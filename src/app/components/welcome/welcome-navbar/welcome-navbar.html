@@ -1,0 +1,68 @@
+<nav class="fixed top-0 left-0 z-50 flex w-full bg-crema px-6 py-3 shadow">
+  <!-- Logo a la izquierda -->
+  <div class="flex cursor-pointer items-center space-x-4" (click)="clickLogo()">
+    <img src="assets/imagenes/logo.svg" alt="Logo" class="h-18" />
+    <div class="text-2xl font-bold text-azul-oscuro">
+      <p>
+        Centro Medico<br />
+        INSUA
+      </p>
+    </div>
+  </div>
+
+  <!-- Espacio flexible en el medio para empujar el resto hacia la derecha -->
+  <div class="flex-grow"></div>
+
+  <!-- Contenedor derecho (texto plano + botones) -->
+  <div class="flex items-end space-y-1 space-x-9">
+    <!-- Texto plano -->
+    <div class="flex items-end space-x-4">
+      <a
+        href="welcome-page/preguntas"
+        class="text-black transition-colors hover:text-verde-oscuro"
+        >Preguntas Frecuentes</a
+      >
+      <span class="text-gray-400">|</span>
+      <a
+        href="welcome-page/ubicaciones"
+        class="text-black transition-colors hover:text-verde-oscuro"
+        >Ubicaciones</a
+      >
+      <span class="text-gray-400">|</span>
+      <a
+        href="welcome-page/comentarios"
+        class="text-black transition-colors hover:text-verde-oscuro"
+        >Comentarios</a
+      >
+    </div>
+
+    <!-- Botones normales -->
+    <div class="flex items-end space-x-4 text-sm">
+      <button
+        class="rounded-full bg-verde-oscuro px-6 py-1.5 font-semibold text-white transition-transform hover:scale-110"
+        (click)="clickLogin()"
+      >
+        Login
+      </button>
+      <button
+        class="rounded-full bg-verde-oscuro px-6 py-1.5 font-semibold text-white transition-transform hover:scale-110"
+        (click)="clickRegister()"
+      >
+        Registrarse
+      </button>
+    </div>
+  </div>
+</nav>
+
+<router-outlet></router-outlet>
+
+<!-- Footer tipo chin -->
+<footer class="bg-gray-400 px-4 py-6 text-sm text-gray-600">
+  <div class="flex flex-wrap justify-center gap-6">
+    <a href="#" class="hover:underline">Política de privacidad</a>
+    <a href="#" class="hover:underline">Términos y condiciones</a>
+    <a href="#" class="hover:underline">Accesibilidad</a>
+    <a href="#" class="hover:underline">Seguridad</a>
+    <a href="#" class="hover:underline">Ayuda</a>
+  </div>
+</footer>

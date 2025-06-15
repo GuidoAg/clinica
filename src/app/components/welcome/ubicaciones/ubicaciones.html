@@ -1,0 +1,21 @@
+<div class="bg-verde-claro px-4 py-28">
+  <h2 class="mb-10 text-center text-3xl font-bold text-azul-oscuro">
+    Nuestras Sedes
+  </h2>
+  <div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 md:grid-cols-3">
+    <div
+      *ngFor="let sede of sedes"
+      class="overflow-hidden rounded-2xl bg-white shadow-md"
+    >
+      <img
+        [src]="sede.imagen"
+        alt="{{ sede.nombre }}"
+        class="h-48 w-full object-cover"
+      />
+      <div class="p-4">
+        <h3 class="text-xl font-bold text-verde-oscuro">{{ sede.nombre }}</h3>
+        <p class="text-gray-600">{{ sede.direccion }}</p>
+      </div>
+    </div>
+  </div>
+</div>

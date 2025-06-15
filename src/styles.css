@@ -1,1 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+@theme {
+  --color-azul-oscuro: oklch(38.59% 0.071 226.98);
+  --color-azul-claro: oklch(74.77% 0.089 202.86);
+  --color-verde-claro: oklch(79.87% 0.081 153.24);
+  --color-verde-oscuro: oklch(46.87% 0.055 146.35);
+  --color-crema: oklch(95.3% 0.02 87.51);
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
