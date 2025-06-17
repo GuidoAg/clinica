@@ -1,5 +1,273 @@
-<div class="bg-crema px-6 py-25">
-  <h2 class="mb-6 text-center text-3xl font-bold text-azul-oscuro">
-    Preguntas Frecuentes
-  </h2>
+<div class="pt-30 pb-90">
+  <h2 class="pb-1 text-center text-4xl font-bold text-azul-oscuro">Registro</h2>
+
+  <!-- Selección de tipo de usuario -->
+  <div *ngIf="!tipoUsuario" class="pt-16 pb-60 text-center">
+    <p class="mb-6 text-xl text-gray-700">¿Qué tipo de usuario sos?</p>
+    <div class="flex justify-center gap-6">
+      <button
+        mat-raised-button
+        class="rounded-full bg-azul-oscuro px-8 py-3 text-lg text-white transition hover:scale-105"
+        (click)="seleccionarTipo('paciente')"
+      >
+        Paciente
+      </button>
+      <button
+        mat-raised-button
+        class="rounded-full bg-verde-oscuro px-8 py-3 text-lg text-white transition hover:scale-105"
+        (click)="seleccionarTipo('especialista')"
+      >
+        Especialista
+      </button>
+    </div>
+  </div>
+
+  <!-- formulario -->
+  <div class="flex justify-center bg-white py-8" *ngIf="tipoUsuario">
+    <form
+      [formGroup]="registroForm"
+      (ngSubmit)="registrar()"
+      class="grid w-full max-w-2xl grid-cols-1 gap-4 rounded-xl bg-crema p-8 shadow-lg md:grid-cols-2"
+    >
+      <!-- Nombre -->
+      <mat-form-field
+        appearance="fill"
+        class="col-span-1"
+        [ngClass]="{
+    'mat-form-field-valid': registroForm.get('nombre')?.valid && (registroForm.get('nombre')?.dirty || registroForm.get('nombre')?.touched),
+    'mat-form-field-invalid': registroForm.get('nombre')?.invalid && (registroForm.get('nombre')?.dirty || registroForm.get('nombre')?.touched)
+  }"
+      >
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" />
+        <mat-error *ngIf="registroForm.get('nombre')?.hasError('required')"
+          >Campo obligatorio</mat-error
+        >
+        <mat-error *ngIf="registroForm.get('nombre')?.hasError('minlength')"
+          >Mínimo 2 caracteres</mat-error
+        >
+        <mat-error *ngIf="registroForm.get('nombre')?.hasError('pattern')"
+          >Solo letras</mat-error
+        >
+      </mat-form-field>
+
+      <!-- Apellido -->
+      <mat-form-field
+        appearance="fill"
+        class="col-span-1"
+        [ngClass]="{
+    'mat-form-field-valid': registroForm.get('apellido')?.valid && (registroForm.get('apellido')?.dirty || registroForm.get('apellido')?.touched),
+    'mat-form-field-invalid': registroForm.get('apellido')?.invalid && (registroForm.get('apellido')?.dirty || registroForm.get('apellido')?.touched)
+  }"
+      >
+        <mat-label>Apellido</mat-label>
+        <input matInput formControlName="apellido" />
+        <mat-error *ngIf="registroForm.get('apellido')?.hasError('required')"
+          >Campo obligatorio</mat-error
+        >
+        <mat-error *ngIf="registroForm.get('apellido')?.hasError('minlength')"
+          >Mínimo 2 caracteres</mat-error
+        >
+        <mat-error *ngIf="registroForm.get('apellido')?.hasError('pattern')"
+          >Solo letras</mat-error
+        >
+      </mat-form-field>
+
+      <!-- Edad -->
+      <mat-form-field
+        appearance="fill"
+        class="col-span-1"
+        [ngClass]="{
+    'mat-form-field-valid': registroForm.get('edad')?.valid && (registroForm.get('edad')?.dirty || registroForm.get('edad')?.touched),
+    'mat-form-field-invalid': registroForm.get('edad')?.invalid && (registroForm.get('edad')?.dirty || registroForm.get('edad')?.touched)
+  }"
+      >
+        <mat-label>Edad</mat-label>
+        <input matInput type="number" formControlName="edad" />
+        <mat-error *ngIf="registroForm.get('edad')?.hasError('required')"
+          >Campo obligatorio</mat-error
+        >
+        <mat-error *ngIf="registroForm.get('edad')?.hasError('min')"
+          >Mínimo 18</mat-error
+        >
+        <mat-error *ngIf="registroForm.get('edad')?.hasError('max')"
+          >Máximo 99</mat-error
+        >
+      </mat-form-field>
+
+      <!-- DNI -->
+      <mat-form-field
+        appearance="fill"
+        class="col-span-1"
+        [ngClass]="{
+    'mat-form-field-valid': registroForm.get('dni')?.valid && (registroForm.get('dni')?.dirty || registroForm.get('dni')?.touched),
+    'mat-form-field-invalid': registroForm.get('dni')?.invalid && (registroForm.get('dni')?.dirty || registroForm.get('dni')?.touched)
+  }"
+      >
+        <mat-label>DNI</mat-label>
+        <input matInput formControlName="dni" />
+        <mat-error *ngIf="registroForm.get('dni')?.hasError('required')"
+          >Campo obligatorio</mat-error
+        >
+        <mat-error *ngIf="registroForm.get('dni')?.hasError('pattern')"
+          >Debe contener 8 dígitos</mat-error
+        >
+      </mat-form-field>
+
+      <!-- Obra Social -->
+      <mat-form-field
+        *ngIf="tipoUsuario === 'paciente'"
+        appearance="fill"
+        class="col-span-1"
+        [ngClass]="{
+    'mat-form-field-valid': registroForm.get('obraSocial')?.valid && (registroForm.get('obraSocial')?.dirty || registroForm.get('obraSocial')?.touched),
+    'mat-form-field-invalid': registroForm.get('obraSocial')?.invalid && (registroForm.get('obraSocial')?.dirty || registroForm.get('obraSocial')?.touched)
+  }"
+      >
+        <mat-label>Obra Social</mat-label>
+        <mat-select formControlName="obraSocial">
+          <mat-option *ngFor="let obra of obraSocialOptions" [value]="obra"
+            >{{ obra }}</mat-option
+          >
+        </mat-select>
+        <mat-error *ngIf="registroForm.get('obraSocial')?.hasError('required')"
+          >Campo obligatorio</mat-error
+        >
+      </mat-form-field>
+
+      <!-- Mail -->
+      <mat-form-field
+        appearance="fill"
+        class="col-span-1"
+        [ngClass]="{
+    'mat-form-field-valid': registroForm.get('mail')?.valid && (registroForm.get('mail')?.dirty || registroForm.get('mail')?.touched),
+    'mat-form-field-invalid': registroForm.get('mail')?.invalid && (registroForm.get('mail')?.dirty || registroForm.get('mail')?.touched)
+  }"
+      >
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="mail" />
+        <mat-error *ngIf="registroForm.get('mail')?.hasError('required')"
+          >Campo obligatorio</mat-error
+        >
+        <mat-error *ngIf="registroForm.get('mail')?.hasError('email')"
+          >Email inválido</mat-error
+        >
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field
+        appearance="fill"
+        class="col-span-1"
+        [ngClass]="{
+    'mat-form-field-valid': registroForm.get('password')?.valid && (registroForm.get('password')?.dirty || registroForm.get('password')?.touched),
+    'mat-form-field-invalid': registroForm.get('password')?.invalid && (registroForm.get('password')?.dirty || registroForm.get('password')?.touched)
+  }"
+      >
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" formControlName="password" />
+        <mat-error *ngIf="registroForm.get('password')?.hasError('required')"
+          >Campo obligatorio</mat-error
+        >
+        <mat-error *ngIf="registroForm.get('password')?.hasError('minlength')"
+          >Mínimo 7 caracteres</mat-error
+        >
+      </mat-form-field>
+
+      <!-- Especialidad -->
+      <mat-form-field
+        *ngIf="tipoUsuario === 'especialista'"
+        appearance="fill"
+        class="col-span-1"
+        [ngClass]="{
+    'mat-form-field-valid': registroForm.get('especialidad')?.valid && (registroForm.get('especialidad')?.dirty || registroForm.get('especialidad')?.touched),
+    'mat-form-field-invalid': registroForm.get('especialidad')?.invalid && (registroForm.get('especialidad')?.dirty || registroForm.get('especialidad')?.touched)
+  }"
+      >
+        <mat-label>Especialidad</mat-label>
+        <mat-select formControlName="especialidad">
+          <mat-option
+            *ngFor="let especialidad of especialidadOptions"
+            [value]="especialidad"
+            >{{ especialidad }}</mat-option
+          >
+        </mat-select>
+        <mat-error
+          *ngIf="registroForm.get('especialidad')?.hasError('required')"
+          >Campo obligatorio</mat-error
+        >
+      </mat-form-field>
+
+      <!-- Otra Especialidad -->
+      <mat-form-field
+        *ngIf="tipoUsuario === 'especialista'"
+        appearance="fill"
+        class="col-span-1"
+        [ngClass]="{
+    'mat-form-field-valid': registroForm.get('otraEspecialidad')?.valid && (registroForm.get('otraEspecialidad')?.dirty || registroForm.get('otraEspecialidad')?.touched),
+    'mat-form-field-invalid': registroForm.get('otraEspecialidad')?.invalid && (registroForm.get('otraEspecialidad')?.dirty || registroForm.get('otraEspecialidad')?.touched)
+  }"
+      >
+        <mat-label>Otra Especialidad</mat-label>
+        <input
+          matInput
+          formControlName="otraEspecialidad"
+          [disabled]="!registroForm.get('otraEspecialidad')?.enabled"
+        />
+        <mat-error
+          *ngIf="registroForm.get('otraEspecialidad')?.hasError('required')"
+          >Campo obligatorio</mat-error
+        >
+        <mat-error
+          *ngIf="registroForm.get('otraEspecialidad')?.hasError('minlength')"
+          >Mínimo 2 caracteres</mat-error
+        >
+        <mat-error
+          *ngIf="registroForm.get('otraEspecialidad')?.hasError('pattern')"
+          >Solo letras</mat-error
+        >
+      </mat-form-field>
+
+      <!-- Imagen -->
+      <div class="col-span-2 flex flex-col gap-2">
+        <label class="font-semibold text-azul-oscuro">Imagen</label>
+        <input
+          type="file"
+          (change)="onFileSelected($event)"
+          class="register-input"
+          accept="image/*"
+        />
+        <mat-error *ngIf="registroForm.get('imagen')?.hasError('required')">
+          Debe seleccionar una imagen.
+        </mat-error>
+        <mat-error *ngIf="registroForm.get('imagen')?.hasError('invalidType')">
+          Solo se permiten archivos .jpg o .png
+        </mat-error>
+      </div>
+
+      <!-- Botón -->
+      <div class="col-span-2 flex justify-center pt-4">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="registroForm.invalid"
+          type="submit"
+          class="rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
+        >
+          Registrarse
+        </button>
+      </div>
+
+      <!-- Cambiar tipo -->
+      <div class="col-span-2 mt-1 flex justify-center">
+        <button
+          mat-button
+          type="button"
+          (click)="tipoUsuario = null"
+          class="text-sm text-gray-600 underline"
+        >
+          Cambiar tipo de usuario
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
