@@ -1,0 +1,6 @@
+/* Oculta scroll global */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}

@@ -1,0 +1,91 @@
+<!-- Contenedor global sin scroll y pantalla completa -->
+<div class="fixed inset-0 flex flex-col overflow-hidden bg-gray-300">
+  <!-- Navbar superior -->
+  <nav class="z-50 flex items-center justify-between bg-crema px-6 py-3 shadow">
+    <div class="flex items-center gap-4">
+      <!-- Botón hamburguesa -->
+      <button
+        mat-icon-button
+        (click)="toggleSidebar()"
+        class="text-azul-oscuro transition-transform hover:scale-110"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <!-- Logo y texto -->
+      <div
+        class="flex cursor-pointer items-center space-x-4"
+        (click)="clickLogo()"
+      >
+        <img src="assets/imagenes/logo.svg" alt="Logo" class="h-14" />
+        <div class="text-xl leading-tight font-bold text-azul-oscuro">
+          <p>
+            Centro Médico<br />
+            INSUA
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón Cerrar sesión -->
+    <button
+      class="rounded-full bg-verde-oscuro px-6 py-1.5 font-semibold text-white transition-transform hover:scale-110"
+      (click)="clickCerrarSesion()"
+    >
+      Cerrar Sesión
+    </button>
+  </nav>
+
+  <!-- Contenido con sidebar + router outlet -->
+  <div class="flex flex-grow overflow-hidden">
+    <!-- Barra lateral -->
+    <aside
+      class="w-64 bg-azul-oscuro p-6 text-crema transition-all duration-300"
+      [class.-ml-64]="!sidebarOpen"
+    >
+      <nav class="flex flex-col space-y-6 font-bold">
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="navigate('')"
+        >
+          Home
+        </button>
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="navigate('mis-turnos')"
+        >
+          Mis Turnos
+        </button>
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="navigate('turnos')"
+        >
+          Turnos
+        </button>
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="navigate('solicitar-turnos')"
+        >
+          Solicitar Turno
+        </button>
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="navigate('mi-perfil')"
+        >
+          Mi Perfil
+        </button>
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="navigate('usuarios')"
+        >
+          Usuarios
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="flex-grow overflow-auto p-6 transition-all duration-300">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

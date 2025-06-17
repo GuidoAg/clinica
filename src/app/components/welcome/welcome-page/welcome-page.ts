@@ -110,4 +110,8 @@ export class WelcomePage implements OnInit, OnDestroy {
   clickRegister() {
     this.router.navigate(['/welcome-page/registro']);
   }
+
+  clickHome() {
+    this.router.navigate(['/home']);
+  }
 }

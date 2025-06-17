@@ -28,7 +28,7 @@ export class Ubicaciones {
     {
       nombre: 'Centro Belgrano',
       direccion: 'Juramento 2100, CABA',
-      imagen: 'assets/imagenes/ubicaciones/belgrano.jpg',
+      imagen: 'assets/imagenes/ubicaciones/belgrano.jpeg',
     },
     {
       nombre: 'Centro Recoleta',
