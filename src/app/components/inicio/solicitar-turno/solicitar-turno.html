@@ -1,9 +1,120 @@
-<div class="h-full w-full p-1">
-  <div class="h-full w-full rounded-2xl bg-crema p-8 shadow-inner">
-    <h1 class="mb-4 text-4xl font-bold text-azul-oscuro">Solicitar turno</h1>
-    <p class="text-lg text-gray-700">
-      Este es un componente de prueba que ocupa todo el espacio disponible
-      dentro del layout.
-    </p>
+<div class="h-full w-full p-6">
+  <div
+    class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
+  >
+    <h1 class="mb-6 text-4xl font-bold text-azul-oscuro">Solicitar Turno</h1>
+
+    <!-- Paso 0: Si es admin, elegir paciente  *ngIf="esAdmin" -->
+    <div *ngIf="" class="mb-6">
+      <h2 class="mb-2 text-lg font-semibold text-gray-700">
+        Seleccionar Paciente
+      </h2>
+      <div class="flex flex-wrap gap-4">
+        <button
+          class="rounded-full border border-gray-500 px-4 py-1.5 hover:bg-gray-500 hover:text-white"
+        >
+          Juan Pérez
+        </button>
+        <button
+          class="rounded-full border border-gray-500 px-4 py-1.5 hover:bg-gray-500 hover:text-white"
+        >
+          María Gómez
+        </button>
+      </div>
+    </div>
+
+    <!-- Paso 1: Especialidad -->
+    <div class="mb-6">
+      <h2 class="mb-2 text-lg font-semibold text-gray-700">
+        Seleccionar Especialidad
+      </h2>
+      <div class="flex flex-wrap gap-4">
+        <button
+          class="rounded-full border border-azul-oscuro px-4 py-1.5 hover:bg-azul-oscuro hover:text-white"
+        >
+          Clínica Médica
+        </button>
+        <button
+          class="rounded-full border border-azul-oscuro px-4 py-1.5 hover:bg-azul-oscuro hover:text-white"
+        >
+          Traumatología
+        </button>
+        <button
+          class="rounded-full border border-azul-oscuro px-4 py-1.5 hover:bg-azul-oscuro hover:text-white"
+        >
+          Cardiología
+        </button>
+      </div>
+    </div>
+
+    <!-- Paso 2: Especialista -->
+    <div class="mb-6">
+      <h2 class="mb-2 text-lg font-semibold text-gray-700">
+        Seleccionar Especialista
+      </h2>
+      <div class="flex flex-wrap gap-4">
+        <button
+          class="rounded-full border border-azul-oscuro px-4 py-1.5 hover:bg-azul-oscuro hover:text-white"
+        >
+          Dr. Insua
+        </button>
+        <button
+          class="rounded-full border border-azul-oscuro px-4 py-1.5 hover:bg-azul-oscuro hover:text-white"
+        >
+          Dra. López
+        </button>
+      </div>
+    </div>
+
+    <!-- Paso 3: Día (dentro de los próximos 15 días) -->
+    <div class="mb-6">
+      <h2 class="mb-2 text-lg font-semibold text-gray-700">Seleccionar Día</h2>
+      <div class="flex flex-wrap gap-3">
+        <button
+          class="rounded-full border border-gray-300 bg-white px-4 py-2 hover:bg-verde-oscuro hover:text-white"
+        >
+          Lun 17/06
+        </button>
+        <button
+          class="rounded-full border border-gray-300 bg-white px-4 py-2 hover:bg-verde-oscuro hover:text-white"
+        >
+          Mar 18/06
+        </button>
+        <!-- ...más días hasta 15 -->
+      </div>
+    </div>
+
+    <!-- Paso 4: Horario -->
+    <div class="mb-6">
+      <h2 class="mb-2 text-lg font-semibold text-gray-700">
+        Seleccionar Horario
+      </h2>
+      <div class="flex flex-wrap gap-3">
+        <button
+          class="rounded-md border border-gray-400 px-4 py-2 hover:bg-verde-oscuro hover:text-white"
+        >
+          09:00
+        </button>
+        <button
+          class="rounded-md border border-gray-400 px-4 py-2 hover:bg-verde-oscuro hover:text-white"
+        >
+          10:30
+        </button>
+        <button
+          class="rounded-md border border-gray-400 px-4 py-2 hover:bg-verde-oscuro hover:text-white"
+        >
+          14:00
+        </button>
+      </div>
+    </div>
+
+    <!-- Botón de confirmación -->
+    <div class="pt-4 text-center">
+      <button
+        class="rounded-full bg-verde-oscuro px-6 py-2 text-white shadow-lg transition hover:scale-105"
+      >
+        Confirmar Turno
+      </button>
+    </div>
   </div>
 </div>

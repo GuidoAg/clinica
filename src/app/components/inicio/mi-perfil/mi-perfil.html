@@ -1,9 +1,122 @@
 <div class="h-full w-full p-1">
-  <div class="h-full w-full rounded-2xl bg-crema p-8 shadow-inner">
-    <h1 class="mb-4 text-4xl font-bold text-azul-oscuro">Mi Perfil</h1>
-    <p class="text-lg text-gray-700">
-      Este es un componente de prueba que ocupa todo el espacio disponible
-      dentro del layout.
-    </p>
+  <div
+    class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
+  >
+    <h1 class="mb-6 text-4xl font-bold text-azul-oscuro">Mi Perfil</h1>
+
+    <div class="flex items-center">
+      <img
+        src="assets/imagenes/banerWelcomePage.png"
+        alt="Portada"
+        class="h-50 w-full rounded-2xl object-cover"
+      />
+    </div>
+
+    <!-- Datos del Usuario -->
+    <div class="mb-8 flex items-center gap-8 pt-10">
+      <img
+        src="assets/imagenes/logo.svg"
+        alt="Avatar"
+        class="h-32 w-32 rounded-full border-4 border-white shadow-md"
+      />
+      <div>
+        <p class="text-xl text-gray-700">
+          <strong>Nombre:</strong> {{ usuario.nombre }}
+        </p>
+        <p class="text-xl text-gray-700">
+          <strong>Apellido:</strong> {{ usuario.apellido }}
+        </p>
+        <p class="text-xl text-gray-700">
+          <strong>Email:</strong> {{ usuario.email }}
+        </p>
+        <p class="text-xl text-gray-700">
+          <strong>Rol:</strong> {{ usuario.perfil }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Mis Horarios (solo especialistas) -->
+    <h2 class="mb-4 text-2xl font-semibold text-azul-oscuro">Mis Horarios</h2>
+
+    <!-- Especialidades -->
+    <div class="mb-4">
+      <p class="mb-2 text-lg font-medium text-gray-700">Especialidades:</p>
+      <div class="flex flex-wrap gap-4">
+        <span
+          *ngFor="let esp of usuario.especialidades"
+          class="rounded-full border border-azul-oscuro bg-white px-4 py-1.5 text-sm text-azul-oscuro shadow-sm"
+          >{{ esp }}</span
+        >
+      </div>
+    </div>
+
+    <!-- Selección de Disponibilidad -->
+    <div>
+      <p class="mb-2 text-lg font-medium text-gray-700">Disponibilidad:</p>
+
+      <!-- Días -->
+      <div class="mb-3">
+        <p class="mb-1 text-sm text-gray-600">Días:</p>
+        <div class="flex flex-wrap gap-2">
+          <button
+            class="rounded-md border border-gray-400 px-4 py-1 hover:bg-verde-oscuro hover:text-white"
+          >
+            Lunes
+          </button>
+          <button
+            class="rounded-md border border-gray-400 px-4 py-1 hover:bg-verde-oscuro hover:text-white"
+          >
+            Martes
+          </button>
+          <button
+            class="rounded-md border border-gray-400 px-4 py-1 hover:bg-verde-oscuro hover:text-white"
+          >
+            Miércoles
+          </button>
+          <button
+            class="rounded-md border border-gray-400 px-4 py-1 hover:bg-verde-oscuro hover:text-white"
+          >
+            Jueves
+          </button>
+          <button
+            class="rounded-md border border-gray-400 px-4 py-1 hover:bg-verde-oscuro hover:text-white"
+          >
+            Viernes
+          </button>
+        </div>
+      </div>
+
+      <!-- Horarios -->
+      <div>
+        <p class="mb-1 text-sm text-gray-600">Horarios:</p>
+        <div class="flex flex-wrap gap-2">
+          <button
+            class="rounded-md border border-gray-400 px-4 py-1 hover:bg-verde-oscuro hover:text-white"
+          >
+            08:00
+          </button>
+          <button
+            class="rounded-md border border-gray-400 px-4 py-1 hover:bg-verde-oscuro hover:text-white"
+          >
+            09:30
+          </button>
+          <button
+            class="rounded-md border border-gray-400 px-4 py-1 hover:bg-verde-oscuro hover:text-white"
+          >
+            11:00
+          </button>
+          <button
+            class="rounded-md border border-gray-400 px-4 py-1 hover:bg-verde-oscuro hover:text-white"
+          >
+            13:00
+          </button>
+          <button
+            class="rounded-md border border-gray-400 px-4 py-1 hover:bg-verde-oscuro hover:text-white"
+          >
+            15:00
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterOutlet } from '@angular/router';
 
@@ -30,6 +30,11 @@ export class WelcomeNavbar {
   }
 
   clickRegister() {
-    this.router.navigate(['/welcome-page/registro']);
+    this.router.navigate(['/welcome-page/registro']).then(() => {
+      // Agregamos un pequeño delay para asegurar que el DOM esté cargado
+      setTimeout(() => {
+        window.location.reload();
+      }, 1);
+    });
   }
 }

@@ -12,6 +12,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
+import { AuthSupabase } from '../../../services/auth-supabase';
+import { RegistroPaciente } from '../../../models/Auth/RegistroPaciente';
+import { RegistroEspecialista } from '../../../models/Auth/RegistroEspecialista';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Supabase } from '../../../supabase';
+
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -32,12 +38,27 @@ export class Register implements OnInit {
   selectedImageUrl: string | null = null;
   tipoUsuario: 'paciente' | 'especialista' | null = null;
 
-  obraSocialOptions = ['opcion1', 'opcion2'];
-  especialidadOptions = ['Cardiología', 'Dermatología', 'Otra'];
+  obraSocialOptions = [
+    'Osde',
+    'SwissMedical',
+    'Galeno',
+    'Pami',
+    'Medife',
+    'Ioma',
+  ];
+  especialidadOptions = ['Otra'];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthSupabase,
+    private snackBar: MatSnackBar,
+  ) {
+    this.tipoUsuario = null;
+  }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.cargarEspecialidades();
+
     this.registroForm = this.fb.group({
       nombre: [
         '',
@@ -134,12 +155,109 @@ export class Register implements OnInit {
     this.registroForm.get('especialidad')?.updateValueAndValidity();
   }
 
-  registrar() {
-    if (this.registroForm.valid) {
-      console.log('Formulario enviado:', this.registroForm.value);
-      // Aquí va la lógica de registro
-    } else {
+  private async cargarEspecialidades(): Promise<void> {
+    const { data, error } = await Supabase.from('specialties')
+      .select('name')
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('Error al obtener especialidades', error.message);
+      this.especialidadOptions = ['Otra'];
+      return;
+    }
+
+    const nombres = data?.map((e) => e.name) ?? [];
+    this.especialidadOptions = [...nombres, 'Otra'];
+  }
+
+  async registrar(): Promise<void> {
+    if (this.registroForm.invalid || !this.tipoUsuario) {
       this.registroForm.markAllAsTouched();
+      return;
+    }
+
+    const formValue = this.registroForm.value;
+    const imagen = formValue.imagen;
+
+    const imageUrl = await this.subirImagen(imagen);
+    if (!imageUrl) {
+      this.snackBar.open('Error al subir la imagen.', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (this.tipoUsuario === 'paciente') {
+      const paciente: RegistroPaciente = {
+        nombre: formValue.nombre,
+        apellido: formValue.apellido,
+        edad: formValue.edad,
+        dni: formValue.dni,
+        obraSocial: formValue.obraSocial,
+        mail: formValue.mail,
+        contrasena: formValue.password,
+        imagenPerfil: imageUrl,
+        imagenFondo: '', // podrías manejar esto como parte opcional después
+      };
+
+      const res = await this.auth.registrarPaciente(paciente);
+      this.mostrarResultado(res);
+    }
+
+    if (this.tipoUsuario === 'especialista') {
+      const especialidad =
+        formValue.especialidad === 'Otra'
+          ? formValue.otraEspecialidad
+          : formValue.especialidad;
+
+      const especialista: RegistroEspecialista = {
+        nombre: formValue.nombre,
+        apellido: formValue.apellido,
+        edad: formValue.edad,
+        dni: formValue.dni,
+        mail: formValue.mail,
+        contrasena: formValue.password,
+        especialidad: especialidad,
+        imagenPerfil: imageUrl,
+      };
+
+      const res = await this.auth.registrarEspecialista(especialista);
+      this.mostrarResultado(res);
+    }
+  }
+
+  private async subirImagen(file: File): Promise<string | null> {
+    const filePath = `perfiles/${Date.now()}-${file.name}`;
+    const { data, error } = await Supabase.storage
+      .from('imagenes') // Debe existir el bucket "imagenes"
+      .upload(filePath, file);
+
+    if (error) return null;
+
+    const { data: urlData } = Supabase.storage
+      .from('imagenes')
+      .getPublicUrl(filePath);
+
+    return urlData?.publicUrl ?? null;
+  }
+
+  private mostrarResultado(res: { exito: boolean; error?: string }) {
+    if (res.exito) {
+      this.snackBar.open(
+        'Registro exitoso. Por favor verifica tu correo.',
+        'Cerrar',
+        {
+          duration: 4000,
+          panelClass: ['bg-green-600', 'text-white'],
+        },
+      );
+      this.registroForm.reset();
+      this.tipoUsuario = null;
+    } else {
+      this.snackBar.open(res.error || 'Ocurrió un error (default).', 'Cerrar', {
+        duration: 4000,
+        panelClass: ['bg-red-600', 'text-white'],
+      });
     }
   }
 }
