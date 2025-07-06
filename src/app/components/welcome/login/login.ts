@@ -1,4 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -6,26 +13,41 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthSupabase } from '../../../services/auth-supabase';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { LoadingOverlayService } from '../../../services/loading-overlay-service';
+
 import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatInputModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login implements OnInit {
+export class Login implements OnInit, AfterViewInit {
   private fb = inject(FormBuilder);
-  private auth = inject(AuthSupabase);
-  private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private auth = inject(AuthSupabase);
+  private overlay = inject(LoadingOverlayService); // nuevo
 
   loginForm!: FormGroup;
-  loading = false;
+  hidePassword = true;
+
+  @ViewChild('emailInput') emailInputRef!: ElementRef<HTMLInputElement>;
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -34,51 +56,31 @@ export class Login implements OnInit {
     });
   }
 
-  async logear(): Promise<void> {
+  ngAfterViewInit(): void {
+    queueMicrotask(() => this.emailInputRef?.nativeElement.focus());
+  }
+
+  async login(): Promise<void> {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    this.loading = true;
+    this.overlay.show();
+
     const { mail, password } = this.loginForm.value;
     const res = await this.auth.login(mail, password);
-    this.loading = false;
 
-    if (!res.exito) {
-      // Mapa el mensaje de Supabase a uno concreto
-      // const raw = res.error ?? '';
-      let mensaje = 'Ocurrió un error.';
+    this.overlay.hide();
 
-      if (res.error != null) {
-        mensaje = res.error;
-      }
-
-      // if (raw.includes('Invalid login credentials')) {
-      //   // Este es el error genérico de mail o contraseña inválidos
-      //   mensaje = 'Email o contraseña incorrectos.';
-      // } else if (raw.toLowerCase().includes('must confirm')) {
-      //   // Supabase podría devolver algo como "New users must confirm email"
-      //   mensaje = 'Tu email no está validado. Revisa tu bandeja de entrada.';
-      // } else if (raw.toLowerCase().includes('admin_validated')) {
-      //   mensaje =
-      //     'Tu cuenta de especialista aún no fue aprobada por el administrador.';
-      // } else if (raw.toLowerCase().includes('not found')) {
-      //   mensaje = 'Este correo no está registrado.';
-      // }
-
-      this.snackBar.open(mensaje, 'Cerrar', {
+    if (!res.success) {
+      this.snackBar.open(res.message ?? 'Error de login', 'Cerrar', {
         duration: 4000,
         panelClass: ['bg-red-600', 'text-white'],
       });
       return;
     }
 
-    // Éxito
-    this.snackBar.open('¡Bienvenido de nuevo!', 'Cerrar', {
-      duration: 3000,
-      panelClass: ['bg-green-600', 'text-white'],
-    });
-    await this.router.navigate(['/dashboard']);
+    this.router.navigate(['/home']);
   }
 }

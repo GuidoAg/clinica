@@ -1,49 +1,70 @@
 <div class="bg-gray-200 pt-30 pb-130">
   <h2 class="pb-1 text-center text-4xl font-bold text-azul-oscuro">Login</h2>
 
-  <!-- formulario -->
   <div class="flex justify-center py-8">
     <form
       [formGroup]="loginForm"
-      (ngSubmit)="logear()"
+      (ngSubmit)="login()"
       class="flex w-full max-w-xl flex-col items-center rounded-xl bg-crema p-8 shadow-lg"
     >
-      <!-- Mail -->
+      <!-- Email -->
       <mat-form-field
         appearance="fill"
         class="w-80"
         [ngClass]="{
-    'mat-form-field-valid': loginForm.get('mail')?.valid && (loginForm.get('mail')?.dirty || loginForm.get('mail')?.touched),
-    'mat-form-field-invalid': loginForm.get('mail')?.invalid && (loginForm.get('mail')?.dirty || loginForm.get('mail')?.touched)
-  }"
+          'mat-form-field-valid':
+            loginForm.get('mail')?.valid &&
+            (loginForm.get('mail')?.dirty || loginForm.get('mail')?.touched),
+          'mat-form-field-invalid':
+            loginForm.get('mail')?.invalid &&
+            (loginForm.get('mail')?.dirty || loginForm.get('mail')?.touched)
+        }"
       >
         <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="mail" />
-        <mat-error *ngIf="loginForm.get('mail')?.hasError('required')"
-          >Campo obligatorio</mat-error
-        >
-        <mat-error *ngIf="loginForm.get('mail')?.hasError('email')"
-          >Email inválido</mat-error
-        >
+        <input matInput type="email" formControlName="mail" #emailInput />
+        <mat-error *ngIf="loginForm.get('mail')?.hasError('required')">
+          Campo obligatorio
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('mail')?.hasError('email')">
+          Email inválido
+        </mat-error>
       </mat-form-field>
-      <br />
+
       <!-- Password -->
       <mat-form-field
         appearance="fill"
         class="w-80"
         [ngClass]="{
-    'mat-form-field-valid': loginForm.get('password')?.valid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched),
-    'mat-form-field-invalid': loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)
-  }"
+          'mat-form-field-valid':
+            loginForm.get('password')?.valid &&
+            (loginForm.get('password')?.dirty || loginForm.get('password')?.touched),
+          'mat-form-field-invalid':
+            loginForm.get('password')?.invalid &&
+            (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)
+        }"
       >
         <mat-label>Contraseña</mat-label>
-        <input matInput type="password" formControlName="password" />
-        <mat-error *ngIf="loginForm.get('password')?.hasError('required')"
-          >Campo obligatorio</mat-error
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          formControlName="password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hidePassword = !hidePassword"
         >
-        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')"
-          >Mínimo 7 caracteres</mat-error
-        >
+          <mat-icon
+            >{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon
+          >
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          Campo obligatorio
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+          Mínimo 7 caracteres
+        </mat-error>
       </mat-form-field>
 
       <!-- Botón -->

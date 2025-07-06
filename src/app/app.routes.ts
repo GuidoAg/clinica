@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { WelcomeNavbar } from './components/welcome/welcome-navbar/welcome-navbar';
 import { HomeNavbar } from './components/inicio/home-navbar/home-navbar';
+import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
   {
@@ -52,10 +53,18 @@ export const routes: Routes = [
             (m) => m.Register,
           ),
       },
+      {
+        path: 'confirmacion',
+        loadComponent: () =>
+          import('./components/welcome/confirmacion/confirmacion').then(
+            (m) => m.Confirmacion,
+          ),
+      },
     ],
   },
   {
     path: 'home',
+    canActivate: [authGuard],
     component: HomeNavbar,
     children: [
       {

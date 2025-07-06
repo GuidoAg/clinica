@@ -2,7 +2,7 @@
   <h2 class="pb-1 text-center text-4xl font-bold text-azul-oscuro">Registro</h2>
 
   <!-- Selección de tipo de usuario -->
-  <div *ngIf="!tipoUsuario" class="pt-16 pb-60 text-center">
+  <div *ngIf="!tipoUsuario && registroForm" class="pt-16 pb-60 text-center">
     <p class="mb-6 text-xl text-gray-700">¿Qué tipo de usuario sos?</p>
     <div class="flex justify-center gap-6">
       <button
@@ -23,7 +23,7 @@
   </div>
 
   <!-- formulario -->
-  <div class="flex justify-center py-8" *ngIf="tipoUsuario">
+  <div class="flex justify-center py-8" *ngIf="tipoUsuario && registroForm">
     <form
       [formGroup]="registroForm"
       (ngSubmit)="registrar()"
@@ -84,6 +84,7 @@
       >
         <mat-label>Edad</mat-label>
         <input matInput type="number" formControlName="edad" />
+
         <mat-error *ngIf="registroForm.get('edad')?.hasError('required')"
           >Campo obligatorio</mat-error
         >
@@ -188,8 +189,9 @@
           <mat-option
             *ngFor="let especialidad of especialidadOptions"
             [value]="especialidad"
-            >{{ especialidad }}</mat-option
           >
+            {{ especialidad.nombre }}
+          </mat-option>
         </mat-select>
         <mat-error
           *ngIf="registroForm.get('especialidad')?.hasError('required')"
@@ -227,17 +229,41 @@
         >
       </mat-form-field>
 
-      <!-- Imagen -->
+      <!-- Imagen de perfil -->
       <div class="col-span-2 flex flex-col gap-2">
-        <label class="font-semibold text-azul-oscuro">Imagen</label>
+        <label class="font-semibold text-azul-oscuro">Foto Perfil</label>
         <input
           type="file"
-          (change)="onFileSelected($event)"
+          (change)="onFileSelected($event, 'perfil')"
           class="register-input"
           accept="image/*"
         />
-        <mat-error *ngIf="registroForm.get('imagen')?.hasError('required')">
-          Debe seleccionar una imagen.
+        <mat-error
+          *ngIf="registroForm.get('imagenPerfil')?.hasError('required')"
+        >
+          Debe seleccionar una imagen de perfil.
+        </mat-error>
+        <mat-error *ngIf="registroForm.get('imagen')?.hasError('invalidType')">
+          Solo se permiten archivos .jpg o .png
+        </mat-error>
+      </div>
+
+      <!-- Imagen de fondo (solo paciente) -->
+      <div
+        *ngIf="tipoUsuario==='paciente'"
+        class="col-span-2 flex flex-col gap-2"
+      >
+        <label class="font-semibold text-azul-oscuro">Foto Fondo</label>
+        <input
+          type="file"
+          (change)="onFileSelected($event, 'fondo')"
+          class="register-input"
+          accept="image/*"
+        />
+        <mat-error
+          *ngIf="registroForm.get('imagenFondo')?.hasError('required')"
+        >
+          Debe seleccionar una imagen de fondo.
         </mat-error>
         <mat-error *ngIf="registroForm.get('imagen')?.hasError('invalidType')">
           Solo se permiten archivos .jpg o .png
@@ -249,11 +275,17 @@
         <button
           mat-raised-button
           color="primary"
-          [disabled]="registroForm.invalid"
+          [disabled]="registroForm.invalid || isLoading"
           type="submit"
-          class="rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
+          class="flex items-center justify-center gap-2 rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
         >
-          Registrarse
+          <mat-spinner
+            *ngIf="isLoading"
+            diameter="24"
+            strokeWidth="3"
+            class="!text-white"
+          ></mat-spinner>
+          <span *ngIf="!isLoading">Registrarse</span>
         </button>
       </div>
 

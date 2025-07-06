@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthSupabase } from '../../../services/auth-supabase';
 
 @Component({
   selector: 'app-home-navbar',
@@ -12,7 +13,10 @@ import { MatIconModule } from '@angular/material/icon';
 export class HomeNavbar {
   sidebarOpen = true;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private auth: AuthSupabase,
+  ) {}
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
@@ -32,6 +36,7 @@ export class HomeNavbar {
   }
 
   clickCerrarSesion() {
+    this.auth.logout();
     this.router.navigate(['/welcome-page']);
   }
 

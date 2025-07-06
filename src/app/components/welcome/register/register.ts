@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -6,17 +6,23 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { AuthSupabase } from '../../../services/auth-supabase';
 import { RegistroPaciente } from '../../../models/Auth/RegistroPaciente';
 import { RegistroEspecialista } from '../../../models/Auth/RegistroEspecialista';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Supabase } from '../../../supabase';
+import { RespuestaApi } from '../../../models/RespuestaApi';
+import { fileToBase64 } from '../../../helpers/upload-base64';
+import { OBRAS_SOCIALES } from '../../../constants/obras-sociales';
+import { Especialidad } from '../../../models/SupaBase/Especialidad';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -29,36 +35,33 @@ import { Supabase } from '../../../supabase';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './register.html',
   styleUrls: ['./register.css'],
 })
-export class Register implements OnInit {
+export class Register implements OnInit, OnDestroy {
   registroForm!: FormGroup;
-  selectedImageUrl: string | null = null;
   tipoUsuario: 'paciente' | 'especialista' | null = null;
+  obraSocialOptions = OBRAS_SOCIALES;
+  especialidadOptions: Especialidad[] = [];
+  isLoading = false;
 
-  obraSocialOptions = [
-    'Osde',
-    'SwissMedical',
-    'Galeno',
-    'Pami',
-    'Medife',
-    'Ioma',
-  ];
-  especialidadOptions = ['Otra'];
+  private subEspecialidad!: Subscription;
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthSupabase,
     private snackBar: MatSnackBar,
-  ) {
-    this.tipoUsuario = null;
-  }
+    private router: Router,
+  ) {}
 
   async ngOnInit(): Promise<void> {
-    this.cargarEspecialidades();
+    // Carga inicial de especialidades
+    this.especialidadOptions = await this.auth.obtenerEspecialidades();
+    this.especialidadOptions.push({ id: -1, nombre: 'Otra' });
 
+    // Construcción del form
     this.registroForm = this.fb.group({
       nombre: [
         '',
@@ -77,19 +80,14 @@ export class Register implements OnInit {
         ],
       ],
       edad: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^\d+$/),
-          Validators.min(18),
-          Validators.max(99),
-        ],
+        null,
+        [Validators.required, Validators.min(18), Validators.max(99)],
       ],
       dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-      obraSocial: ['', Validators.required],
+      obraSocial: [''],
       mail: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(7)]],
-      especialidad: ['', Validators.required],
+      especialidad: [''],
       otraEspecialidad: [
         { value: '', disabled: true },
         [
@@ -97,167 +95,253 @@ export class Register implements OnInit {
           Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
         ],
       ],
-      imagen: [null, Validators.required],
+      imagenPerfil: [null, Validators.required],
+      imagenFondo: [''],
     });
 
-    this.registroForm.get('especialidad')?.valueChanges.subscribe((value) => {
-      const otraControl = this.registroForm.get('otraEspecialidad');
-      if (value === 'Otra') {
-        otraControl?.enable();
-        otraControl?.setValidators([
-          Validators.required,
-          Validators.minLength(2),
-          Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
-        ]);
-      } else {
-        otraControl?.disable();
-        otraControl?.clearValidators();
-      }
-      otraControl?.updateValueAndValidity();
-    });
+    // Ajuste dinámico de validadores para "otraEspecialidad"
+    this.subEspecialidad = this.registroForm
+      .get('especialidad')!
+      .valueChanges.subscribe((value) => {
+        const otra = this.registroForm.get('otraEspecialidad')!;
+        if (value?.id === -1) {
+          otra.enable();
+          otra.setValidators([
+            Validators.required,
+            Validators.minLength(2),
+            Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
+          ]);
+        } else {
+          otra.disable();
+          otra.clearValidators();
+        }
+        otra.updateValueAndValidity();
+      });
   }
 
-  onFileSelected(event: Event) {
+  ngOnDestroy(): void {
+    this.subEspecialidad.unsubscribe();
+  }
+
+  seleccionarTipo(tipo: 'paciente' | 'especialista'): void {
+    this.tipoUsuario = tipo;
+
+    if (!this.registroForm) return; // <--- chequeo de seguridad
+
+    if (tipo === 'paciente') {
+      this.registroForm.get('obraSocial')?.setValidators([Validators.required]);
+      this.registroForm.get('especialidad')?.clearValidators();
+      this.registroForm.get('otraEspecialidad')?.clearValidators();
+    } else {
+      this.registroForm.get('obraSocial')?.clearValidators();
+      this.registroForm
+        .get('especialidad')
+        ?.setValidators([Validators.required]);
+      // Si especialidad no es "Otra", entonces desactivo otraEspecialidad
+      const otraEspecialidadCtrl = this.registroForm.get('otraEspecialidad')!;
+      if (this.registroForm.get('especialidad')?.value !== 'Otra') {
+        otraEspecialidadCtrl.disable();
+        otraEspecialidadCtrl.clearValidators();
+      }
+    }
+
+    // Actualizar validez después de cambiar validadores
+    this.registroForm.get('obraSocial')?.updateValueAndValidity();
+    this.registroForm.get('especialidad')?.updateValueAndValidity();
+    this.registroForm.get('otraEspecialidad')?.updateValueAndValidity();
+  }
+
+  onFileSelected(event: Event, tipo: 'perfil' | 'fondo') {
+    const controlName = tipo === 'perfil' ? 'imagenPerfil' : 'imagenFondo';
     const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) {
-      this.registroForm.get('imagen')?.setValue(null);
-      this.registroForm.get('imagen')?.setErrors({ required: true });
-      this.selectedImageUrl = null;
+    const ctrl = this.registroForm.get(controlName)!;
+
+    if (!input.files?.length) {
+      ctrl.setValue(null);
+      ctrl.setErrors({ required: true });
       return;
     }
 
     const file = input.files[0];
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-
     if (!validTypes.includes(file.type)) {
-      this.registroForm.get('imagen')?.setErrors({ invalidType: true });
-      this.selectedImageUrl = null;
+      ctrl.setErrors({ invalidType: true });
       return;
     }
 
-    // ✅ Imagen válida
-    this.registroForm.get('imagen')?.setValue(file);
-    this.registroForm.get('imagen')?.setErrors(null);
-  }
-
-  seleccionarTipo(tipo: 'paciente' | 'especialista') {
-    this.tipoUsuario = tipo;
-
-    if (tipo === 'paciente') {
-      this.registroForm.get('obraSocial')?.setValidators(Validators.required);
-      this.registroForm.get('especialidad')?.clearValidators();
-    } else {
-      this.registroForm.get('especialidad')?.setValidators(Validators.required);
-      this.registroForm.get('obraSocial')?.clearValidators();
-    }
-
-    this.registroForm.get('obraSocial')?.updateValueAndValidity();
-    this.registroForm.get('especialidad')?.updateValueAndValidity();
-  }
-
-  private async cargarEspecialidades(): Promise<void> {
-    const { data, error } = await Supabase.from('specialties')
-      .select('name')
-      .order('name', { ascending: true });
-
-    if (error) {
-      console.error('Error al obtener especialidades', error.message);
-      this.especialidadOptions = ['Otra'];
-      return;
-    }
-
-    const nombres = data?.map((e) => e.name) ?? [];
-    this.especialidadOptions = [...nombres, 'Otra'];
+    ctrl.setValue(file);
+    ctrl.setErrors(null);
   }
 
   async registrar(): Promise<void> {
-    if (this.registroForm.invalid || !this.tipoUsuario) {
-      this.registroForm.markAllAsTouched();
-      return;
+    if (this.registroForm.invalid || !this.tipoUsuario) return;
+
+    this.isLoading = true;
+    try {
+      if (this.tipoUsuario === 'paciente') {
+        await this.handleRegistroPaciente();
+      } else {
+        await this.handleRegistroEspecialista();
+      }
+    } finally {
+      this.isLoading = false;
     }
+  }
 
-    const formValue = this.registroForm.value;
-    const imagen = formValue.imagen;
+  private async handleRegistroPaciente(): Promise<void> {
+    try {
+      const f = this.registroForm.value;
+      const imgPerfil = await fileToBase64(f.imagenPerfil as File);
+      const imgFondo = await fileToBase64(f.imagenFondo as File);
 
-    const imageUrl = await this.subirImagen(imagen);
-    if (!imageUrl) {
-      this.snackBar.open('Error al subir la imagen.', 'Cerrar', {
-        duration: 3000,
-      });
-      return;
-    }
-
-    if (this.tipoUsuario === 'paciente') {
-      const paciente: RegistroPaciente = {
-        nombre: formValue.nombre,
-        apellido: formValue.apellido,
-        edad: formValue.edad,
-        dni: formValue.dni,
-        obraSocial: formValue.obraSocial,
-        mail: formValue.mail,
-        contrasena: formValue.password,
-        imagenPerfil: imageUrl,
-        imagenFondo: '', // podrías manejar esto como parte opcional después
+      const payload: RegistroPaciente = {
+        nombre: f.nombre,
+        apellido: f.apellido,
+        edad: f.edad,
+        dni: f.dni,
+        obraSocial: f.obraSocial,
+        mail: f.mail,
+        contrasena: f.password,
+        imagenPerfil: imgPerfil,
+        imagenFondo: imgFondo,
       };
 
-      const res = await this.auth.registrarPaciente(paciente);
-      this.mostrarResultado(res);
+      const res: RespuestaApi<void> = await this.auth.registerPaciente(payload);
+      this.mostrarResultado(res.success, res.message);
+    } catch {
+      this.mostrarResultado(false, 'Error al procesar las imágenes.');
     }
+  }
 
-    if (this.tipoUsuario === 'especialista') {
+  private async handleRegistroEspecialista(): Promise<void> {
+    try {
+      const f = this.registroForm.value;
+      const imgPerfil = await fileToBase64(f.imagenPerfil as File);
+
       const especialidad =
-        formValue.especialidad === 'Otra'
-          ? formValue.otraEspecialidad
-          : formValue.especialidad;
+        f.especialidad.id === -1 ? f.otraEspecialidad : f.especialidad.nombre;
 
-      const especialista: RegistroEspecialista = {
-        nombre: formValue.nombre,
-        apellido: formValue.apellido,
-        edad: formValue.edad,
-        dni: formValue.dni,
-        mail: formValue.mail,
-        contrasena: formValue.password,
-        especialidad: especialidad,
-        imagenPerfil: imageUrl,
+      const payload: RegistroEspecialista = {
+        nombre: f.nombre,
+        apellido: f.apellido,
+        edad: f.edad,
+        dni: f.dni,
+        mail: f.mail,
+        contrasena: f.password,
+        especialidad,
+        imagenPerfil: imgPerfil,
       };
 
-      const res = await this.auth.registrarEspecialista(especialista);
-      this.mostrarResultado(res);
+      const res: RespuestaApi<void> =
+        await this.auth.registerEspecialista(payload);
+      this.mostrarResultado(res.success, res.message);
+    } catch {
+      this.mostrarResultado(false, 'Error al procesar la imagen.');
     }
   }
 
-  private async subirImagen(file: File): Promise<string | null> {
-    const filePath = `perfiles/${Date.now()}-${file.name}`;
-    const { data, error } = await Supabase.storage
-      .from('imagenes') // Debe existir el bucket "imagenes"
-      .upload(filePath, file);
-
-    if (error) return null;
-
-    const { data: urlData } = Supabase.storage
-      .from('imagenes')
-      .getPublicUrl(filePath);
-
-    return urlData?.publicUrl ?? null;
-  }
-
-  private mostrarResultado(res: { exito: boolean; error?: string }) {
-    if (res.exito) {
-      this.snackBar.open(
-        'Registro exitoso. Por favor verifica tu correo.',
-        'Cerrar',
-        {
-          duration: 4000,
-          panelClass: ['bg-green-600', 'text-white'],
-        },
-      );
-      this.registroForm.reset();
-      this.tipoUsuario = null;
-    } else {
-      this.snackBar.open(res.error || 'Ocurrió un error (default).', 'Cerrar', {
+  private mostrarResultado(exito: boolean, mensaje?: string) {
+    if (!exito) {
+      this.snackBar.open(mensaje || 'Ocurrió un error.', 'Cerrar', {
         duration: 4000,
         panelClass: ['bg-red-600', 'text-white'],
       });
+      return;
     }
+
+    this.registroForm.reset();
+    this.tipoUsuario = null;
+    this.router.navigate(['/welcome-page/confirmacion']);
   }
 }
+
+// onFileSelected(event: Event) {
+//   const input = event.target as HTMLInputElement;
+//   if (!input.files || input.files.length === 0) {
+//     this.registroForm.get('imagen')?.setValue(null);
+//     this.registroForm.get('imagen')?.setErrors({ required: true });
+//     this.selectedImageUrl = null;
+//     return;
+//   }
+
+//   const file = input.files[0];
+//   const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+
+//   if (!validTypes.includes(file.type)) {
+//     this.registroForm.get('imagen')?.setErrors({ invalidType: true });
+//     this.selectedImageUrl = null;
+//     return;
+//   }
+
+//   // ✅ Imagen válida
+//   this.registroForm.get('imagen')?.setValue(file);
+//   this.registroForm.get('imagen')?.setErrors(null);
+// }
+
+// async registrar(): Promise<void> {
+//   if (this.registroForm.invalid || !this.tipoUsuario) {
+//     this.registroForm.markAllAsTouched();
+//     return;
+//   }
+
+//   const formValue = this.registroForm.value;
+//   const imagen = formValue.imagen;
+
+//   if (this.tipoUsuario === 'paciente') {
+//     const paciente: RegistroPaciente = {
+//       nombre: formValue.nombre,
+//       apellido: formValue.apellido,
+//       edad: formValue.edad,
+//       dni: formValue.dni,
+//       obraSocial: formValue.obraSocial,
+//       mail: formValue.mail,
+//       contrasena: formValue.password,
+//       imagenPerfil: 'safsdf',
+//       imagenFondo: '', // podrías manejar esto como parte opcional después
+//     };
+
+//     const res = await this.auth.register(
+//       paciente.nombre,
+//       paciente.mail,
+//       paciente.contrasena,
+//     );
+//     //onst res = await this.auth.registrarPaciente(paciente);
+//     this.mostrarResultado(res);
+//   }
+
+//   // if (this.tipoUsuario === 'especialista') {
+//   //   const especialidad =
+//   //     formValue.especialidad === 'Otra'
+//   //       ? formValue.otraEspecialidad
+//   //       : formValue.especialidad;
+
+//   //   const especialista: RegistroEspecialista = {
+//   //     nombre: formValue.nombre,
+//   //     apellido: formValue.apellido,
+//   //     edad: formValue.edad,
+//   //     dni: formValue.dni,
+//   //     mail: formValue.mail,
+//   //     contrasena: formValue.password,
+//   //     especialidad: especialidad,
+//   //     imagenPerfil: imageUrl,
+//   //   };
+
+//   //   const res = await this.auth.registrarEspecialista(especialista);
+//   //   this.mostrarResultado(res);
+//   // }
+// }
+
+// // private async subirImagen(file: File): Promise<string | null> {
+// //   const filePath = `perfiles/${Date.now()}-${file.name}`;
+// //   const { data, error } = await Supabase.storage
+// //     .from('imagenes') // Debe existir el bucket "imagenes"
+// //     .upload(filePath, file);
+
+// //   if (error) return null;
+
+// //   const { data: urlData } = Supabase.storage
+// //     .from('imagenes')
+// //     .getPublicUrl(filePath);
+
+// //   return urlData?.publicUrl ?? null;
+// // }

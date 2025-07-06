@@ -1,17 +1,14 @@
 import { environment } from '../environments/environment';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-export const Supabase: SupabaseClient<any, 'core', any> = createClient(
+export const Supabase = createClient(
   environment.supabaseUrl,
   environment.supabaseKey,
   {
     auth: {
-      persistSession: true,
-      autoRefreshToken: true,
       detectSessionInUrl: true,
-    },
-    db: {
-      schema: 'core',
+      persistSession: true,
+      autoRefreshToken: false,
     },
   },
 );

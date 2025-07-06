@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthSupabase } from '../../../services/auth-supabase';
 
 @Component({
   selector: 'app-welcome-page',
@@ -11,7 +12,15 @@ import { Router } from '@angular/router';
   styleUrl: './welcome-page.css',
 })
 export class WelcomePage implements OnInit, OnDestroy {
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authSupabase: AuthSupabase,
+  ) {}
+
+  async logout() {
+    await this.authSupabase.logout();
+    this.router.navigate(['/login']);
+  }
 
   opciones = [
     { icon: 'local_hospital', label: 'Consultas' },
