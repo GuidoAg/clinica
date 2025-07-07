@@ -12,7 +12,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { AuthSupabase } from '../../../services/auth-supabase';
@@ -23,6 +22,7 @@ import { fileToBase64 } from '../../../helpers/upload-base64';
 import { OBRAS_SOCIALES } from '../../../constants/obras-sociales';
 import { Especialidad } from '../../../models/SupaBase/Especialidad';
 import { Router } from '@angular/router';
+import { LoadingOverlayService } from '../../../services/loading-overlay-service';
 
 @Component({
   selector: 'app-register',
@@ -35,7 +35,6 @@ import { Router } from '@angular/router';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
   ],
   templateUrl: './register.html',
   styleUrls: ['./register.css'],
@@ -45,7 +44,6 @@ export class Register implements OnInit, OnDestroy {
   tipoUsuario: 'paciente' | 'especialista' | null = null;
   obraSocialOptions = OBRAS_SOCIALES;
   especialidadOptions: Especialidad[] = [];
-  isLoading = false;
 
   private subEspecialidad!: Subscription;
 
@@ -54,6 +52,7 @@ export class Register implements OnInit, OnDestroy {
     private auth: AuthSupabase,
     private snackBar: MatSnackBar,
     private router: Router,
+    private loading: LoadingOverlayService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -176,7 +175,7 @@ export class Register implements OnInit, OnDestroy {
   async registrar(): Promise<void> {
     if (this.registroForm.invalid || !this.tipoUsuario) return;
 
-    this.isLoading = true;
+    this.loading.show(); // <--- spinner on
     try {
       if (this.tipoUsuario === 'paciente') {
         await this.handleRegistroPaciente();
@@ -184,7 +183,7 @@ export class Register implements OnInit, OnDestroy {
         await this.handleRegistroEspecialista();
       }
     } finally {
-      this.isLoading = false;
+      this.loading.hide();
     }
   }
 
@@ -207,7 +206,16 @@ export class Register implements OnInit, OnDestroy {
       };
 
       const res: RespuestaApi<void> = await this.auth.registerPaciente(payload);
-      this.mostrarResultado(res.success, res.message);
+
+      const errorNormal = res.errorCode?.toLowerCase();
+
+      console.log(res.errorCode);
+
+      if (errorNormal?.includes('error desconocido')) {
+        this.mostrarResultado(res.success, res.message);
+      } else {
+        this.mostrarResultado(res.success, res.errorCode);
+      }
     } catch {
       this.mostrarResultado(false, 'Error al procesar las imágenes.');
     }
@@ -234,7 +242,14 @@ export class Register implements OnInit, OnDestroy {
 
       const res: RespuestaApi<void> =
         await this.auth.registerEspecialista(payload);
-      this.mostrarResultado(res.success, res.message);
+
+      const errorNormal = res.errorCode?.toLowerCase();
+
+      if (errorNormal?.includes('error desconocido')) {
+        this.mostrarResultado(res.success, res.message);
+      } else {
+        this.mostrarResultado(res.success, res.errorCode);
+      }
     } catch {
       this.mostrarResultado(false, 'Error al procesar la imagen.');
     }
@@ -254,94 +269,3 @@ export class Register implements OnInit, OnDestroy {
     this.router.navigate(['/welcome-page/confirmacion']);
   }
 }
-
-// onFileSelected(event: Event) {
-//   const input = event.target as HTMLInputElement;
-//   if (!input.files || input.files.length === 0) {
-//     this.registroForm.get('imagen')?.setValue(null);
-//     this.registroForm.get('imagen')?.setErrors({ required: true });
-//     this.selectedImageUrl = null;
-//     return;
-//   }
-
-//   const file = input.files[0];
-//   const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-
-//   if (!validTypes.includes(file.type)) {
-//     this.registroForm.get('imagen')?.setErrors({ invalidType: true });
-//     this.selectedImageUrl = null;
-//     return;
-//   }
-
-//   // ✅ Imagen válida
-//   this.registroForm.get('imagen')?.setValue(file);
-//   this.registroForm.get('imagen')?.setErrors(null);
-// }
-
-// async registrar(): Promise<void> {
-//   if (this.registroForm.invalid || !this.tipoUsuario) {
-//     this.registroForm.markAllAsTouched();
-//     return;
-//   }
-
-//   const formValue = this.registroForm.value;
-//   const imagen = formValue.imagen;
-
-//   if (this.tipoUsuario === 'paciente') {
-//     const paciente: RegistroPaciente = {
-//       nombre: formValue.nombre,
-//       apellido: formValue.apellido,
-//       edad: formValue.edad,
-//       dni: formValue.dni,
-//       obraSocial: formValue.obraSocial,
-//       mail: formValue.mail,
-//       contrasena: formValue.password,
-//       imagenPerfil: 'safsdf',
-//       imagenFondo: '', // podrías manejar esto como parte opcional después
-//     };
-
-//     const res = await this.auth.register(
-//       paciente.nombre,
-//       paciente.mail,
-//       paciente.contrasena,
-//     );
-//     //onst res = await this.auth.registrarPaciente(paciente);
-//     this.mostrarResultado(res);
-//   }
-
-//   // if (this.tipoUsuario === 'especialista') {
-//   //   const especialidad =
-//   //     formValue.especialidad === 'Otra'
-//   //       ? formValue.otraEspecialidad
-//   //       : formValue.especialidad;
-
-//   //   const especialista: RegistroEspecialista = {
-//   //     nombre: formValue.nombre,
-//   //     apellido: formValue.apellido,
-//   //     edad: formValue.edad,
-//   //     dni: formValue.dni,
-//   //     mail: formValue.mail,
-//   //     contrasena: formValue.password,
-//   //     especialidad: especialidad,
-//   //     imagenPerfil: imageUrl,
-//   //   };
-
-//   //   const res = await this.auth.registrarEspecialista(especialista);
-//   //   this.mostrarResultado(res);
-//   // }
-// }
-
-// // private async subirImagen(file: File): Promise<string | null> {
-// //   const filePath = `perfiles/${Date.now()}-${file.name}`;
-// //   const { data, error } = await Supabase.storage
-// //     .from('imagenes') // Debe existir el bucket "imagenes"
-// //     .upload(filePath, file);
-
-// //   if (error) return null;
-
-// //   const { data: urlData } = Supabase.storage
-// //     .from('imagenes')
-// //     .getPublicUrl(filePath);
-
-// //   return urlData?.publicUrl ?? null;
-// // }

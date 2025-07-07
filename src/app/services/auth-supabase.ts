@@ -10,6 +10,8 @@ import { RegistroEspecialista } from '../models/Auth/RegistroEspecialista';
 import { RegistroAdmin } from '../models/Auth/RegistroAdmin';
 import { Especialidad } from '../models/SupaBase/Especialidad';
 
+import { mapSupabaseError } from '../mappers/mapAuthError';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -63,10 +65,12 @@ export class AuthSupabase {
   private async loadUsuarioDesdePerfil(
     auth_id: string,
     email: string,
-  ): Promise<void> {
+  ): Promise<RespuestaApi<void>> {
     if (!auth_id) {
       this.userSubject.next(null);
-      return;
+      return {
+        success: false,
+      };
     }
 
     const { data: perfil, error: perfilError } = await Supabase.from('perfiles')
@@ -103,16 +107,32 @@ export class AuthSupabase {
 
     if (perfilError) {
       this.userSubject.next(null);
-      return;
+      return {
+        success: false,
+      };
     }
 
     if (!perfil) {
       this.userSubject.next(null);
-      return;
+      return {
+        success: false,
+      };
     }
 
     const usuario: Usuario = mapPerfilToUsuario(perfil, email);
+
+    if (usuario.rol == 'especialista' && usuario.validadoAdmin == false) {
+      this.userSubject.next(null);
+      return {
+        success: false,
+        errorCode: 'Tu cuenta aún no fue validada por un administrador.',
+      };
+    }
+
     this.setCurrentUser(usuario);
+    return {
+      success: true,
+    };
   }
 
   async login(email: string, password: string): Promise<RespuestaApi<void>> {
@@ -124,11 +144,20 @@ export class AuthSupabase {
     if (error || !data.user) {
       return {
         success: false,
+        errorCode: mapSupabaseError(error),
         message: error?.message ?? 'Error desconocido al iniciar sesión',
       };
     }
 
-    await this.loadUsuarioDesdePerfil(data.user.id, data.user.email ?? '');
+    const respuesta = await this.loadUsuarioDesdePerfil(
+      data.user.id,
+      data.user.email ?? '',
+    );
+
+    if (respuesta.success == false) {
+      return respuesta;
+    }
+
     return { success: true };
   }
 
@@ -137,29 +166,37 @@ export class AuthSupabase {
     this.userSubject.next(null);
   }
 
-  async registerPaciente(data: RegistroPaciente): Promise<RespuestaApi<void>> {
+  async registerPaciente(
+    dataRegistro: RegistroPaciente,
+  ): Promise<RespuestaApi<void>> {
     // Paso 1: Crear usuario en Auth
-    const { data: authData, error: authError } = await Supabase.auth.signUp({
-      email: data.mail,
-      password: data.contrasena,
+    const { data, error } = await Supabase.auth.signUp({
+      email: dataRegistro.mail,
+      password: dataRegistro.contrasena,
     });
 
-    if (authError || !authData.user) {
+    if (data?.user?.identities?.length === 0) {
       return {
         success: false,
-        message:
-          authError?.message === 'User already registered'
-            ? 'El correo ya está registrado.'
-            : 'No se pudo crear el usuario. Intentalo de nuevo.',
+        errorCode: mapSupabaseError(error),
+        message: 'Ya existe una cuenta registrada con este email.',
       };
     }
 
-    const auth_id = authData.user.id;
-    const nombreSanitizado = data.nombre.replace(/\s+/g, '');
+    if (error || !data.user) {
+      return {
+        success: false,
+        errorCode: mapSupabaseError(error),
+        message: error?.message ?? 'Error desconocido al registrar',
+      };
+    }
+
+    const auth_id = data.user.id;
+    const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, '');
 
     // Paso 2: Subir imágenes
     const imagenPerfilRes = await subirImagenDesdeBase64(
-      data.imagenPerfil,
+      dataRegistro.imagenPerfil,
       'fotoPerfilPaciente',
       `perfil-${nombreSanitizado}`,
     );
@@ -169,7 +206,7 @@ export class AuthSupabase {
     }
 
     const imagenFondoRes = await subirImagenDesdeBase64(
-      data.imagenFondo,
+      dataRegistro.imagenFondo,
       'fotoFondoPaciente',
       `fondo-${nombreSanitizado}`,
     );
@@ -184,10 +221,10 @@ export class AuthSupabase {
     )
       .insert({
         auth_id,
-        nombre: data.nombre,
-        apellido: data.apellido,
-        edad: parseInt(data.edad, 10),
-        dni: data.dni,
+        nombre: dataRegistro.nombre,
+        apellido: dataRegistro.apellido,
+        edad: parseInt(dataRegistro.edad, 10),
+        dni: dataRegistro.dni,
         url_imagen_perfil: imagenPerfilRes.data,
         rol: 'paciente',
       })
@@ -206,7 +243,7 @@ export class AuthSupabase {
       'detalles_paciente',
     ).insert({
       perfil_id: perfilData.id,
-      obra_social: data.obraSocial,
+      obra_social: dataRegistro.obraSocial,
       url_imagen_fondo: imagenFondoRes.data,
     });
 
@@ -221,30 +258,36 @@ export class AuthSupabase {
   }
 
   async registerEspecialista(
-    data: RegistroEspecialista,
+    dataRegistro: RegistroEspecialista,
   ): Promise<RespuestaApi<void>> {
     // Paso 1: Crear usuario en Auth
-    const { data: authData, error: authError } = await Supabase.auth.signUp({
-      email: data.mail,
-      password: data.contrasena,
+    const { data, error } = await Supabase.auth.signUp({
+      email: dataRegistro.mail,
+      password: dataRegistro.contrasena,
     });
 
-    if (authError || !authData.user) {
+    if (data?.user?.identities?.length === 0) {
       return {
         success: false,
-        message:
-          authError?.message === 'User already registered'
-            ? 'El correo ya está registrado.'
-            : 'No se pudo crear el usuario. Intentalo de nuevo.',
+        errorCode: mapSupabaseError(error),
+        message: 'Ya existe una cuenta registrada con este email.',
       };
     }
 
-    const auth_id = authData.user.id;
-    const nombreSanitizado = data.nombre.replace(/\s+/g, '');
+    if (error || !data.user) {
+      return {
+        success: false,
+        errorCode: mapSupabaseError(error),
+        message: error?.message ?? 'Error desconocido al iniciar sesión',
+      };
+    }
+
+    const auth_id = data.user.id;
+    const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, '');
 
     // Paso 2: Subir imagen de perfil
     const imagenPerfilRes = await subirImagenDesdeBase64(
-      data.imagenPerfil,
+      dataRegistro.imagenPerfil,
       'fotoPerfilEspecialista',
       `perfil-${nombreSanitizado}`,
     );
@@ -259,10 +302,10 @@ export class AuthSupabase {
     )
       .insert({
         auth_id,
-        nombre: data.nombre,
-        apellido: data.apellido,
-        edad: parseInt(data.edad, 10),
-        dni: data.dni,
+        nombre: dataRegistro.nombre,
+        apellido: dataRegistro.apellido,
+        edad: parseInt(dataRegistro.edad, 10),
+        dni: dataRegistro.dni,
         url_imagen_perfil: imagenPerfilRes.data,
         rol: 'especialista',
       })
@@ -293,14 +336,14 @@ export class AuthSupabase {
     }
 
     // Paso 5: Insertar especialidad
-    const parsedId = Number(data.especialidad);
+    const parsedId = Number(dataRegistro.especialidad);
     const esNueva = !Number.isInteger(parsedId);
 
     let especialidadId: number;
 
     if (esNueva) {
       const resultado = await this.agregarEspecialidadSiNoExiste(
-        String(data.especialidad),
+        String(dataRegistro.especialidad),
       );
 
       if (!resultado.success || !resultado.data) {
@@ -329,29 +372,37 @@ export class AuthSupabase {
     return { success: true };
   }
 
-  async registerAdmin(data: RegistroAdmin): Promise<RespuestaApi<void>> {
+  async registerAdmin(
+    dataRegistro: RegistroAdmin,
+  ): Promise<RespuestaApi<void>> {
     // Paso 1: Crear usuario en Auth
-    const { data: authData, error: authError } = await Supabase.auth.signUp({
-      email: data.mail,
-      password: data.contrasena,
+    const { data, error } = await Supabase.auth.signUp({
+      email: dataRegistro.mail,
+      password: dataRegistro.contrasena,
     });
 
-    if (authError || !authData.user) {
+    if (data?.user?.identities?.length === 0) {
       return {
         success: false,
-        message:
-          authError?.message === 'User already registered'
-            ? 'El correo ya está registrado.'
-            : 'No se pudo crear el usuario. Intentalo de nuevo.',
+        errorCode: mapSupabaseError(error),
+        message: 'Ya existe una cuenta registrada con este email.',
       };
     }
 
-    const auth_id = authData.user.id;
-    const nombreSanitizado = data.nombre.replace(/\s+/g, '');
+    if (error || !data.user) {
+      return {
+        success: false,
+        errorCode: mapSupabaseError(error),
+        message: error?.message ?? 'Error desconocido al iniciar sesión',
+      };
+    }
+
+    const auth_id = data.user.id;
+    const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, '');
 
     // Paso 2: Subir imagen de perfil
     const imagenPerfilRes = await subirImagenDesdeBase64(
-      data.imagenPerfil,
+      dataRegistro.imagenPerfil,
       'fotoPerfilAdmin',
       `perfil-${nombreSanitizado}`,
     );
@@ -363,10 +414,10 @@ export class AuthSupabase {
     // Paso 3: Insertar perfil y obtener el id generado
     const { error: perfilError } = await Supabase.from('perfiles').insert({
       auth_id,
-      nombre: data.nombre,
-      apellido: data.apellido,
-      edad: parseInt(data.edad, 10),
-      dni: data.dni,
+      nombre: dataRegistro.nombre,
+      apellido: dataRegistro.apellido,
+      edad: parseInt(dataRegistro.edad, 10),
+      dni: dataRegistro.dni,
       url_imagen_perfil: imagenPerfilRes.data,
       rol: 'admin',
     });
@@ -447,370 +498,3 @@ export class AuthSupabase {
     return { success: true, data: insertada.id };
   }
 }
-
-// async register(
-//   nombre: string,
-//   email: string,
-//   password: string,
-// ): Promise<{ exito: boolean; error?: string }> {
-//   const { data: signUpData, error: signUpError } = await Supabase.auth.signUp(
-//     { email, password },
-//   );
-
-//   if (signUpError || !signUpData.user) {
-//     const yaRegistrado = signUpData.user?.identities?.length === 0;
-//     return {
-//       exito: false,
-//       error: yaRegistrado
-//         ? 'Este correo ya está registrado.'
-//         : signUpError?.message || 'No se pudo registrar el usuario.',
-//     };
-//   }
-
-//   const userId = signUpData.user.id;
-
-//   // Subir avatar
-//   const uniqueName = `${userId}_${Date.now()}_${avatar.name}`;
-//   const avatarPath = `avatarUsuarios/${uniqueName}`;
-//   const { error: uploadError } = await Supabase.storage
-//     .from('imagenes')
-//     .upload(avatarPath, avatar, { upsert: false });
-
-//   if (uploadError) {
-//     return { exito: false, error: 'Error al subir avatar.' };
-//   }
-
-//   // Insertar usuario en tabla "Usuarios"
-//   const { data: insertedUser, error: insertError } = await Supabase.from(
-//     'usuarios',
-//   )
-//     .insert([
-//       {
-//         idAuth: userId,
-//         nombre: nombre,
-//         valido: false,
-//       },
-//     ])
-//     .select()
-//     .single();
-
-//   if (insertError) {
-//     return { exito: false, error: 'Error al guardar datos del usuario.' };
-//   }
-
-//   return { exito: true };
-// }
-
-// async login(
-//   email: string,
-//   password: string,
-// ): Promise<{ exito: boolean; error?: string }> {
-//   const { data, error } = await Supabase.auth.signInWithPassword({
-//     email,
-//     password,
-//   });
-
-//   if (error) {
-//     const msg = error.message.toLowerCase();
-//     if (msg.includes('confirm')) {
-//       return {
-//         exito: false,
-//         error: 'Debes confirmar tu email antes de ingresar.',
-//       };
-//     }
-//     return { exito: false, error: 'Email o contraseña incorrectos.' };
-//   }
-
-//   const {
-//     data: { user },
-//     error: userError,
-//   } = await Supabase.auth.getUser();
-
-//   if (userError || !user) {
-//     return { exito: false, error: 'No se pudo obtener el usuario.' };
-//   }
-
-//   if (!user.email_confirmed_at) {
-//     return {
-//       exito: false,
-//       error: 'Debes confirmar tu email antes de ingresar.',
-//     };
-//   }
-
-//   await this.loadUserData(user.id);
-//   return { exito: true };
-// }
-
-// async logout(): Promise<void> {
-//   await Supabase.auth.signOut();
-//   this.userSubject.next(null);
-// }
-
-// private userSubject = new BehaviorSubject<UsuarioBase | null>(null);
-// userData$ = this.userSubject.asObservable();
-
-// constructor() {
-//   this.restoreSession();
-// }
-
-// async registrarPaciente(dto: RegistroPaciente): Promise<AuthRespuesta> {
-//   const { data, error } = await Supabase.auth.signUp({
-//     email: dto.mail,
-//     password: dto.contrasena,
-//   });
-
-//   if (data.user?.identities?.length === 0) {
-//     return {
-//       exito: false,
-//       error: 'Este correo ya está registrado. Por favor, usa otro.',
-//     };
-//   }
-
-//   if (error || !data.user) {
-//     return {
-//       exito: false,
-//       error: error?.message || 'No se pudo registrar el usuario.',
-//     };
-//   }
-
-//   const userId = data.user?.id;
-//   const { data: perfil, error: perfilError } = await Supabase.from('profiles')
-//     .insert({
-//       user_id: userId,
-//       role: 'paciente',
-//       first_name: dto.nombre,
-//       last_name: dto.apellido,
-//       age: Number(dto.edad),
-//       dni: dto.dni,
-//       email_verified: false,
-//       profile_image_url: dto.imagenPerfil,
-//     })
-//     .select('id')
-//     .single();
-
-//   if (perfilError) {
-//     if (perfilError.message.toLowerCase().includes('duplicate key value')) {
-//       return {
-//         exito: false,
-//         error: 'Error, el mail ya fue utilizado pero en espera de validacion',
-//       };
-//     } else {
-//       return {
-//         exito: false,
-//         error: 'Error al guardar perfil del especialista.',
-//       };
-//     }
-//   }
-
-//   const { error: detallesError } = await Supabase.from(
-//     'patient_details',
-//   ).insert({
-//     profile_id: perfil.id,
-//     obra_social: dto.obraSocial,
-//   });
-
-//   if (detallesError)
-//     return { exito: false, error: 'Error al guardar datos del paciente.' };
-
-//   return { exito: true };
-// }
-
-// async registrarEspecialista(
-//   dto: RegistroEspecialista,
-// ): Promise<AuthRespuesta> {
-//   const { data, error } = await Supabase.auth.signUp({
-//     email: dto.mail,
-//     password: dto.contrasena,
-//   });
-
-//   if (error) return { exito: false, error: error.message };
-//   if (data.user?.identities?.length === 0) {
-//     return {
-//       exito: false,
-//       error: 'Este correo ya está registrado. Por favor, usa otro.',
-//     };
-//   }
-
-//   const userId = data.user?.id;
-
-//   // Insert perfil
-//   const { data: perfil, error: perfilError } = await Supabase.from('profiles')
-//     .insert({
-//       user_id: userId,
-//       role: 'especialista',
-//       first_name: dto.nombre,
-//       last_name: dto.apellido,
-//       age: Number(dto.edad),
-//       dni: dto.dni,
-//       email_verified: false,
-//       profile_image_url: dto.imagenPerfil,
-//     })
-//     .select('id')
-//     .single();
-
-//   if (perfilError) {
-//     if (perfilError.message.toLowerCase().includes('duplicate key value')) {
-//       return {
-//         exito: false,
-//         error: 'Error, el mail ya fue utilizado pero en espera de validacion',
-//       };
-//     } else {
-//       return {
-//         exito: false,
-//         error: 'Error al guardar perfil del especialista.',
-//       };
-//     }
-//   }
-
-//   const profileId = perfil.id;
-
-//   // Insert detalles
-//   const { error: detallesError } = await Supabase.from(
-//     'specialist_details',
-//   ).insert({ profile_id: profileId });
-
-//   if (detallesError)
-//     return {
-//       exito: false,
-//       error: 'Error al guardar detalles del especialista.',
-//     };
-
-//   // Buscar o crear especialidad
-//   const especialidadNombre = dto.especialidad.trim().toLowerCase();
-
-//   const { data: especialidadExistente, error: buscarError } =
-//     await Supabase.from('specialties')
-//       .select('id, name')
-//       .filter('name', 'ilike', especialidadNombre)
-//       .maybeSingle();
-
-//   let especialidadId: number | null = null;
-
-//   if (buscarError) {
-//     return { exito: false, error: 'Error al buscar especialidad.' };
-//   }
-
-//   if (especialidadExistente) {
-//     especialidadId = especialidadExistente.id;
-//   } else {
-//     const { data: nuevaEspecialidad, error: crearError } =
-//       await Supabase.from('specialties')
-//         .insert({ name: dto.especialidad })
-//         .select('id')
-//         .single();
-
-//     if (crearError)
-//       return { exito: false, error: 'Error al crear especialidad.' };
-
-//     especialidadId = nuevaEspecialidad.id;
-//   }
-
-//   // Asignar especialidad al especialista
-//   const { error: asignarError } = await Supabase.from(
-//     'specialist_specialties',
-//   ).insert({
-//     profile_id: profileId,
-//     specialty_id: especialidadId,
-//   });
-
-//   if (asignarError)
-//     return {
-//       exito: false,
-//       error: 'Error al asignar especialidad al especialista.',
-//     };
-
-//   return { exito: true };
-// }
-
-// async login(email: string, password: string): Promise<AuthRespuesta> {
-//   // 1) Intento de login
-//   const { data: signInData, error: signInError } =
-//     await Supabase.auth.signInWithPassword({ email, password });
-
-//   // 2) Si hay error de credenciales o email no confirmado
-//   if (signInError) {
-//     const msg = signInError.message.toLowerCase();
-//     if (msg.includes('must confirm') || msg.includes('confirm')) {
-//       return {
-//         exito: false,
-//         error: 'Debes verificar tu email antes de ingresar.',
-//       };
-//     }
-//     if (msg.includes('invalid login')) {
-//       return { exito: false, error: 'Email o contraseña incorrectos.' };
-//     }
-//     return { exito: false, error: signInError.message };
-//   }
-
-//   // 3) Refresco la info del usuario para obtener email_confirmed_at actualizado
-//   const {
-//     data: { user: refreshedUser },
-//     error: getUserError,
-//   } = await Supabase.auth.getUser();
-
-//   if (getUserError || !refreshedUser) {
-//     return {
-//       exito: false,
-//       error: 'No se pudo obtener la información del usuario.',
-//     };
-//   }
-
-//   // 4) Valido el flag de confirmación
-//   if (!refreshedUser.email_confirmed_at) {
-//     return {
-//       exito: false,
-//       error: 'Debes verificar tu email antes de ingresar.',
-//     };
-//   }
-
-//   // 5) Cargo el perfil de aplicación
-//   const { data: perfil, error: perfilError } = await Supabase.from('profiles')
-//     .select('*')
-//     .eq('user_id', refreshedUser.id)
-//     .single();
-
-//   if (perfilError) {
-//     return { exito: false, error: 'Perfil no encontrado.' };
-//   }
-
-//   // 6) Si es especialista, chequear validación admin
-//   if (perfil.role === 'especialista') {
-//     const { data: detalles, error: detallesError } = await Supabase.from(
-//       'specialist_details',
-//     )
-//       .select('admin_validated')
-//       .eq('profile_id', perfil.id)
-//       .single();
-
-//     if (detallesError || !detalles.admin_validated) {
-//       return {
-//         exito: false,
-//         error: 'Tu cuenta aún no fue validada por un administrador.',
-//       };
-//     }
-//   }
-
-//   // 7) Éxito: emito el perfil al BehaviorSubject
-//   this.userSubject.next(perfil);
-//   return { exito: true };
-// }
-
-// logout(): void {
-//   Supabase.auth.signOut();
-//   this.userSubject.next(null);
-// }
-
-// private async restoreSession(): Promise<void> {
-//   const {
-//     data: { session },
-//   } = await Supabase.auth.getSession();
-
-//   if (!session?.user) return;
-
-//   const { data: perfil } = await Supabase.from('profiles')
-//     .select('*')
-//     .eq('user_id', session.user.id)
-//     .single();
-
-//   this.userSubject.next(perfil ?? null);
-// }

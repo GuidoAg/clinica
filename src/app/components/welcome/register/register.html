@@ -275,17 +275,11 @@
         <button
           mat-raised-button
           color="primary"
-          [disabled]="registroForm.invalid || isLoading"
+          [disabled]="registroForm.invalid"
           type="submit"
           class="flex items-center justify-center gap-2 rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
         >
-          <mat-spinner
-            *ngIf="isLoading"
-            diameter="24"
-            strokeWidth="3"
-            class="!text-white"
-          ></mat-spinner>
-          <span *ngIf="!isLoading">Registrarse</span>
+          <span>Registrarse</span>
         </button>
       </div>
 

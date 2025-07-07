@@ -23,6 +23,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
+//import { mapSupabaseError } from '../../../mappers/mapAuthError';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -74,7 +76,7 @@ export class Login implements OnInit, AfterViewInit {
     this.overlay.hide();
 
     if (!res.success) {
-      this.snackBar.open(res.message ?? 'Error de login', 'Cerrar', {
+      this.snackBar.open(res.errorCode ?? 'Error de login', 'Cerrar', {
         duration: 4000,
         panelClass: ['bg-red-600', 'text-white'],
       });
