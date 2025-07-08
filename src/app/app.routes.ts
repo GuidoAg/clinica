@@ -42,6 +42,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'planes',
+        loadComponent: () =>
+          import('./components/welcome/planes/planes').then((m) => m.Planes),
+      },
+      {
         path: 'login',
         loadComponent: () =>
           import('./components/welcome/login/login').then((m) => m.Login),
@@ -73,10 +78,24 @@ export const routes: Routes = [
           import('./components/inicio/home/home').then((m) => m.Home),
       },
       {
-        path: 'mi-perfil',
+        path: 'perfil-paciente',
         loadComponent: () =>
-          import('./components/inicio/mi-perfil/mi-perfil').then(
-            (m) => m.MiPerfil,
+          import(
+            './components/inicio/perfil/perfil-paciente/perfil-paciente'
+          ).then((m) => m.PerfilPaciente),
+      },
+      {
+        path: 'perfil-especialista',
+        loadComponent: () =>
+          import(
+            './components/inicio/perfil/perfil-especialista/perfil-especialista'
+          ).then((m) => m.PerfilEspecialista),
+      },
+      {
+        path: 'perfil-admin',
+        loadComponent: () =>
+          import('./components/inicio/perfil/perfil-admin/perfil-admin').then(
+            (m) => m.PerfilAdmin,
           ),
       },
       {

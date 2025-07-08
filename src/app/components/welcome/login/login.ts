@@ -52,10 +52,12 @@ export class Login implements OnInit, AfterViewInit {
   @ViewChild('emailInput') emailInputRef!: ElementRef<HTMLInputElement>;
 
   ngOnInit(): void {
+    this.overlay.show();
     this.loginForm = this.fb.group({
       mail: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(7)]],
     });
+    this.overlay.hide();
   }
 
   ngAfterViewInit(): void {
@@ -73,16 +75,16 @@ export class Login implements OnInit, AfterViewInit {
     const { mail, password } = this.loginForm.value;
     const res = await this.auth.login(mail, password);
 
-    this.overlay.hide();
-
     if (!res.success) {
       this.snackBar.open(res.errorCode ?? 'Error de login', 'Cerrar', {
         duration: 4000,
         panelClass: ['bg-red-600', 'text-white'],
       });
+      this.overlay.hide();
       return;
     }
 
+    //this.overlay.hide();
     this.router.navigate(['/home']);
   }
 }

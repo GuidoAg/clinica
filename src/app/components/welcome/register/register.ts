@@ -56,66 +56,72 @@ export class Register implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    // Carga inicial de especialidades
-    this.especialidadOptions = await this.auth.obtenerEspecialidades();
-    this.especialidadOptions.push({ id: -1, nombre: 'Otra' });
+    try {
+      this.loading.show();
+      // Carga inicial de especialidades
+      this.especialidadOptions = await this.auth.obtenerEspecialidades();
+      this.especialidadOptions.push({ id: -1, nombre: 'Otra' });
 
-    // Construcción del form
-    this.registroForm = this.fb.group({
-      nombre: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(2),
-          Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
-        ],
-      ],
-      apellido: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(2),
-          Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
-        ],
-      ],
-      edad: [
-        null,
-        [Validators.required, Validators.min(18), Validators.max(99)],
-      ],
-      dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-      obraSocial: [''],
-      mail: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(7)]],
-      especialidad: [''],
-      otraEspecialidad: [
-        { value: '', disabled: true },
-        [
-          Validators.minLength(2),
-          Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
-        ],
-      ],
-      imagenPerfil: [null, Validators.required],
-      imagenFondo: [''],
-    });
-
-    // Ajuste dinámico de validadores para "otraEspecialidad"
-    this.subEspecialidad = this.registroForm
-      .get('especialidad')!
-      .valueChanges.subscribe((value) => {
-        const otra = this.registroForm.get('otraEspecialidad')!;
-        if (value?.id === -1) {
-          otra.enable();
-          otra.setValidators([
+      // Construcción del form
+      this.registroForm = this.fb.group({
+        nombre: [
+          '',
+          [
             Validators.required,
             Validators.minLength(2),
             Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
-          ]);
-        } else {
-          otra.disable();
-          otra.clearValidators();
-        }
-        otra.updateValueAndValidity();
+          ],
+        ],
+        apellido: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(2),
+            Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
+          ],
+        ],
+        edad: [
+          null,
+          [Validators.required, Validators.min(18), Validators.max(99)],
+        ],
+        dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+        obraSocial: [''],
+        mail: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(7)]],
+        especialidad: [''],
+        otraEspecialidad: [
+          { value: '', disabled: true },
+          [
+            Validators.minLength(2),
+            Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
+          ],
+        ],
+        imagenPerfil: [null, Validators.required],
+        imagenFondo: [''],
       });
+
+      // Ajuste dinámico de validadores para "otraEspecialidad"
+      this.subEspecialidad = this.registroForm
+        .get('especialidad')!
+        .valueChanges.subscribe((value) => {
+          const otra = this.registroForm.get('otraEspecialidad')!;
+          if (value?.id === -1) {
+            otra.enable();
+            otra.setValidators([
+              Validators.required,
+              Validators.minLength(2),
+              Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
+            ]);
+          } else {
+            otra.disable();
+            otra.clearValidators();
+          }
+          otra.updateValueAndValidity();
+        });
+    } catch (err: any) {
+    } finally {
+      this.loading.hide();
+    }
   }
 
   ngOnDestroy(): void {
@@ -264,7 +270,7 @@ export class Register implements OnInit, OnDestroy {
       return;
     }
 
-    this.registroForm.reset();
+    //this.registroForm.reset();
     this.tipoUsuario = null;
     this.router.navigate(['/welcome-page/confirmacion']);
   }

@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthSupabase } from '../../../services/auth-supabase';
+import { Usuario } from '../../../models/Auth/Usuario';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-mi-perfil',
@@ -8,12 +11,9 @@ import { CommonModule } from '@angular/common';
   styleUrl: './mi-perfil.css',
 })
 export class MiPerfil {
-  usuario = {
-    nombre: 'Guido',
-    apellido: 'Insua',
-    email: 'guido@clinica.com',
-    imagen: 'assets/imagenes/avatar.png',
-    perfil: 'especialista', // o 'paciente'
-    especialidades: ['Clínica Médica', 'Cardiología'],
-  };
+  usuario$: Observable<Usuario | null>;
+
+  constructor(private authSupabase: AuthSupabase) {
+    this.usuario$ = this.authSupabase.user$;
+  }
 }

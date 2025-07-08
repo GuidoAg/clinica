@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthSupabase } from '../../../services/auth-supabase';
+import { LoadingOverlayService } from '../../../services/loading-overlay-service';
 
 @Component({
   selector: 'app-welcome-page',
@@ -15,6 +16,7 @@ export class WelcomePage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authSupabase: AuthSupabase,
+    private loading: LoadingOverlayService,
   ) {}
 
   async logout() {
@@ -67,8 +69,10 @@ export class WelcomePage implements OnInit, OnDestroy {
   intervalId: any;
 
   ngOnInit() {
+    this.loading.show();
     this.updateVisibleItems();
     this.startAutoSlide();
+    this.loading.hide();
   }
 
   ngOnDestroy() {
@@ -122,5 +126,9 @@ export class WelcomePage implements OnInit, OnDestroy {
 
   clickHome() {
     this.router.navigate(['/home']);
+  }
+
+  clickPlanes() {
+    this.router.navigate(['/welcome-page/planes']);
   }
 }

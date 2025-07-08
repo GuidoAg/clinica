@@ -29,6 +29,10 @@ export class WelcomeNavbar {
     this.router.navigate(['/welcome-page/login']);
   }
 
+  clickPlanes() {
+    this.router.navigate(['/welcome-page/planes']);
+  }
+
   clickRegister() {
     this.router.navigate(['/welcome-page/registro']).then(() => {
       // Agregamos un pequeño delay para asegurar que el DOM esté cargado

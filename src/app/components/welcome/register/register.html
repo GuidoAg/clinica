@@ -1,24 +1,44 @@
-<div class="bg-gray-200 pt-30 pb-90">
+<div class="bg-gray-200 pt-30 pb-60">
   <h2 class="pb-1 text-center text-4xl font-bold text-azul-oscuro">Registro</h2>
 
   <!-- Selección de tipo de usuario -->
-  <div *ngIf="!tipoUsuario && registroForm" class="pt-16 pb-60 text-center">
+  <div *ngIf="!tipoUsuario && registroForm" class="pt-16 pb-30 text-center">
     <p class="mb-6 text-xl text-gray-700">¿Qué tipo de usuario sos?</p>
-    <div class="flex justify-center gap-6">
-      <button
-        mat-raised-button
-        class="rounded-full bg-azul-oscuro px-8 py-3 text-lg text-white transition hover:scale-105"
+
+    <div class="flex flex-col items-center gap-6">
+      <!-- Opción Paciente -->
+      <div
+        class="w-[315px] cursor-pointer p-2 transition-transform hover:scale-105"
         (click)="seleccionarTipo('paciente')"
       >
-        Paciente
-      </button>
-      <button
-        mat-raised-button
-        class="rounded-full bg-verde-oscuro px-8 py-3 text-lg text-white transition hover:scale-105"
+        <div class="rounded-2xl bg-white shadow-lg">
+          <img
+            src="assets/imagenes/Registro/pacientes.jpg"
+            alt="Paciente"
+            class="h-50 w-full rounded-t-2xl object-cover"
+          />
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-azul-oscuro">Paciente</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Opción Especialista -->
+      <div
+        class="w-[315px] cursor-pointer p-2 transition-transform hover:scale-105"
         (click)="seleccionarTipo('especialista')"
       >
-        Especialista
-      </button>
+        <div class="rounded-2xl bg-white shadow-lg">
+          <img
+            src="assets/imagenes/Registro/especialistas.jpg"
+            alt="Especialista"
+            class="h-50 w-full rounded-t-2xl object-cover"
+          />
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-azul-oscuro">Especialista</h3>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -1,0 +1,100 @@
+<div class="bg-gray-200 px-6 py-28 pb-83">
+  <h2 class="mb-10 text-center text-5xl font-bold text-azul-oscuro">Planes</h2>
+  <p class="mt-4 text-center text-lg text-gray-700">
+    Elegí el plan que mejor se adapte a vos y a tu familia. Contamos con
+    cobertura integral, atención personalizada y beneficios únicos para cuidar
+    tu salud.
+  </p>
+
+  <div
+    class="mx-auto mt-12 grid max-w-7xl grid-cols-1 gap-8 px-4 md:grid-cols-3"
+  >
+    <!-- Plan Plata -->
+    <div
+      class="mx-auto flex h-[540px] w-[400px] flex-col rounded-2xl bg-white p-6 shadow transition-transform hover:scale-105"
+    >
+      <h3 class="text-center text-4xl font-bold text-gray-300">Plan Plata</h3>
+      <ul class="mt-4 flex-grow space-y-2 text-gray-700">
+        <li>✔ Consultas médicas ilimitadas</li>
+        <li>✔ Atención ambulatoria básica</li>
+        <li>✔ Acceso a laboratorio y estudios simples</li>
+        <li>✔ Odontología general</li>
+        <li>✔ Turnos programados</li>
+      </ul>
+
+      <!-- Sección de precios -->
+      <div class="mt-6 flex items-baseline justify-center gap-4 text-center">
+        <span class="text-3xl font-bold text-verde-oscuro">$200.000</span>
+        <span class="text-gray-500 line-through">$250.000</span>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button
+          class="rounded-full bg-verde-oscuro px-6 py-2 font-semibold text-white transition-transform hover:scale-105"
+          (click)="clickLogin()"
+        >
+          Elegir este plan
+        </button>
+      </div>
+    </div>
+
+    <!-- Plan Oro -->
+    <div
+      class="mx-auto flex h-[540px] w-[400px] flex-col rounded-2xl bg-white p-6 shadow-lg transition-transform hover:scale-105"
+    >
+      <h3 class="text-center text-4xl font-bold text-yellow-500">Plan Oro</h3>
+      <ul class="mt-4 flex-grow space-y-2 text-gray-700">
+        <li>✔ Todo lo del Plan Plata</li>
+        <li>✔ Atención médica 24 hs</li>
+        <li>✔ Ambulancia sin costo</li>
+        <li>✔ Estudios de alta complejidad</li>
+        <li>✔ Internación en habitación compartida</li>
+        <li>✔ Oftalmología y audiología</li>
+      </ul>
+
+      <div class="mt-6 flex items-baseline justify-center gap-4 text-center">
+        <span class="text-3xl font-bold text-verde-oscuro">$300.000</span>
+        <span class="text-gray-500 line-through">$350.000</span>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button
+          class="rounded-full bg-verde-oscuro px-6 py-2 font-semibold text-white transition-transform hover:scale-105"
+          (click)="clickLogin()"
+        >
+          Elegir este plan
+        </button>
+      </div>
+    </div>
+
+    <!-- Plan Platino -->
+    <div
+      class="mx-auto flex h-[540px] w-[400px] flex-col rounded-2xl bg-white p-6 shadow-xl transition-transform hover:scale-105"
+    >
+      <h3 class="text-center text-4xl font-bold text-blue-300">Plan Platino</h3>
+      <ul class="mt-4 flex-grow space-y-2 text-gray-700">
+        <li>✔ Todo lo del Plan Oro</li>
+        <li>✔ Cirugías estéticas opcionales</li>
+        <li>✔ Internación en habitación privada</li>
+        <li>✔ Cobertura internacional</li>
+        <li>✔ Check-up anual personalizado</li>
+        <li>✔ Kinesiología y fisioterapia sin tope</li>
+        <li>✔ Descuentos en farmacias y ópticas</li>
+      </ul>
+
+      <div class="mt-6 flex items-baseline justify-center gap-4 text-center">
+        <span class="text-3xl font-bold text-verde-oscuro">$500.000</span>
+        <span class="text-gray-500 line-through">$550.000</span>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button
+          class="rounded-full bg-verde-oscuro px-6 py-2 font-semibold text-white transition-transform hover:scale-105"
+          (click)="clickLogin()"
+        >
+          Elegir este plan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

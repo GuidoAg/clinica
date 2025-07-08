@@ -1,5 +1,5 @@
 export interface Usuario {
-  id: string;
+  id: number;
   auth_id: string;
   nombre: string;
   apellido: string;
@@ -20,6 +20,7 @@ export interface Usuario {
     id: number;
     nombre: string;
     urlIcono?: string;
+    duracion?: number;
   }[];
   validadoAdmin?: boolean;
   activo?: boolean;

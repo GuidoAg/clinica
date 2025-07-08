@@ -62,77 +62,66 @@ export class AuthSupabase {
     await this.loadUsuarioDesdePerfil(data.user.id, data.user.email ?? '');
   }
 
-  private async loadUsuarioDesdePerfil(
+  async loadUsuarioDesdePerfil(
     auth_id: string,
     email: string,
   ): Promise<RespuestaApi<void>> {
     if (!auth_id) {
       this.userSubject.next(null);
-      return {
-        success: false,
-      };
+      return { success: false };
     }
 
-    const { data: perfil, error: perfilError } = await Supabase.from('perfiles')
+    const { data: perfil, error } = await Supabase.from('perfiles')
       .select(
         `
-    id,
-    auth_id,
-    nombre,
-    apellido,
-    edad,
-    dni,
-    url_imagen_perfil,
-    email_verificado,
-    rol,
-    detalles_paciente (
-      obra_social,
-      url_imagen_fondo
-    ),
-    detalles_especialista (
-      validado_admin,
-      activo,
-      especialista_especialidades (
-        especialidades (
-          id,
-          nombre,
-          url_icono
+        id,
+        auth_id,
+        nombre,
+        apellido,
+        edad,
+        dni,
+        url_imagen_perfil,
+        email_verificado,
+        rol,
+        detalles_paciente (
+          obra_social,
+          url_imagen_fondo
+        ),
+        detalles_especialista (
+          validado_admin,
+          activo
+        ),
+        especialista_especialidades (
+        duracion,
+          especialidades (
+            id,
+            nombre,
+            url_icono
+          )
         )
-      )
-    )
-  `,
+      `,
       )
       .eq('auth_id', auth_id)
       .maybeSingle();
 
-    if (perfilError) {
+    if (error || !perfil) {
+      this.userSubject.next(null);
+      return { success: false };
+    }
+
+    const usuario = mapPerfilToUsuario(perfil, email);
+
+    // Si es especialista pero no validado, no dejamos pasar
+    if (usuario.rol === 'especialista' && !usuario.validadoAdmin) {
       this.userSubject.next(null);
       return {
         success: false,
+        errorCode: 'Tu cuenta aún no fue validada por un administrador',
       };
     }
 
-    if (!perfil) {
-      this.userSubject.next(null);
-      return {
-        success: false,
-      };
-    }
-
-    const usuario: Usuario = mapPerfilToUsuario(perfil, email);
-
-    if (usuario.rol == 'especialista' && usuario.validadoAdmin == false) {
-      this.userSubject.next(null);
-      return {
-        success: false,
-        errorCode: 'Tu cuenta aún no fue validada por un administrador.',
-      };
-    }
-
-    this.setCurrentUser(usuario);
-    return {
-      success: true,
-    };
+    this.userSubject.next(usuario);
+    return { success: true };
   }
 
   async login(email: string, password: string): Promise<RespuestaApi<void>> {
@@ -360,6 +349,7 @@ export class AuthSupabase {
     ).insert({
       perfil_id: perfilData.id,
       especialidad_id: especialidadId,
+      duracion: 30,
     });
 
     if (especialidadError) {

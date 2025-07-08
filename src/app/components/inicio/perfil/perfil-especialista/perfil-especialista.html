@@ -1,0 +1,84 @@
+<div class="h-full w-full p-1" *ngIf="usuario$ | async as usuario">
+  <div
+    class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
+  >
+    <h1 class="mb-6 ml-3 text-4xl font-bold text-azul-oscuro">Mi Perfil</h1>
+
+    <!-- Banner / Fondo -->
+    <div class="mb-2 flex items-center">
+      <img
+        [src]="'assets/imagenes/perfiles/bannerEspecialista.jpg'"
+        alt="Portada"
+        class="object-bottom-1 h-50 w-full rounded-2xl object-cover"
+      />
+    </div>
+
+    <!-- Datos del Usuario -->
+    <div class="mb-8 flex items-center gap-8 pt-5 pb-5 pl-5">
+      <img
+        [src]="usuario.urlImagenPerfil || 'assets/imagenes/logo.svg'"
+        alt="Avatar"
+        class="h-42 w-42 rounded-full border-4 border-white object-cover shadow-md"
+      />
+      <div
+        class="grid grid-cols-2 gap-x-6 gap-y-1 text-xl font-normal text-gray-700"
+        style="min-width: 300px"
+      >
+        <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
+        <p><strong>Apellido:</strong> {{ usuario.apellido }}</p>
+        <p><strong>Edad:</strong> {{ usuario.edad }}</p>
+        <p><strong>DNI:</strong> {{ usuario.dni | formatoDni }}</p>
+        <p><strong>Email:</strong> {{ usuario.email }}</p>
+        <p><strong>Activo:</strong> {{ usuario.activo | formatoBoolSiNO }}</p>
+      </div>
+    </div>
+    <div class="pl-10">
+      <button
+        class="btn btn-primary rounded bg-azul-oscuro px-4 py-2 text-white hover:bg-azul-oscuro/90"
+        (click)="abrirPopupHorarios()"
+      >
+        Definir horarios
+      </button>
+
+      <app-horarios
+        *ngIf="mostrarPopupHorarios && usuarioActual"
+        [perfilId]="usuarioActual.id"
+        (cerrar)="cerrarPopupHorarios()"
+      ></app-horarios>
+
+      <div class="col-span-2 pt-5">
+        <p class="mb-2 text-xl font-semibold text-gray-700">Especialidades:</p>
+        <div class="flex flex-wrap gap-3">
+          <div
+            *ngFor="let esp of usuario.especialidades"
+            class="flex items-center gap-2 border border-azul-oscuro bg-white px-4 py-1.5 text-sm text-azul-oscuro shadow-sm"
+          >
+            <img
+              *ngIf="esp.urlIcono"
+              [src]="esp.urlIcono"
+              alt="{{ esp.nombre }}"
+              class="h-8 w-8 object-contain"
+            />
+            <span class="mr-2">{{ esp.nombre }}</span>
+
+            <input
+              type="number"
+              min="30"
+              max="60"
+              [(ngModel)]="esp.duracion"
+              class="w-16 rounded border border-gray-300 px-2 py-1 text-center text-sm text-azul-oscuro"
+            />
+
+            <button
+              class="ml-2 rounded bg-azul-oscuro px-3 py-1 text-white hover:bg-azul-oscuro/90"
+              (click)="guardarDuracion(esp)"
+              title="Guardar duración del turno"
+            >
+              Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

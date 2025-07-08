@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { LoadingOverlayService } from '../../../services/loading-overlay-service';
 
 @Component({
   selector: 'app-home',
@@ -8,7 +9,13 @@ import { NgClass } from '@angular/common';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home {
+export class Home implements OnInit {
+  constructor(private loading: LoadingOverlayService) {}
+
+  async ngOnInit(): Promise<void> {
+    this.loading.hide();
+  }
+
   usuario = {
     nombre: 'Guido',
     rol: 'Administrador',
