@@ -38,6 +38,12 @@ export class AuthSupabase {
     }
   }
 
+  async recargarUsuario(): Promise<void> {
+    const current = this.getCurrentUser();
+    if (!current) return;
+    await this.loadUsuarioDesdePerfil(current.auth_id, current.email);
+  }
+
   getAvatarUrl(path: string): string {
     return Supabase.storage.from('imagenes').getPublicUrl(path).data.publicUrl;
   }
