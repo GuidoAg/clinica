@@ -1,1 +1,35 @@
-<p>perfil-admin works!</p>
+<div class="h-full w-full p-1" *ngIf="usuario$ | async as usuario">
+  <div
+    class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
+  >
+    <h1 class="mb-6 text-4xl font-bold text-azul-oscuro">Mi Perfil</h1>
+
+    <!-- Banner / Fondo -->
+    <div class="mb-6 flex items-center">
+      <img
+        [src]="'assets/imagenes/perfiles/bannerAdmin.jpg'"
+        alt="Portada"
+        class="h-70 w-full rounded-2xl object-cover"
+      />
+    </div>
+
+    <!-- Datos del Usuario -->
+    <div class="mb-8 flex items-center gap-8 pt-10 pl-10">
+      <img
+        [src]="usuario.urlImagenPerfil || 'assets/imagenes/logo.svg'"
+        alt="Avatar"
+        class="h-42 w-42 rounded-full border-4 border-white object-cover shadow-md"
+      />
+      <div
+        class="grid grid-cols-2 gap-x-1 gap-y-1 text-xl font-normal text-gray-700"
+        style="min-width: 300px"
+      >
+        <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
+        <p><strong>Apellido:</strong> {{ usuario.apellido }}</p>
+        <p><strong>Edad:</strong> {{ usuario.edad }}</p>
+        <p><strong>DNI:</strong> {{ usuario.dni }}</p>
+        <p><strong>Email:</strong> {{ usuario.email }}</p>
+      </div>
+    </div>
+  </div>
+</div>

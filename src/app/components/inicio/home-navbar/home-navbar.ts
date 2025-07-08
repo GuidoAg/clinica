@@ -4,7 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthSupabase } from '../../../services/auth-supabase';
 import { Usuario } from '../../../models/Auth/Usuario';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { LoadingOverlayService } from '../../../services/loading-overlay-service';
 
 @Component({
@@ -49,6 +49,19 @@ export class HomeNavbar implements OnInit {
         }, 100);
       });
     }
+  }
+
+  clickUsuario() {
+    if (!this.usuarioActual) return;
+    this.loadin.show();
+
+    if (this.router.url === '/home/usuarios') {
+      this.loadin.hide();
+      return;
+    }
+
+    // ✅ Solo si la ruta es distinta
+    this.router.navigate(['/home/usuarios']);
   }
 
   clickPerfil() {

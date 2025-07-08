@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Usuario } from '../../../models/Auth/Usuario';
 import { UsuariosService } from '../../../services/usuarios';
-import { AuthSupabase } from '../../../services/auth-supabase';
 import { Subject } from 'rxjs';
 import { AltasAdmin } from '../altas-admin/altas-admin';
+import { LoadingOverlayService } from '../../../services/loading-overlay-service';
 
 @Component({
   selector: 'app-usuarios',
@@ -28,11 +28,12 @@ export class Usuarios implements OnInit, OnDestroy {
 
   constructor(
     private usuariosService: UsuariosService,
-    private authSupabase: AuthSupabase,
+    private loading: LoadingOverlayService,
   ) {}
 
   ngOnInit(): void {
     this.recargarUsuarios();
+    this.loading.hide();
   }
 
   ngOnDestroy(): void {
@@ -77,5 +78,10 @@ export class Usuarios implements OnInit, OnDestroy {
 
   cerrarPopupAltas() {
     this.mostrarPopupAltas = false;
+  }
+
+  async onAltaExitosa() {
+    await this.recargarUsuarios(); // vuelve a consultar las listas
+    this.cerrarPopupAltas(); // cierra el popup
   }
 }
