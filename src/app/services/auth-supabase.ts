@@ -126,6 +126,24 @@ export class AuthSupabase {
       };
     }
 
+    if (!usuario.emailVerificado) {
+      const { error: updateError } = await Supabase.from('perfiles')
+        .update({ email_verificado: true })
+        .eq('auth_id', auth_id);
+
+      if (updateError) {
+        console.error('Error al actualizar email_verificado:', updateError);
+        return {
+          success: false,
+          errorCode:
+            'No se pudo actualizar el estado de verificación del email',
+        };
+      }
+
+      // Refrescás el usuario para tener la versión actualizada
+      usuario.emailVerificado = true;
+    }
+
     this.userSubject.next(usuario);
     return { success: true };
   }
