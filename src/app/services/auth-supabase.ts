@@ -8,7 +8,7 @@ import { subirImagenDesdeBase64 } from '../helpers/upload-base64';
 import { RespuestaApi } from '../models/RespuestaApi';
 import { RegistroEspecialista } from '../models/Auth/RegistroEspecialista';
 import { RegistroAdmin } from '../models/Auth/RegistroAdmin';
-import { Especialidad } from '../models/SupaBase/Especialidad';
+import { Especialidad } from '../models/especialidad';
 
 import { mapSupabaseError } from '../mappers/mapAuthError';
 
@@ -459,7 +459,8 @@ export class AuthSupabase {
     return data.map((e) => ({
       id: e.id,
       nombre: e.nombre,
-      urlIcono: e.url_icono ?? undefined,
+      url_icono: e.url_icono ?? undefined,
+      duracion: '20',
     }));
   }
 

@@ -29,7 +29,7 @@ import { RegistroEspecialista } from '../../../models/Auth/RegistroEspecialista'
 import { RespuestaApi } from '../../../models/RespuestaApi';
 import { fileToBase64 } from '../../../helpers/upload-base64';
 import { OBRAS_SOCIALES } from '../../../constants/obras-sociales';
-import { Especialidad } from '../../../models/SupaBase/Especialidad';
+import { Especialidad } from '../../../models/especialidad';
 import { Router } from '@angular/router';
 import { LoadingOverlayService } from '../../../services/loading-overlay-service';
 
@@ -89,7 +89,12 @@ export class AltasAdmin implements OnInit, OnDestroy {
       this.loading.show();
 
       this.especialidadOptions = await this.auth.obtenerEspecialidades();
-      this.especialidadOptions.push({ id: -1, nombre: 'Otra' });
+      this.especialidadOptions.push({
+        id: -1,
+        nombre: 'Otra',
+        url_icono: 'http',
+        duracion: '30',
+      });
 
       // Construcción del form
       this.registroForm = this.fb.group({

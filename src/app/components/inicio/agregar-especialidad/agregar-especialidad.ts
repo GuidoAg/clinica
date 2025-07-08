@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Especialidad } from '../../../models/SupaBase/Especialidad';
+import { Especialidad } from '../../../models/especialidad';
 import { AuthSupabase } from '../../../services/auth-supabase';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Supabase } from '../../../supabase';

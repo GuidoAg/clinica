@@ -1,5 +1,6 @@
 export interface Especialidad {
   id: number;
   nombre: string;
-  urlIcono?: string;
+  url_icono: string;
+  duracion: string;
 }

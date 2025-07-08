@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SolicitarTurno } from './solicitar-turno';
+import { SolicitarUnTurno } from './solicitar-un-turno';
 
-describe('SolicitarTurno', () => {
-  let component: SolicitarTurno;
-  let fixture: ComponentFixture<SolicitarTurno>;
+describe('SolicitarUnTurno', () => {
+  let component: SolicitarUnTurno;
+  let fixture: ComponentFixture<SolicitarUnTurno>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SolicitarTurno]
+      imports: [SolicitarUnTurno]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SolicitarTurno);
+    fixture = TestBed.createComponent(SolicitarUnTurno);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
