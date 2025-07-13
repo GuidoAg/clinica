@@ -51,6 +51,19 @@ export class HomeNavbar implements OnInit {
     }
   }
 
+  clickSolicitarTurno() {
+    if (!this.usuarioActual) return;
+    this.loadin.show();
+
+    if (this.router.url === '/home/solicitar-turnos') {
+      this.loadin.hide();
+      return;
+    }
+
+    // ✅ Solo si la ruta es distinta
+    this.router.navigate(['/home/solicitar-turnos']);
+  }
+
   clickUsuario() {
     if (!this.usuarioActual) return;
     this.loadin.show();

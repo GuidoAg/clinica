@@ -5,10 +5,18 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthSupabase } from '../../../services/auth-supabase';
 import { LoadingOverlayService } from '../../../services/loading-overlay-service';
+import { TrackImage } from '../../../directivas/track-image';
+import { LoadingWrapper } from '../../loading-wrapper/loading-wrapper';
 
 @Component({
   selector: 'app-welcome-page',
-  imports: [MatIconModule, CommonModule, FormsModule],
+  imports: [
+    MatIconModule,
+    CommonModule,
+    FormsModule,
+    TrackImage,
+    LoadingWrapper,
+  ],
   templateUrl: './welcome-page.html',
   styleUrl: './welcome-page.css',
 })

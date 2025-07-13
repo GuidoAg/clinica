@@ -4,10 +4,12 @@ import { AuthSupabase } from '../../../../services/auth-supabase';
 import { Usuario } from '../../../../models/Auth/Usuario';
 import { Observable, firstValueFrom } from 'rxjs';
 import { LoadingOverlayService } from '../../../../services/loading-overlay-service';
+import { TrackImage } from '../../../../directivas/track-image';
+import { LoadingWrapper } from '../../../loading-wrapper/loading-wrapper';
 
 @Component({
   selector: 'app-perfil-admin',
-  imports: [CommonModule],
+  imports: [CommonModule, TrackImage, LoadingWrapper],
   templateUrl: './perfil-admin.html',
   styleUrl: './perfil-admin.css',
 })

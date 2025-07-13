@@ -23,7 +23,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-//import { mapSupabaseError } from '../../../mappers/mapAuthError';
+export interface UsuarioAutoLog {
+  nombre: string;
+  imagenUrl: string;
+  mail: string;
+  password: string;
+}
 
 @Component({
   selector: 'app-login',
@@ -48,6 +53,46 @@ export class Login implements OnInit, AfterViewInit {
 
   loginForm!: FormGroup;
   hidePassword = true;
+  autoLogVisible = false;
+
+  usuariosAutoLog: UsuarioAutoLog[] = [
+    {
+      nombre: 'Admin',
+      imagenUrl: 'assets/imagenes/Login/admin.png',
+      mail: 'insua.guido@gmail.com',
+      password: '1234567',
+    },
+    {
+      nombre: 'Pepe',
+      imagenUrl: 'assets/imagenes/Login/especialista1.png',
+      mail: 'espe.deduct310@passmail.net',
+      password: '1234567',
+    },
+    {
+      nombre: 'Especialista',
+      imagenUrl: 'assets/imagenes/Login/especialista2.png',
+      mail: 'paciente@demo.com',
+      password: 'paciente123',
+    },
+    {
+      nombre: 'Guido',
+      imagenUrl: 'assets/imagenes/Login/paciente1.png',
+      mail: 'pepitoluis.culture104@passmail.net',
+      password: '1234567',
+    },
+    {
+      nombre: 'Paciente',
+      imagenUrl: 'assets/imagenes/Login/paciente2.png',
+      mail: 'user2@demo.com',
+      password: 'user123',
+    },
+    {
+      nombre: 'Paciente',
+      imagenUrl: 'assets/imagenes/Login/paciente3.png',
+      mail: 'user3@demo.com',
+      password: 'user123',
+    },
+  ];
 
   @ViewChild('emailInput') emailInputRef!: ElementRef<HTMLInputElement>;
 
@@ -86,5 +131,16 @@ export class Login implements OnInit, AfterViewInit {
 
     //this.overlay.hide();
     this.router.navigate(['/home']);
+  }
+
+  toggleAutoLog() {
+    this.autoLogVisible = !this.autoLogVisible;
+  }
+
+  autocompletar(user: UsuarioAutoLog): void {
+    this.loginForm.patchValue({
+      mail: user.mail,
+      password: user.password,
+    });
   }
 }

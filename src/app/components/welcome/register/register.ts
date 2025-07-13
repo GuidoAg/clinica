@@ -20,9 +20,11 @@ import { RegistroEspecialista } from '../../../models/Auth/RegistroEspecialista'
 import { RespuestaApi } from '../../../models/RespuestaApi';
 import { fileToBase64 } from '../../../helpers/upload-base64';
 import { OBRAS_SOCIALES } from '../../../constants/obras-sociales';
-import { Especialidad } from '../../../models/especialidad';
+import { Especialidad } from '../../../models/SupaBase/Especialidad';
 import { Router } from '@angular/router';
 import { LoadingOverlayService } from '../../../services/loading-overlay-service';
+
+import { MiCaptcha } from '../../mi-captcha/mi-captcha';
 
 @Component({
   selector: 'app-register',
@@ -35,6 +37,7 @@ import { LoadingOverlayService } from '../../../services/loading-overlay-service
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    MiCaptcha,
   ],
   templateUrl: './register.html',
   styleUrls: ['./register.css'],
@@ -44,6 +47,13 @@ export class Register implements OnInit, OnDestroy {
   tipoUsuario: 'paciente' | 'especialista' | null = null;
   obraSocialOptions = OBRAS_SOCIALES;
   especialidadOptions: Especialidad[] = [];
+  captchaEsValido = false;
+
+  captchaValidoValidator = () => {
+    return (group: FormGroup): { captchaInvalido: true } | null => {
+      return this.captchaEsValido ? null : { captchaInvalido: true };
+    };
+  };
 
   private subEspecialidad!: Subscription;
 
@@ -60,50 +70,50 @@ export class Register implements OnInit, OnDestroy {
       this.loading.show();
       // Carga inicial de especialidades
       this.especialidadOptions = await this.auth.obtenerEspecialidades();
-      this.especialidadOptions.push({
-        id: -1,
-        nombre: 'Otra',
-        url_icono: 'asd',
-        duracion: '30',
-      });
+      this.especialidadOptions.push({ id: -1, nombre: 'Otra' });
 
       // Construcción del form
-      this.registroForm = this.fb.group({
-        nombre: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(2),
-            Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
+      this.registroForm = this.fb.group(
+        {
+          nombre: [
+            '',
+            [
+              Validators.required,
+              Validators.minLength(2),
+              Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
+            ],
           ],
-        ],
-        apellido: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(2),
-            Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
+          apellido: [
+            '',
+            [
+              Validators.required,
+              Validators.minLength(2),
+              Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
+            ],
           ],
-        ],
-        edad: [
-          null,
-          [Validators.required, Validators.min(18), Validators.max(99)],
-        ],
-        dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-        obraSocial: [''],
-        mail: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(7)]],
-        especialidad: [''],
-        otraEspecialidad: [
-          { value: '', disabled: true },
-          [
-            Validators.minLength(2),
-            Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
+          edad: [
+            null,
+            [Validators.required, Validators.min(18), Validators.max(99)],
           ],
-        ],
-        imagenPerfil: [null, Validators.required],
-        imagenFondo: [''],
-      });
+          dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+          obraSocial: [''],
+          mail: ['', [Validators.required, Validators.email]],
+          password: ['', [Validators.required, Validators.minLength(7)]],
+          especialidad: [''],
+          otraEspecialidad: [
+            { value: '', disabled: true },
+            [
+              Validators.minLength(2),
+              Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
+            ],
+          ],
+          imagenPerfil: [null, Validators.required],
+          imagenFondo: [''],
+        },
+        {
+          validators: this.captchaValidoValidator(),
+        },
+      );
 
       // Ajuste dinámico de validadores para "otraEspecialidad"
       this.subEspecialidad = this.registroForm
@@ -140,6 +150,9 @@ export class Register implements OnInit, OnDestroy {
 
     if (tipo === 'paciente') {
       this.registroForm.get('obraSocial')?.setValidators([Validators.required]);
+      this.registroForm
+        .get('imagenFondo')
+        ?.setValidators([Validators.required]);
       this.registroForm.get('especialidad')?.clearValidators();
       this.registroForm.get('otraEspecialidad')?.clearValidators();
     } else {
@@ -278,5 +291,10 @@ export class Register implements OnInit, OnDestroy {
     //this.registroForm.reset();
     this.tipoUsuario = null;
     this.router.navigate(['/welcome-page/confirmacion']);
+  }
+
+  onCaptchaResuelto(valido: boolean) {
+    this.captchaEsValido = valido;
+    this.registroForm.updateValueAndValidity();
   }
 }

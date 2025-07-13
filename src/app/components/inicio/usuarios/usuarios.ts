@@ -5,11 +5,13 @@ import { UsuariosService } from '../../../services/usuarios';
 import { Subject } from 'rxjs';
 import { AltasAdmin } from '../altas-admin/altas-admin';
 import { LoadingOverlayService } from '../../../services/loading-overlay-service';
+import { TrackImage } from '../../../directivas/track-image';
+import { LoadingWrapper } from '../../loading-wrapper/loading-wrapper';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, AltasAdmin],
+  imports: [CommonModule, AltasAdmin, TrackImage, LoadingWrapper],
   templateUrl: './usuarios.html',
   styleUrls: ['./usuarios.css'],
 })

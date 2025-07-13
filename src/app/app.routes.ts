@@ -111,6 +111,13 @@ export const routes: Routes = [
           import('./components/inicio/turnos/turnos').then((m) => m.Turnos),
       },
       {
+        path: 'solicitar-turnos',
+        loadComponent: () =>
+          import('./components/inicio/solicitar-turno/solicitar-turno').then(
+            (m) => m.SolicitarTurno,
+          ),
+      },
+      {
         path: 'usuarios',
         loadComponent: () =>
           import('./components/inicio/usuarios/usuarios').then(

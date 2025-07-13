@@ -8,9 +8,10 @@ import { subirImagenDesdeBase64 } from '../helpers/upload-base64';
 import { RespuestaApi } from '../models/RespuestaApi';
 import { RegistroEspecialista } from '../models/Auth/RegistroEspecialista';
 import { RegistroAdmin } from '../models/Auth/RegistroAdmin';
-import { Especialidad } from '../models/especialidad';
+import { Especialidad } from '../models/SupaBase/Especialidad';
 
 import { mapSupabaseError } from '../mappers/mapAuthError';
+import { Captcha } from '../models/captcha';
 
 @Injectable({
   providedIn: 'root',
@@ -459,8 +460,7 @@ export class AuthSupabase {
     return data.map((e) => ({
       id: e.id,
       nombre: e.nombre,
-      url_icono: e.url_icono ?? undefined,
-      duracion: '20',
+      urlIcono: e.url_icono ?? undefined,
     }));
   }
 
@@ -511,5 +511,26 @@ export class AuthSupabase {
     }
 
     return { success: true, data: insertada.id };
+  }
+
+  async getCaptchas(): Promise<Captcha[]> {
+    const { data, error } = await Supabase.from('captcha')
+      .select('imagenUrl, respuesta')
+      .overrideTypes<
+        { imagenUrl: string; respuesta: string }[],
+        { merge: false }
+      >();
+
+    console.log(data);
+
+    if (error || !data) {
+      console.error('Error al obtener captchas:', error);
+      return [];
+    }
+
+    return data.map((item) => ({
+      imagenUrl: item.imagenUrl,
+      answerHash: item.respuesta,
+    }));
   }
 }

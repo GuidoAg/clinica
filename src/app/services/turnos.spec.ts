@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TurnosService } from './turnos-service';
+import { Turnos } from './turnos';
 
-describe('TurnosService', () => {
-  let service: TurnosService;
+describe('Turnos', () => {
+  let service: Turnos;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(TurnosService);
+    service = TestBed.inject(Turnos);
   });
 
   it('should be created', () => {

@@ -1,4 +1,4 @@
-<div class="bg-gray-200 pt-30 pb-60">
+<div class="min-h-screen bg-gray-200 pt-30 pb-60">
   <h2 class="pb-1 text-center text-4xl font-bold text-azul-oscuro">Registro</h2>
 
   <!-- Selección de tipo de usuario -->
@@ -313,6 +313,18 @@
         >
           Cambiar tipo de usuario
         </button>
+      </div>
+      <div class="col-span-2 mt-1 flex flex-col items-center">
+        <!-- Mensaje de error arriba -->
+        <div
+          *ngIf="registroForm.errors?.['captchaInvalido'] && registroForm.touched"
+          class="mb-2 text-center text-sm text-red-600"
+        >
+          Debe resolver correctamente el CAPTCHA.
+        </div>
+
+        <!-- Componente captcha -->
+        <app-mi-captcha (captchaResuelto)="onCaptchaResuelto($event)" />
       </div>
     </form>
   </div>

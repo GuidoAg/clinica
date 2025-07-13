@@ -8,7 +8,7 @@ export const Supabase = createClient(
     auth: {
       detectSessionInUrl: true,
       persistSession: true,
-      autoRefreshToken: false,
+      autoRefreshToken: true,
     },
   },
 );
