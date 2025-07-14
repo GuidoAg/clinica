@@ -99,16 +99,18 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'tabla-turnos',
+        loadComponent: () =>
+          import('./components/inicio/tabla-turnos/tabla-turnos').then(
+            (m) => m.TablaTurnos,
+          ),
+      },
+      {
         path: 'mis-turnos',
         loadComponent: () =>
           import('./components/inicio/mis-turnos/mis-turnos').then(
             (m) => m.MisTurnos,
           ),
-      },
-      {
-        path: 'turnos',
-        loadComponent: () =>
-          import('./components/inicio/turnos/turnos').then((m) => m.Turnos),
       },
       {
         path: 'solicitar-turnos',

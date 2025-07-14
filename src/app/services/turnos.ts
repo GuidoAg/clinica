@@ -4,6 +4,8 @@ import { EspecialistaTurnos } from '../models/Turnos/EspecialistaTurnos';
 import { EspecialidadTurnos } from '../models/Turnos/EspecialidadTurnos';
 import { CitaTurnos } from '../models/Turnos/CitaTurnos';
 import { RespuestaApi } from '../models/RespuestaApi';
+import { DatoDinamicoTurnos } from '../models/Turnos/DatoDinamicoTurnos';
+import { CitaCompletaTurnos } from '../models/Turnos/CitaCompletaTurnos';
 
 export interface DiasDisponibles {
   lunes: boolean;
@@ -336,5 +338,65 @@ export class Turnos {
         errorCode: 'unexpected_error',
       };
     }
+  }
+
+  async obtenerCitasConRegistro(): Promise<CitaCompletaTurnos[]> {
+    // 1. Obtener las citas con datos de registro (vista)
+    const { data: citasPlano, error: errorCitas } = await Supabase.from(
+      'vista_citas_enteras',
+    ).select('*');
+
+    if (errorCitas)
+      throw new Error(`Error al obtener citas: ${errorCitas.message}`);
+    if (!citasPlano) return [];
+
+    // 2. Obtener todos los datos dinámicos
+    const { data: datosDinamicos, error: errorDatos } = await Supabase.from(
+      'datos_medicos_dinamicos',
+    ).select('*');
+
+    if (errorDatos)
+      throw new Error(
+        `Error al obtener datos dinámicos: ${errorDatos.message}`,
+      );
+
+    // 3. Agrupar datos dinámicos por cita_id
+    const datosPorCita: Record<number, DatoDinamicoTurnos[]> = {};
+    for (const dato of datosDinamicos || []) {
+      if (!dato.cita_id) continue;
+      if (!datosPorCita[dato.cita_id]) {
+        datosPorCita[dato.cita_id] = [];
+      }
+      datosPorCita[dato.cita_id].push({
+        id: dato.id,
+        clave: dato.clave,
+        valor: dato.valor,
+        citaId: dato.cita_id,
+      });
+    }
+
+    // 4. Mapear al modelo final
+    return citasPlano.map(
+      (c: any): CitaCompletaTurnos => ({
+        citaId: c.cita_id,
+        fechaHora: new Date(c.fecha_hora),
+        duracionMin: c.duracion_min,
+        estado: c.estado,
+        comentarioPaciente: c.comentario_paciente,
+        comentarioEspecialista: c.comentario_especialista,
+        resenia: c.resenia,
+        pacienteId: c.paciente_id,
+        pacienteNombreCompleto: c.paciente_nombre_completo,
+        especialistaId: c.especialista_id,
+        especialistaNombreCompleto: c.especialista_nombre_completo,
+        especialidadId: c.especialidad_id,
+        especialidadNombre: c.especialidad_nombre,
+        alturaCm: Number(c.altura_cm),
+        pesoKg: Number(c.peso_kg),
+        temperaturaC: Number(c.temperatura_c),
+        presionArterial: c.presion_arterial,
+        datosDinamicos: datosPorCita[c.cita_id] || [],
+      }),
+    );
   }
 }
