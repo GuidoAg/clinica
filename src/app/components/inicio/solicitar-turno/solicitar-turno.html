@@ -11,7 +11,7 @@
           </h2>
           <div class="flex flex-wrap justify-center gap-4">
             <button
-              *ngFor="let prof of especialistas()"
+              *ngFor="let prof of especialistasValidados()"
               (click)="seleccionarEspecialista(prof)"
               [class.opacity-50]="especialistaSeleccionado() && especialistaSeleccionado()!.id !== prof.id"
               class="flex flex-col items-center space-y-1 focus:outline-none"
@@ -19,7 +19,8 @@
               <img
                 [src]="prof.imagenPerfil || 'assets/default-avatar.png'"
                 alt="profesional"
-                class="h-20 w-20 rounded-full border object-cover"
+                class="h-20 w-20 rounded-full border object-cover shadow"
+                [class.border-blue-600]="especialistaSeleccionado()?.id === prof.id"
                 TrackImage
               />
               <span class="text-center text-sm"
@@ -32,7 +33,7 @@
         <!-- Paso 2: Especialidades -->
         <div *ngIf="especialistaSeleccionado()">
           <h2 class="mb-4 text-center text-xl font-semibold">
-            Seleccioná una especialidad
+            ---- Seleccioná una especialidad ----
           </h2>
           <div class="flex flex-wrap justify-center gap-4">
             <button
@@ -40,6 +41,7 @@
               (click)="seleccionarEspecialidad(esp)"
               class="flex h-21 w-21 flex-col items-center justify-center rounded-lg border bg-white shadow hover:bg-blue-50"
               [class.border-blue-600]="especialidadSeleccionada()?.id === esp.id"
+              [class.opacity-50]="especialidadSeleccionada()  && especialidadSeleccionada()!.id !== esp.id"
             >
               <img
                 [src]="esp.icono || 'assets/default-icon.png'"
@@ -62,7 +64,7 @@
         <!-- Paso 3: Fechas disponibles -->
         <div *ngIf="especialidadSeleccionada()">
           <h2 class="mb-4 text-center text-xl font-semibold">
-            Seleccioná un día
+            ---- Seleccioná un día ----
           </h2>
           <div class="flex flex-wrap justify-center gap-2">
             <button
@@ -83,13 +85,15 @@
         <!-- Paso 4: Horarios disponibles -->
         <div *ngIf="fechaSeleccionada() ">
           <h2 class="mb-4 text-center text-xl font-semibold">
-            Seleccioná un horario
+            ---- Seleccioná un horario ----
           </h2>
           <div class="flex flex-wrap justify-center gap-2">
             <button
               *ngFor="let hora of horariosDisponibles()"
               (click)="seleccionarHorario(hora)"
-              class="h-12 w-16 rounded-lg bg-green-100 text-sm font-semibold hover:bg-green-200"
+              class="h-12 w-16 rounded-lg bg-green-200 text-sm font-semibold hover:bg-green-300"
+              [class.bg-green-500]="horaSelecionada() === hora"
+              [class.text-white]="horaSelecionada() === hora"
             >
               {{ hora }}
             </button>
@@ -115,6 +119,15 @@
             <br />
             Hora: <strong>{{ horaSelecionada() }}</strong>
           </p>
+
+          <div class="pt-4">
+            <button
+              (click)="cargarCita()"
+              class="rounded bg-blue-200 px-4 py-2 text-lg font-medium hover:bg-blue-300"
+            >
+              Confirmar
+            </button>
+          </div>
         </div>
       </div>
     </div>

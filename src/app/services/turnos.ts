@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Supabase } from '../supabase';
 import { EspecialistaTurnos } from '../models/Turnos/EspecialistaTurnos';
 import { EspecialidadTurnos } from '../models/Turnos/EspecialidadTurnos';
+import { CitaTurnos } from '../models/Turnos/CitaTurnos';
+import { RespuestaApi } from '../models/RespuestaApi';
 
 export interface DiasDisponibles {
   lunes: boolean;
@@ -53,7 +55,8 @@ export class Turnos {
       )
     `,
       )
-      .eq('rol', 'especialista');
+      .eq('rol', 'especialista')
+      .eq('email_verificado_real', true);
 
     if (error || !perfiles) {
       console.error('Error al obtener usuarios:', error);
@@ -211,8 +214,14 @@ export class Turnos {
 
     const { hora_inicio, hora_fin } = disponibilidad;
 
-    const disponibilidadInicio = new Date(`${fecha}T${hora_inicio}:00`);
-    const disponibilidadFin = new Date(`${fecha}T${hora_fin}:00`);
+    function parseHoraLocal(fecha: string, hora: string): Date {
+      const [year, month, day] = fecha.split('-').map(Number);
+      const [hour, minute] = hora.split(':').map(Number);
+      return new Date(year, month - 1, day, hour, minute);
+    }
+
+    const disponibilidadInicio = parseHoraLocal(fecha, hora_inicio);
+    const disponibilidadFin = parseHoraLocal(fecha, hora_fin);
 
     // 3. Traer citas del especialista en esa fecha
     const inicioDia = new Date(`${fecha}T00:00:00`);
@@ -273,12 +282,59 @@ export class Turnos {
 
       while (horaTurno.getTime() + duracion * 60000 <= bloque.fin.getTime()) {
         turnosDisponibles.push(
-          horaTurno.toTimeString().substring(0, 5), // "HH:MM"
+          horaTurno.toLocaleTimeString('es-AR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }),
         );
         horaTurno = new Date(horaTurno.getTime() + duracion * 60000);
       }
     }
 
     return turnosDisponibles;
+  }
+
+  async darAltaCita(cita: CitaTurnos): Promise<RespuestaApi<CitaTurnos>> {
+    try {
+      const { data, error } = await Supabase.from('citas')
+        .insert({
+          fecha_hora: cita.fechaHora.toISOString(), // Supabase acepta ISO string
+          duracion_min: cita.duracionMin,
+          paciente_id: cita.pacienteId,
+          especialista_id: cita.especialistaId,
+          especialidad_id: cita.especialidadId,
+          estado: cita.estado,
+          comentario_paciente: cita.comentarioPaciente,
+          comentario_especialista: cita.comentarioEspecialista,
+          resenia: cita.resenia,
+        })
+        .select()
+        .maybeSingle();
+
+      if (error || !data) {
+        console.error('Error al insertar cita:', error);
+        return {
+          success: false,
+          message: 'No se pudo registrar la cita',
+          errorCode: error?.code ?? 'insert_error',
+        };
+      }
+
+      return {
+        success: true,
+        data: {
+          ...cita,
+          fechaHora: new Date(data.fecha_hora),
+        },
+      };
+    } catch (e) {
+      console.error('Excepción en darAltaCita:', e);
+      return {
+        success: false,
+        message: 'Ocurrió un error inesperado',
+        errorCode: 'unexpected_error',
+      };
+    }
   }
 }

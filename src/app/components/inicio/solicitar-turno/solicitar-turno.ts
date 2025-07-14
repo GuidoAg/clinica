@@ -1,12 +1,17 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Turnos } from '../../../services/turnos';
 import { EspecialistaTurnos } from '../../../models/Turnos/EspecialistaTurnos';
 import { EspecialidadTurnos } from '../../../models/Turnos/EspecialidadTurnos';
 import { LoadingOverlayService } from '../../../services/loading-overlay-service';
-
+import { CitaTurnos } from '../../../models/Turnos/CitaTurnos';
 import { TrackImage } from '../../../directivas/track-image';
 import { LoadingWrapper } from '../../loading-wrapper/loading-wrapper';
+import { Usuario } from '../../../models/Auth/Usuario';
+import { Observable, Subject, firstValueFrom } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { AuthSupabase } from '../../../services/auth-supabase';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-solicitar-turno',
@@ -15,7 +20,12 @@ import { LoadingWrapper } from '../../loading-wrapper/loading-wrapper';
   templateUrl: './solicitar-turno.html',
   styleUrl: './solicitar-turno.css',
 })
-export class SolicitarTurno implements OnInit {
+export class SolicitarTurno implements OnInit, OnDestroy {
+  usuario$: Observable<Usuario | null>;
+  usuarioActual: Usuario | null = null;
+
+  private destroy$ = new Subject<void>();
+
   especialistas = signal<EspecialistaTurnos[]>([]);
   especialidades = signal<EspecialidadTurnos[]>([]);
   fechasDisponibles = signal<string[]>([]);
@@ -31,6 +41,19 @@ export class SolicitarTurno implements OnInit {
   horasBuscadas = signal(false);
 
   cargando = signal(false);
+
+  constructor(
+    private turnosService: Turnos,
+    private loadin: LoadingOverlayService,
+    private authSupabase: AuthSupabase,
+    private snackBar: MatSnackBar,
+  ) {
+    this.usuario$ = this.authSupabase.user$;
+  }
+
+  especialistasValidados = computed(() =>
+    this.especialistas().filter((e) => e.validadoAdmin === true),
+  );
 
   // 🟡 Nuevas señales computadas
   noHayEspecialidades = computed(
@@ -54,14 +77,27 @@ export class SolicitarTurno implements OnInit {
       this.horariosDisponibles().length === 0,
   );
 
-  constructor(
-    private turnosService: Turnos,
-    private loadin: LoadingOverlayService,
-  ) {}
-
   async ngOnInit() {
+    this.usuario$.pipe(takeUntil(this.destroy$)).subscribe((usuario) => {
+      if (!usuario) {
+        this.usuarioActual = null;
+        return;
+      }
+      // Asegurar que id sea número
+      usuario.id =
+        typeof usuario.id === 'string' ? Number(usuario.id) : usuario.id;
+
+      this.usuarioActual = usuario;
+    });
+
     this.especialistas.set(await this.turnosService.obtenerEspecialistas());
+
     this.loadin.hide();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   async seleccionarEspecialista(e: EspecialistaTurnos) {
@@ -87,6 +123,7 @@ export class SolicitarTurno implements OnInit {
   async seleccionarEspecialidad(es: EspecialidadTurnos) {
     this.especialidadSeleccionada.set(es);
     this.fechaSeleccionada.set(null);
+    this.horaSelecionada.set(null);
     this.horariosDisponibles.set([]);
     this.cargando.set(true);
 
@@ -99,6 +136,7 @@ export class SolicitarTurno implements OnInit {
   }
 
   async seleccionarFecha(fecha: string) {
+    this.horaSelecionada.set(null);
     this.fechaSeleccionada.set(fecha);
     this.cargando.set(true);
 
@@ -114,12 +152,57 @@ export class SolicitarTurno implements OnInit {
 
   seleccionarHorario(hora: string) {
     this.horaSelecionada.set(hora);
+  }
 
-    console.log('Turno seleccionado:', {
-      especialista: this.especialistaSeleccionado(),
-      especialidad: this.especialidadSeleccionada(),
-      fecha: this.fechaSeleccionada(),
-      horas: this.horaSelecionada(),
-    });
+  async cargarCita() {
+    const fecha = this.fechaSeleccionada();
+    const hora = this.horaSelecionada();
+    const especialista = this.especialistaSeleccionado();
+    const especialidad = this.especialidadSeleccionada();
+    const paciente = this.usuarioActual;
+
+    if (!fecha || !hora || !especialista || !especialidad || !paciente) {
+      console.error('Datos incompletos para agendar la cita');
+      return;
+    }
+
+    const miFechaHora = new Date(`${fecha}T${hora}:00`);
+
+    const cita: CitaTurnos = {
+      fechaHora: miFechaHora,
+      duracionMin: especialidad.duracion,
+      pacienteId: paciente.id,
+      especialistaId: especialista.id,
+      especialidadId: especialidad.id,
+      estado: 'solicitado',
+      comentarioPaciente: ' ',
+      comentarioEspecialista: ' ',
+      resenia: ' ',
+    };
+
+    try {
+      const resultado = await this.turnosService.darAltaCita(cita);
+      console.log('Cita creada exitosamente', resultado);
+
+      this.snackBar.open('Cita agendada', 'exito', {
+        duration: 4000,
+        panelClass: ['bg-blue-600', 'text-white'],
+      });
+      this.especialistaSeleccionado.set(null);
+      this.especialidadSeleccionada.set(null);
+      this.fechaSeleccionada.set(null);
+      this.horaSelecionada.set(null);
+    } catch (error) {
+      console.error('Error al cargar la cita:', error);
+
+      this.snackBar.open('Ups algo salio mal', 'error', {
+        duration: 4000,
+        panelClass: ['bg-red-600', 'text-white'],
+      });
+      this.especialistaSeleccionado.set(null);
+      this.especialidadSeleccionada.set(null);
+      this.fechaSeleccionada.set(null);
+      this.horaSelecionada.set(null);
+    }
   }
 }
