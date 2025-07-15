@@ -22,10 +22,20 @@
       <button
         type="button"
         (click)="limpiarFiltro()"
-        class="rounded bg-[color:var(--color-azul-oscuro)] px-3 py-1 text-sm font-semibold text-white shadow hover:bg-[color:var(--color-azul-claro)]"
+        class="rounded bg-[color:var(--color-azul-oscuro)] px-3 py-1 text-sm font-semibold text-white shadow transition-transform hover:scale-105 hover:bg-[color:var(--color-azul-claro)]"
       >
         Limpiar
       </button>
+
+      <!-- Botón Acciones alineado a la derecha -->
+      <div class="ml-auto">
+        <app-acciones-admin
+          *ngIf="mostrarPopupAcciones && citaSeleccionada()"
+          [cita]="citaSeleccionada()!"
+          (cerrar)="cerrarPopupAcciones()"
+          (accionRealizada)="accionDesdeModal($event)"
+        ></app-acciones-admin>
+      </div>
     </div>
 
     <!-- Tabla -->
@@ -64,8 +74,11 @@
               <td class="border border-gray-300 px-3 py-1">
                 {{ cita.fechaHora | date : 'short' }}
               </td>
-              <td class="border border-gray-300 px-3 py-1">
-                {{ cita.estado }}
+              <td
+                class="rounded border border-gray-300 px-3 py-1 text-center font-semibold"
+                [ngClass]="estadoClaseMap[cita.estado] ?? 'bg-gray-100 text-gray-700'"
+              >
+                {{ cita.estado | titlecase }}
               </td>
               <td class="border border-gray-300 px-3 py-1">
                 {{ cita.alturaCm }}
@@ -94,6 +107,17 @@
                   type="button"
                 >
                   {{ filaExpandida() === cita.citaId ? 'Ocultar' : 'Mostrar' }}
+                </button>
+              </td>
+              <td
+                class="border border-gray-300 bg-green-200 px-3 py-1 text-center hover:bg-green-500"
+              >
+                <button
+                  class="font-bold text-[color:var(--color-azul-oscuro)] hover:text-[color:var(--color-white)]"
+                  type="button"
+                  (click)="abrirPopupAcciones(cita)"
+                >
+                  Acciones
                 </button>
               </td>
             </tr>

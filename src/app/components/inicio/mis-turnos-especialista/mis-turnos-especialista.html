@@ -29,12 +29,12 @@
 
       <!-- Botón Acciones alineado a la derecha -->
       <div class="ml-auto">
-        <app-acciones-paciente
+        <app-acciones-especialista
           *ngIf="mostrarPopupAcciones && citaSeleccionada()"
           [cita]="citaSeleccionada()!"
           (cerrar)="cerrarPopupAcciones()"
           (accionRealizada)="accionDesdeModal($event)"
-        ></app-acciones-paciente>
+        ></app-acciones-especialista>
       </div>
     </div>
 

@@ -469,7 +469,7 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado === 'realizado') {
+    if (cita.estado === 'completado') {
       return {
         success: false,
         message: 'No se puede cancelar un turno ya realizado.',
@@ -501,7 +501,7 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     encuesta: EncuestaTurnos,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado !== 'realizado') {
+    if (cita.estado !== 'completado') {
       return {
         success: false,
         message: 'El turno debe ser realizado para poder cargar encuesta.',
@@ -547,7 +547,7 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado !== 'realizado') {
+    if (cita.estado !== 'completado') {
       return {
         success: false,
         message:
@@ -581,7 +581,7 @@ export class Turnos {
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
     if (
-      cita.estado === 'realizado' ||
+      cita.estado === 'completado' ||
       cita.estado === 'aceptado' ||
       cita.estado === 'rechazado'
     ) {
@@ -618,7 +618,7 @@ export class Turnos {
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
     if (
-      cita.estado === 'realizado' ||
+      cita.estado === 'completado' ||
       cita.estado === 'aceptado' ||
       cita.estado === 'cancelado'
     ) {
@@ -654,7 +654,7 @@ export class Turnos {
     cita: CitaCompletaTurnos,
   ): Promise<RespuestaApi<boolean>> {
     if (
-      cita.estado === 'realizado' ||
+      cita.estado === 'completado' ||
       cita.estado === 'rechazado' ||
       cita.estado === 'cancelado'
     ) {
@@ -715,5 +715,69 @@ export class Turnos {
       message: 'Turno completado exitosamente.',
       data: true,
     };
+  }
+
+  async obtenerCitasEspecialista(
+    id_usuario: number,
+  ): Promise<CitaCompletaTurnos[]> {
+    // 1. Obtener las citas con datos de registro (vista)
+    const { data: citasPlano, error: errorCitas } = await Supabase.from(
+      'vista_citas_enteras',
+    )
+      .select('*')
+      .eq('especialista_id', id_usuario);
+
+    if (errorCitas)
+      throw new Error(`Error al obtener citas: ${errorCitas.message}`);
+    if (!citasPlano) return [];
+
+    // 2. Obtener todos los datos dinámicos
+    const { data: datosDinamicos, error: errorDatos } = await Supabase.from(
+      'datos_medicos_dinamicos',
+    ).select('*');
+
+    if (errorDatos)
+      throw new Error(
+        `Error al obtener datos dinámicos: ${errorDatos.message}`,
+      );
+
+    // 3. Agrupar datos dinámicos por cita_id
+    const datosPorCita: Record<number, DatoDinamicoTurnos[]> = {};
+    for (const dato of datosDinamicos || []) {
+      if (!dato.cita_id) continue;
+      if (!datosPorCita[dato.cita_id]) {
+        datosPorCita[dato.cita_id] = [];
+      }
+      datosPorCita[dato.cita_id].push({
+        id: dato.id,
+        clave: dato.clave,
+        valor: dato.valor,
+        citaId: dato.cita_id,
+      });
+    }
+
+    // 4. Mapear al modelo final
+    return citasPlano.map(
+      (c: any): CitaCompletaTurnos => ({
+        citaId: c.cita_id,
+        fechaHora: new Date(c.fecha_hora),
+        duracionMin: c.duracion_min,
+        estado: c.estado,
+        comentarioPaciente: c.comentario_paciente,
+        comentarioEspecialista: c.comentario_especialista,
+        resenia: c.resenia,
+        pacienteId: c.paciente_id,
+        pacienteNombreCompleto: c.paciente_nombre_completo,
+        especialistaId: c.especialista_id,
+        especialistaNombreCompleto: c.especialista_nombre_completo,
+        especialidadId: c.especialidad_id,
+        especialidadNombre: c.especialidad_nombre,
+        alturaCm: Number(c.altura_cm),
+        pesoKg: Number(c.peso_kg),
+        temperaturaC: Number(c.temperatura_c),
+        presionArterial: c.presion_arterial,
+        datosDinamicos: datosPorCita[c.cita_id] || [],
+      }),
+    );
   }
 }

@@ -14,15 +14,15 @@ import { Usuario } from '../../../models/Auth/Usuario';
 import { Observable, Subject, firstValueFrom } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EncuestaTurnos } from '../../../models/Turnos/EncuestaTurnos';
-import { AccionesPaciente } from '../acciones-paciente/acciones-paciente';
+import { AccionesEspecialista } from '../acciones-especialista/acciones-especialista';
 
 @Component({
-  selector: 'app-mis-turnos-paciente',
-  imports: [CommonModule, FormsModule, AccionesPaciente],
-  templateUrl: './mis-turnos-paciente.html',
-  styleUrl: './mis-turnos-paciente.css',
+  selector: 'app-mis-turnos-especialista',
+  imports: [CommonModule, FormsModule, AccionesEspecialista],
+  templateUrl: './mis-turnos-especialista.html',
+  styleUrl: './mis-turnos-especialista.css',
 })
-export class MisTurnosPaciente implements OnInit, OnDestroy {
+export class MisTurnosEspecialista implements OnInit, OnDestroy {
   usuario$: Observable<Usuario | null>;
   usuarioActual: Usuario | null = null;
   private destroy$ = new Subject<void>();
@@ -103,7 +103,7 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
 
     try {
       if (this.usuarioActual?.id != null) {
-        const datos = await this.turnosService.obtenerCitasPaciente(
+        const datos = await this.turnosService.obtenerCitasEspecialista(
           this.usuarioActual.id,
         );
         this.citas.set(datos);

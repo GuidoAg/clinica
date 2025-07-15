@@ -113,6 +113,13 @@ export const routes: Routes = [
           ).then((m) => m.MisTurnosPaciente),
       },
       {
+        path: 'mis-turnos-especialista',
+        loadComponent: () =>
+          import(
+            './components/inicio/mis-turnos-especialista/mis-turnos-especialista'
+          ).then((m) => m.MisTurnosEspecialista),
+      },
+      {
         path: 'solicitar-turnos',
         loadComponent: () =>
           import('./components/inicio/solicitar-turno/solicitar-turno').then(

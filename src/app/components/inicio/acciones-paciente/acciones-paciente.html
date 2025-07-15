@@ -10,7 +10,7 @@
 >
   <!-- Vista principal de botones -->
   <div
-    *ngIf="!mostrarFormularioCancelar && !mostrarFormularioEncuesta && !mostrarFormularioCalificar"
+    *ngIf="!mostrarFormularioCancelar && !mostrarFormularioEncuesta && !mostrarFormularioCalificar && !mostrarFormularioResenia"
     class="flex flex-col gap-3"
   >
     <button
@@ -161,5 +161,26 @@
         Enviar calificación
       </button>
     </div>
+  </div>
+
+  <!-- Vista para mostrar reseña -->
+  <div
+    *ngIf="mostrarFormularioResenia"
+    class="flex flex-col items-center gap-4 text-center"
+  >
+    <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
+      Reseña
+    </h3>
+
+    <p class="px-2 text-gray-700 italic">
+      {{ cita.resenia || 'No se ha dejado una reseña para este turno.' }}
+    </p>
+
+    <button
+      (click)="volverDesdeVistaResenia()"
+      class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
+    >
+      Volver
+    </button>
   </div>
 </div>

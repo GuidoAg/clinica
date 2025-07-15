@@ -37,6 +37,7 @@ export class AccionesPaciente implements OnInit {
   mostrarFormularioCancelar = false;
   mostrarFormularioEncuesta = false;
   mostrarFormularioCalificar = false;
+  mostrarFormularioResenia = false;
 
   comentarioCancelar = '';
   comentarioCalificar = '';
@@ -61,7 +62,7 @@ export class AccionesPaciente implements OnInit {
 
   get puedeCancelar() {
     return (
-      this.cita.estado !== 'realizado' &&
+      this.cita.estado !== 'completado' &&
       this.cita.estado !== 'cancelado' &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioEncuesta &&
@@ -75,7 +76,7 @@ export class AccionesPaciente implements OnInit {
 
   get puedeCompletarEncuesta() {
     return (
-      this.cita.estado === 'realizado' &&
+      this.cita.estado === 'completado' &&
       (!this.cita.resenia || this.cita.resenia.trim() === '') &&
       this.puedeVerResenia &&
       !this.mostrarFormularioEncuesta &&
@@ -86,7 +87,7 @@ export class AccionesPaciente implements OnInit {
 
   get puedeCalificar() {
     return (
-      this.cita.estado === 'realizado' &&
+      this.cita.estado === 'completado' &&
       !this.mostrarFormularioCalificar &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioEncuesta
@@ -192,11 +193,12 @@ export class AccionesPaciente implements OnInit {
       });
   }
 
-  // Método para ver reseña, si lo necesitas, puede ser algo simple
   verResenia() {
-    if (this.cita.resenia) {
-      this.snackBar.open(this.cita.resenia, 'Cerrar', { duration: 5000 });
-    }
+    this.mostrarFormularioResenia = true;
+  }
+
+  volverDesdeVistaResenia() {
+    this.mostrarFormularioResenia = false;
   }
 
   cerrarModal() {

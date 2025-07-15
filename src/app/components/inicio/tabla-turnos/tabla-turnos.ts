@@ -1,20 +1,47 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // IMPORTANTE para ngModel
+import { FormsModule } from '@angular/forms';
 import { Turnos } from '../../../services/turnos';
 import { CitaCompletaTurnos } from '../../../models/Turnos/CitaCompletaTurnos';
+import { AuthSupabase } from '../../../services/auth-supabase';
+import { Usuario } from '../../../models/Auth/Usuario';
+import { Observable, Subject, firstValueFrom } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { EncuestaTurnos } from '../../../models/Turnos/EncuestaTurnos';
+import { AccionesAdmin } from '../acciones-admin/acciones-admin';
 
 @Component({
   selector: 'app-tabla-turnos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AccionesAdmin],
   templateUrl: './tabla-turnos.html',
   styleUrl: './tabla-turnos.css',
 })
-export class TablaTurnos implements OnInit {
+export class TablaTurnos implements OnInit, OnDestroy {
+  usuario$: Observable<Usuario | null>;
+  usuarioActual: Usuario | null = null;
+  private destroy$ = new Subject<void>();
+
   citas = signal<CitaCompletaTurnos[]>([]);
   filaExpandida = signal<number | null>(null);
   cargando = signal(true);
+  citaSeleccionada = signal<CitaCompletaTurnos | null>(null);
+
+  mostrarPopupAcciones = false;
+
+  estadoClaseMap: { [key: string]: string | undefined } = {
+    solicitado: 'bg-yellow-200 text-yellow-800',
+    aceptado: 'bg-green-200 text-green-800',
+    rechazado: 'bg-red-200 text-red-800',
+    cancelado: 'bg-gray-300 text-gray-800',
+    completado: 'bg-blue-200 text-blue-800',
+  };
 
   readonly columnas = [
     { key: 'citaId', label: 'ID' },
@@ -32,8 +59,14 @@ export class TablaTurnos implements OnInit {
   readonly columnasConDatosDinamicos = [
     ...this.columnas,
     { key: 'datosDinamicos', label: 'Datos dinámicos' },
-    { key: 'acciones', label: 'Acciones' },
   ];
+
+  constructor(
+    private turnosService: Turnos,
+    private authSupabase: AuthSupabase,
+  ) {
+    this.usuario$ = this.authSupabase.user$;
+  }
 
   // Filtro seleccionado y valor del filtro
   filtroColumna = signal<string | null>(null);
@@ -47,12 +80,33 @@ export class TablaTurnos implements OnInit {
     this._filtroValor.set(value);
   }
 
-  constructor(private turnosService: Turnos) {}
-
   async ngOnInit() {
+    this.usuario$.pipe(takeUntil(this.destroy$)).subscribe((usuario) => {
+      if (!usuario) {
+        this.usuarioActual = null;
+        return;
+      }
+
+      usuario.id =
+        typeof usuario.id === 'string' ? Number(usuario.id) : usuario.id;
+      this.usuarioActual = usuario;
+      this.cargarCitas(); // ✅ llamada aquí
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  async cargarCitas() {
+    this.cargando.set(true);
+
     try {
-      const datos = await this.turnosService.obtenerCitasConRegistro();
-      this.citas.set(datos);
+      if (this.usuarioActual?.id != null) {
+        const datos = await this.turnosService.obtenerCitasConRegistro();
+        this.citas.set(datos);
+      }
     } catch (e) {
       console.error('Error al obtener citas', e);
     } finally {
@@ -100,5 +154,25 @@ export class TablaTurnos implements OnInit {
   limpiarFiltro() {
     this.filtroColumna.set('');
     this._filtroValor.set('');
+  }
+
+  mostrarAcciones() {
+    this.filtroColumna.set('');
+    this._filtroValor.set('');
+  }
+
+  abrirPopupAcciones(cita: CitaCompletaTurnos) {
+    this.citaSeleccionada.set(cita);
+    this.mostrarPopupAcciones = true;
+  }
+
+  cerrarPopupAcciones() {
+    this.mostrarPopupAcciones = false;
+    this.citaSeleccionada.set(null);
+  }
+
+  accionDesdeModal(tipo: string) {
+    this.cerrarPopupAcciones();
+    this.cargarCitas(); // ✅ recarga los turnos
   }
 }
