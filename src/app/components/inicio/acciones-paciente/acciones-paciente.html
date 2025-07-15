@@ -1,0 +1,165 @@
+<!-- Fondo difuminado y clic para cerrar -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+  (click)="cerrarModal()"
+></div>
+
+<div
+  class="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-2xl bg-white p-11 shadow-lg"
+  (click)="$event.stopPropagation()"
+>
+  <!-- Vista principal de botones -->
+  <div
+    *ngIf="!mostrarFormularioCancelar && !mostrarFormularioEncuesta && !mostrarFormularioCalificar"
+    class="flex flex-col gap-3"
+  >
+    <button
+      *ngIf="puedeCancelar"
+      (click)="mostrarFormularioCancelar = true"
+      class="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-red-700"
+    >
+      Cancelar turno
+    </button>
+
+    <button
+      *ngIf="puedeVerResenia"
+      (click)="verResenia()"
+      class="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-blue-700"
+    >
+      Ver reseña
+    </button>
+
+    <button
+      *ngIf="puedeCompletarEncuesta"
+      (click)="mostrarFormularioEncuesta = true"
+      class="rounded-lg bg-green-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-green-700"
+    >
+      Completar encuesta
+    </button>
+
+    <button
+      *ngIf="puedeCalificar"
+      (click)="mostrarFormularioCalificar = true"
+      class="rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-purple-700"
+    >
+      Calificar atención
+    </button>
+  </div>
+
+  <!-- Formulario para cancelar turno -->
+  <div *ngIf="mostrarFormularioCancelar" class="flex flex-col gap-3">
+    <textarea
+      [(ngModel)]="comentarioCancelar"
+      placeholder="Ingrese el motivo de cancelación"
+      rows="3"
+      class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
+    ></textarea>
+
+    <div class="flex justify-end gap-3">
+      <button
+        type="button"
+        (click)="cancelarAccionCancelar()"
+        class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        (click)="confirmarCancelarTurno()"
+        [disabled]="!comentarioCancelar.trim() || cargando()"
+        class="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+      >
+        Confirmar cancelación
+      </button>
+    </div>
+  </div>
+
+  <!-- Formulario para encuesta -->
+  <form
+    *ngIf="mostrarFormularioEncuesta"
+    [formGroup]="encuestaForm"
+    (ngSubmit)="enviarEncuesta()"
+    class="flex flex-col gap-3"
+  >
+    <h3 class="mb-2 text-lg font-semibold text-gray-700">Encuesta</h3>
+
+    <input
+      formControlName="nombre"
+      type="text"
+      placeholder="Tu nombre"
+      class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
+    />
+    <input
+      formControlName="telefono"
+      type="tel"
+      placeholder="Tu teléfono"
+      class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
+    />
+    <textarea
+      formControlName="pregunta1"
+      placeholder="¿Cómo calificarías el trato recibido?"
+      class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
+      rows="2"
+    ></textarea>
+    <textarea
+      formControlName="pregunta2"
+      placeholder="¿Quedaste conforme con el diagnóstico?"
+      class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
+      rows="2"
+    ></textarea>
+    <textarea
+      formControlName="pregunta3"
+      placeholder="¿Volverías a atenderte con este especialista?"
+      class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
+      rows="2"
+    ></textarea>
+
+    <div class="mt-3 flex justify-end gap-3">
+      <button
+        type="button"
+        (click)="cancelarAccionEncuesta()"
+        class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="submit"
+        [disabled]="encuestaForm.invalid || cargando()"
+        class="rounded bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50"
+      >
+        Enviar encuesta
+      </button>
+    </div>
+  </form>
+
+  <!-- Formulario para calificar atención -->
+  <div *ngIf="mostrarFormularioCalificar" class="flex flex-col gap-3">
+    <textarea
+      [(ngModel)]="comentarioCalificar"
+      placeholder="Dejá un comentario sobre la atención recibida"
+      rows="3"
+      class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+    ></textarea>
+
+    <div class="flex justify-end gap-3">
+      <button
+        type="button"
+        (click)="cancelarAccionCalificar()"
+        class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        (click)="confirmarCalificarAtencion()"
+        [disabled]="!comentarioCalificar.trim() || cargando()"
+        class="rounded bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50"
+      >
+        Enviar calificación
+      </button>
+    </div>
+  </div>
+</div>

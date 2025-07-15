@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MiPerfil } from './mi-perfil';
+import { MisTurnosPaciente } from './mis-turnos-paciente';
 
-describe('MiPerfil', () => {
-  let component: MiPerfil;
-  let fixture: ComponentFixture<MiPerfil>;
+describe('MisTurnosPaciente', () => {
+  let component: MisTurnosPaciente;
+  let fixture: ComponentFixture<MisTurnosPaciente>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MiPerfil]
+      imports: [MisTurnosPaciente]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MiPerfil);
+    fixture = TestBed.createComponent(MisTurnosPaciente);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

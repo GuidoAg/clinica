@@ -106,11 +106,11 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'mis-turnos',
+        path: 'mis-turnos-paciente',
         loadComponent: () =>
-          import('./components/inicio/mis-turnos/mis-turnos').then(
-            (m) => m.MisTurnos,
-          ),
+          import(
+            './components/inicio/mis-turnos-paciente/mis-turnos-paciente'
+          ).then((m) => m.MisTurnosPaciente),
       },
       {
         path: 'solicitar-turnos',

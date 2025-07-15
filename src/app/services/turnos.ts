@@ -6,6 +6,7 @@ import { CitaTurnos } from '../models/Turnos/CitaTurnos';
 import { RespuestaApi } from '../models/RespuestaApi';
 import { DatoDinamicoTurnos } from '../models/Turnos/DatoDinamicoTurnos';
 import { CitaCompletaTurnos } from '../models/Turnos/CitaCompletaTurnos';
+import { EncuestaTurnos } from '../models/Turnos/EncuestaTurnos';
 
 export interface DiasDisponibles {
   lunes: boolean;
@@ -398,5 +399,321 @@ export class Turnos {
         datosDinamicos: datosPorCita[c.cita_id] || [],
       }),
     );
+  }
+
+  async obtenerCitasPaciente(
+    id_usuario: number,
+  ): Promise<CitaCompletaTurnos[]> {
+    // 1. Obtener las citas con datos de registro (vista)
+    const { data: citasPlano, error: errorCitas } = await Supabase.from(
+      'vista_citas_enteras',
+    )
+      .select('*')
+      .eq('paciente_id', id_usuario);
+
+    if (errorCitas)
+      throw new Error(`Error al obtener citas: ${errorCitas.message}`);
+    if (!citasPlano) return [];
+
+    // 2. Obtener todos los datos dinámicos
+    const { data: datosDinamicos, error: errorDatos } = await Supabase.from(
+      'datos_medicos_dinamicos',
+    ).select('*');
+
+    if (errorDatos)
+      throw new Error(
+        `Error al obtener datos dinámicos: ${errorDatos.message}`,
+      );
+
+    // 3. Agrupar datos dinámicos por cita_id
+    const datosPorCita: Record<number, DatoDinamicoTurnos[]> = {};
+    for (const dato of datosDinamicos || []) {
+      if (!dato.cita_id) continue;
+      if (!datosPorCita[dato.cita_id]) {
+        datosPorCita[dato.cita_id] = [];
+      }
+      datosPorCita[dato.cita_id].push({
+        id: dato.id,
+        clave: dato.clave,
+        valor: dato.valor,
+        citaId: dato.cita_id,
+      });
+    }
+
+    // 4. Mapear al modelo final
+    return citasPlano.map(
+      (c: any): CitaCompletaTurnos => ({
+        citaId: c.cita_id,
+        fechaHora: new Date(c.fecha_hora),
+        duracionMin: c.duracion_min,
+        estado: c.estado,
+        comentarioPaciente: c.comentario_paciente,
+        comentarioEspecialista: c.comentario_especialista,
+        resenia: c.resenia,
+        pacienteId: c.paciente_id,
+        pacienteNombreCompleto: c.paciente_nombre_completo,
+        especialistaId: c.especialista_id,
+        especialistaNombreCompleto: c.especialista_nombre_completo,
+        especialidadId: c.especialidad_id,
+        especialidadNombre: c.especialidad_nombre,
+        alturaCm: Number(c.altura_cm),
+        pesoKg: Number(c.peso_kg),
+        temperaturaC: Number(c.temperatura_c),
+        presionArterial: c.presion_arterial,
+        datosDinamicos: datosPorCita[c.cita_id] || [],
+      }),
+    );
+  }
+
+  async cancelarCitaPaciente(
+    cita: CitaCompletaTurnos,
+    comentario: string,
+  ): Promise<RespuestaApi<boolean>> {
+    if (cita.estado === 'realizado') {
+      return {
+        success: false,
+        message: 'No se puede cancelar un turno ya realizado.',
+      };
+    }
+
+    const { error } = await Supabase.from('citas')
+      .update({
+        estado: 'cancelado',
+        comentario_paciente: comentario,
+      })
+      .eq('id', cita.citaId);
+
+    if (error) {
+      return {
+        success: false,
+        message: 'Ocurrió un error al cancelar el turno.',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Turno cancelado exitosamente.',
+      data: true,
+    };
+  }
+
+  async cargarEncuesta(
+    cita: CitaCompletaTurnos,
+    encuesta: EncuestaTurnos,
+  ): Promise<RespuestaApi<boolean>> {
+    if (cita.estado !== 'realizado') {
+      return {
+        success: false,
+        message: 'El turno debe ser realizado para poder cargar encuesta.',
+      };
+    }
+
+    if (!cita.resenia || cita.resenia.trim() === '') {
+      return {
+        success: false,
+        message:
+          'El especialista debe cargar una reseña antes de poder cargar una encuesta',
+      };
+    }
+
+    const { data, error } = await Supabase.from('encuesta')
+      .insert({
+        id: cita.citaId,
+        pregunta1: encuesta.pregunta1,
+        pregunta2: encuesta.pregunta2,
+        pregunta3: encuesta.pregunta3,
+        nombre: encuesta.nombre,
+        telefono: encuesta.telefono,
+      })
+      .select()
+      .maybeSingle();
+
+    if (error || !data) {
+      return {
+        success: false,
+        message: 'No se pudo registrar la encuesta',
+        errorCode: error?.code ?? 'insert_error',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Encuesta registrada exitosamente.',
+      data: true,
+    };
+  }
+
+  async cargarComentarioAtencion(
+    cita: CitaCompletaTurnos,
+    comentario: string,
+  ): Promise<RespuestaApi<boolean>> {
+    if (cita.estado !== 'realizado') {
+      return {
+        success: false,
+        message:
+          'El turno debe ser realizado para poder calificar la atencion.',
+      };
+    }
+
+    const { error } = await Supabase.from('citas')
+      .update({
+        comentario_paciente: comentario,
+      })
+      .eq('id', cita.citaId);
+
+    if (error) {
+      return {
+        success: false,
+        message: 'No se pudo registrar la calificacion',
+        errorCode: error?.code ?? 'insert_error',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Antencion calificada exitosamente.',
+      data: true,
+    };
+  }
+
+  async cancelarCitaEspecialista(
+    cita: CitaCompletaTurnos,
+    comentario: string,
+  ): Promise<RespuestaApi<boolean>> {
+    if (
+      cita.estado === 'realizado' ||
+      cita.estado === 'aceptado' ||
+      cita.estado === 'rechazado'
+    ) {
+      return {
+        success: false,
+        message:
+          'No se puede cancelar un turno ya realizado, aceptado o rechazado.',
+      };
+    }
+
+    const { error } = await Supabase.from('citas')
+      .update({
+        estado: 'cancelado',
+        comentario_especialista: comentario,
+      })
+      .eq('id', cita.citaId);
+
+    if (error) {
+      return {
+        success: false,
+        message: 'Ocurrió un error al cancelar el turno.',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Turno cancelado exitosamente.',
+      data: true,
+    };
+  }
+
+  async rechazarCitaEspecialista(
+    cita: CitaCompletaTurnos,
+    comentario: string,
+  ): Promise<RespuestaApi<boolean>> {
+    if (
+      cita.estado === 'realizado' ||
+      cita.estado === 'aceptado' ||
+      cita.estado === 'cancelado'
+    ) {
+      return {
+        success: false,
+        message:
+          'No se puede rechazar un turno ya realizado, aceptado o cancelado.',
+      };
+    }
+
+    const { error } = await Supabase.from('citas')
+      .update({
+        estado: 'rechazado',
+        comentario_especialista: comentario,
+      })
+      .eq('id', cita.citaId);
+
+    if (error) {
+      return {
+        success: false,
+        message: 'Ocurrió un error al rechazar el turno.',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Turno rechazado exitosamente.',
+      data: true,
+    };
+  }
+
+  async aceptarCitaEspecialista(
+    cita: CitaCompletaTurnos,
+  ): Promise<RespuestaApi<boolean>> {
+    if (
+      cita.estado === 'realizado' ||
+      cita.estado === 'rechazado' ||
+      cita.estado === 'cancelado'
+    ) {
+      return {
+        success: false,
+        message:
+          'No se puede aceprtar un turno ya realizado, rechazado o cancelado.',
+      };
+    }
+
+    const { error } = await Supabase.from('citas')
+      .update({
+        estado: 'aceptado',
+      })
+      .eq('id', cita.citaId);
+
+    if (error) {
+      return {
+        success: false,
+        message: 'Ocurrió un error al aceptar el turno.',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Turno aceptado exitosamente.',
+      data: true,
+    };
+  }
+
+  async completarCitaEspecialista(
+    cita: CitaCompletaTurnos,
+    resenia: string,
+  ): Promise<RespuestaApi<boolean>> {
+    if (cita.estado !== 'aceptado') {
+      return {
+        success: false,
+        message: 'No se puede finalizar un turno que no fue aceptado.',
+      };
+    }
+
+    const { error } = await Supabase.from('citas')
+      .update({
+        estado: 'completado',
+        resenia: resenia,
+      })
+      .eq('id', cita.citaId);
+
+    if (error) {
+      return {
+        success: false,
+        message: 'Ocurrió un error al completar el turno.',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Turno completado exitosamente.',
+      data: true,
+    };
   }
 }
