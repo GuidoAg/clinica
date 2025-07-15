@@ -1,1 +1,0 @@
-import{T as t,la as e}from"./chunk-GQUYXPDO.js";var o=class i{loading=e(!1);show(){this.loading.set(!0)}hide(){this.loading.set(!1)}visible(){return this.loading()}static \u0275fac=function(a){return new(a||i)};static \u0275prov=t({token:i,factory:i.\u0275fac,providedIn:"root"})};export{o as a};

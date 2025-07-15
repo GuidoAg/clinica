@@ -1,61 +1,54 @@
-<!-- Contenedor general con altura completa y padding -->
-<div class="h-full w-full overflow-hidden p-6">
-  <!-- Panel interno con fondo crema y borde blanco -->
-  <div
-    class="flex h-full w-full flex-col gap-6 overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
-  >
-    <!-- Bienvenida -->
-    <h1 class="text-4xl font-bold text-azul-oscuro">
-      Bienvenido, {{ usuario.nombre }}
-      <span class="text-xl font-normal text-gray-600">({{ usuario.rol }})</span>
-    </h1>
+<div class="space-y-8 overflow-auto p-4 text-sm">
+  <h2 class="text-2xl font-bold text-azul-oscuro">Estadísticas del Sistema</h2>
 
-    <!-- Estadísticas -->
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-      <div
-        *ngFor="let est of estadisticas"
-        class="rounded-xl p-4 text-white shadow-md"
-        [ngClass]="est.color"
+  <section>
+    <h3 class="mb-2 text-lg font-semibold">Turnos por Día</h3>
+    <turnos-por-dia-chart></turnos-por-dia-chart>
+  </section>
+
+  <section>
+    <h3 class="mb-2 text-lg font-semibold">Turnos por Especialidad</h3>
+    <turnos-por-especialidad-chart></turnos-por-especialidad-chart>
+  </section>
+
+  <section>
+    <h3 class="mb-2 text-lg font-semibold">Turnos por Médico</h3>
+    <div class="mb-4 flex flex-wrap items-center gap-4">
+      <label>
+        Desde:
+        <input
+          type="date"
+          [value]="rangoFechas().desde"
+          (change)="onDesdeChange($event)"
+          class="rounded border px-2 py-1"
+        />
+      </label>
+      <label>
+        Hasta:
+        <input
+          type="date"
+          [value]="rangoFechas().hasta"
+          (change)="onHastaChange($event)"
+          class="rounded border px-2 py-1"
+        />
+      </label>
+      <button
+        (click)="onRangoFechasChange()"
+        class="hover:bg-azul-700 rounded bg-azul-oscuro px-3 py-1 text-white"
       >
-        <p class="text-sm font-semibold tracking-wide uppercase">
-          {{ est.titulo }}
-        </p>
-        <p class="mt-2 text-3xl font-bold">{{ est.valor }}</p>
-      </div>
+        Aplicar
+      </button>
     </div>
+    <turnos-por-medico-chart></turnos-por-medico-chart>
+  </section>
 
-    <!-- Gráfico de barras simulado -->
-    <div
-      class="mt-4 flex-1 overflow-auto rounded-xl border border-gray-300 bg-white p-6 shadow-md"
-    >
-      <h2 class="mb-4 text-2xl font-semibold text-azul-oscuro">
-        Turnos por especialidad
-      </h2>
+  <section>
+    <h3 class="mb-2 text-lg font-semibold">Turnos Finalizados por Médico</h3>
+    <turnos-finalizados-por-medico-chart></turnos-finalizados-por-medico-chart>
+  </section>
 
-      <div class="flex items-end gap-4">
-        <div class="flex flex-col items-center">
-          <div
-            class="w-10 rounded-t bg-verde-oscuro"
-            style="height: 80px"
-          ></div>
-          <p class="mt-2 text-sm">Clínica</p>
-        </div>
-        <div class="flex flex-col items-center">
-          <div
-            class="w-10 rounded-t bg-azul-oscuro"
-            style="height: 120px"
-          ></div>
-          <p class="mt-2 text-sm">Pediatría</p>
-        </div>
-        <div class="flex flex-col items-center">
-          <div class="w-10 rounded-t bg-orange-500" style="height: 60px"></div>
-          <p class="mt-2 text-sm">Dermatología</p>
-        </div>
-        <div class="flex flex-col items-center">
-          <div class="w-10 rounded-t bg-rose-600" style="height: 100px"></div>
-          <p class="mt-2 text-sm">Trauma</p>
-        </div>
-      </div>
-    </div>
-  </div>
+  <section>
+    <h3 class="mb-2 text-lg font-semibold">Log de Ingresos</h3>
+    <log-ingreso-chart>ng </log-ingreso-chart>
+  </section>
 </div>
