@@ -20,6 +20,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Turnos } from '../../../services/turnos';
 import { CitaCompletaTurnos } from '../../../models/Turnos/CitaCompletaTurnos';
 import { EncuestaTurnos } from '../../../models/Turnos/EncuestaTurnos';
+import { RegistroMedicoTurnos } from '../../../models/Turnos/RegistroMedicoTurnos';
+import { DatoDinamicoTurnos } from '../../../models/Turnos/DatoDinamicoTurnos';
 
 @Component({
   selector: 'app-acciones-especialista',
@@ -39,6 +41,7 @@ export class AccionesEspecialista {
   mostrarFormularioAceptar = false;
   mostrarFormularioFinalizar = false;
   mostrarFormularioResenia = false;
+  mostrarFormularioHistoriaClinica = false;
 
   comentarioCancelar = '';
   comentarioRechazar = '';
@@ -60,6 +63,7 @@ export class AccionesEspecialista {
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
       !this.mostrarFormularioRechazar &&
+      !this.mostrarFormularioHistoriaClinica &&
       !this.mostrarFormularioResenia
     );
   }
@@ -74,6 +78,7 @@ export class AccionesEspecialista {
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
       !this.mostrarFormularioRechazar &&
+      !this.mostrarFormularioHistoriaClinica &&
       !this.mostrarFormularioResenia
     );
   }
@@ -88,6 +93,7 @@ export class AccionesEspecialista {
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
       !this.mostrarFormularioRechazar &&
+      !this.mostrarFormularioHistoriaClinica &&
       !this.mostrarFormularioResenia
     );
   }
@@ -99,13 +105,63 @@ export class AccionesEspecialista {
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
       !this.mostrarFormularioRechazar &&
+      !this.mostrarFormularioHistoriaClinica &&
       !this.mostrarFormularioResenia
     );
   }
 
-  get puedeVerResenia() {
-    return !!this.cita.resenia && this.cita.resenia.trim().length > 0;
+  get puedeCargarHistoriaClinica() {
+    return (
+      this.cita.estado === 'completado' &&
+      !this.yaTieneHistoriaClinica &&
+      !this.mostrarFormularioCancelar &&
+      !this.mostrarFormularioAceptar &&
+      !this.mostrarFormularioFinalizar &&
+      !this.mostrarFormularioRechazar &&
+      !this.mostrarFormularioResenia &&
+      !this.mostrarFormularioHistoriaClinica
+    );
   }
+
+  get puedeVerResenia() {
+    return (
+      !!this.cita.resenia &&
+      this.cita.resenia.trim().length > 0 &&
+      !this.mostrarFormularioCancelar &&
+      !this.mostrarFormularioAceptar &&
+      !this.mostrarFormularioFinalizar &&
+      !this.mostrarFormularioRechazar &&
+      !this.mostrarFormularioResenia &&
+      !this.mostrarFormularioHistoriaClinica
+    );
+  }
+
+  get yaTieneHistoriaClinica(): boolean {
+    return (
+      this.cita.alturaCm !== null &&
+      this.cita.pesoKg !== null &&
+      this.cita.temperaturaC !== null &&
+      !!this.cita.presionArterial?.trim()
+    );
+  }
+
+  registro: RegistroMedicoTurnos = {
+    alturaCm: 0,
+    pesoKg: 0,
+    temperaturaC: 0,
+    presionArterial: '',
+    citaId: 0,
+  };
+
+  datosTexto: { clave: string; valor: string }[] = [
+    { clave: '', valor: '' },
+    { clave: '', valor: '' },
+    { clave: '', valor: '' },
+  ];
+
+  datoSlider = { clave: '', valor: 50 };
+  datoNumero = { clave: '', valor: null };
+  datoBoolean = { clave: '', valor: false };
 
   cancelarAccionCancelar() {
     this.mostrarFormularioCancelar = false;
@@ -233,6 +289,105 @@ export class AccionesEspecialista {
 
   volverDesdeVistaResenia() {
     this.mostrarFormularioResenia = false;
+  }
+
+  cancelarHistoriaClinica() {
+    this.mostrarFormularioHistoriaClinica = false;
+    // Opcional: resetear formulario
+  }
+
+  async guardarHistoriaClinica() {
+    this.cargando.set(true);
+
+    const datosDinamicos: DatoDinamicoTurnos[] = [
+      ...this.datosTexto.map((d) => ({
+        id: 0,
+        clave: d.clave,
+        valor: d.valor,
+        citaId: this.registro.citaId,
+      })),
+      {
+        id: 0,
+        clave: this.datoSlider.clave,
+        valor: this.datoSlider.valor.toString(),
+        citaId: this.registro.citaId,
+      },
+      {
+        id: 0,
+        clave: this.datoNumero.clave,
+        valor: (this.datoNumero.valor ?? 0).toString(),
+        citaId: this.registro.citaId,
+      },
+      {
+        id: 0,
+        clave: this.datoBoolean.clave,
+        valor: this.datoBoolean.valor ? 'Sí' : 'No',
+        citaId: this.registro.citaId,
+      },
+    ].filter((d) => d.clave && d.valor);
+
+    if (
+      !this.registro.alturaCm ||
+      !this.registro.pesoKg ||
+      !this.registro.temperaturaC ||
+      !this.registro.presionArterial?.trim() ||
+      !this.datoSlider.clave.trim() ||
+      !this.datoNumero.clave.trim() ||
+      this.datoNumero.valor === null ||
+      !this.datoBoolean.clave.trim()
+    ) {
+      this.snackBar.open('Completá todos los campos obligatorios', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    this.registro.citaId = this.cita.citaId;
+
+    const res = await this.turnos.cargarHistoriaClinica(
+      this.registro,
+      datosDinamicos,
+    );
+    this.cargando.set(false);
+
+    if (res.success) {
+      this.snackBar.open('Historia clínica guardada', 'Cerrar', {
+        duration: 3000,
+      });
+      this.accionRealizada.emit('historia_clinica');
+      this.cerrar.emit();
+    } else {
+      this.snackBar.open(res.message ?? 'Error al guardar', 'Cerrar', {
+        duration: 4000,
+      });
+    }
+  }
+
+  esFormularioHistoriaClinicaValido(): boolean {
+    const r = this.registro;
+
+    const sliderValido = this.datoSlider.clave.trim() !== '';
+    const numeroValido =
+      this.datoNumero.clave.trim() !== '' && this.datoNumero.valor !== null;
+    const booleanoValido = this.datoBoolean.clave.trim() !== '';
+
+    const datosTextoValidos = this.datosTexto.every((d) => {
+      const clave = d.clave.trim();
+      const valor = d.valor.trim();
+      // Ambos deben estar completos o ambos vacíos (para evitar mitad cargados)
+      return (clave && valor) || (!clave && !valor);
+    });
+
+    return (
+      r.alturaCm !== null &&
+      r.pesoKg !== null &&
+      r.temperaturaC !== null &&
+      !!r.presionArterial?.trim() &&
+      sliderValido &&
+      numeroValido &&
+      booleanoValido &&
+      datosTextoValidos
+    );
   }
 
   cerrarModal() {

@@ -7,6 +7,7 @@ import { RespuestaApi } from '../models/RespuestaApi';
 import { DatoDinamicoTurnos } from '../models/Turnos/DatoDinamicoTurnos';
 import { CitaCompletaTurnos } from '../models/Turnos/CitaCompletaTurnos';
 import { EncuestaTurnos } from '../models/Turnos/EncuestaTurnos';
+import { RegistroMedicoTurnos } from '../models/Turnos/RegistroMedicoTurnos';
 
 export interface DiasDisponibles {
   lunes: boolean;
@@ -779,5 +780,60 @@ export class Turnos {
         datosDinamicos: datosPorCita[c.cita_id] || [],
       }),
     );
+  }
+
+  async cargarHistoriaClinica(
+    registro: RegistroMedicoTurnos,
+    datosDinamicos: DatoDinamicoTurnos[],
+  ): Promise<RespuestaApi<boolean>> {
+    if (datosDinamicos.length < 1 || datosDinamicos.length > 6) {
+      return {
+        success: false,
+        message: 'Debe cargar entre 1 y 6 datos médicos dinámicos',
+      };
+    }
+
+    // Insertar en registros_medicos
+    const { error: errorRegistro } = await Supabase.from(
+      'registros_medicos',
+    ).insert({
+      cita_id: registro.citaId,
+      altura_cm: registro.alturaCm,
+      peso_kg: registro.pesoKg,
+      temperatura_c: registro.temperaturaC,
+      presion_arterial: registro.presionArterial,
+    });
+
+    if (errorRegistro) {
+      return {
+        success: false,
+        message:
+          'Error al guardar los datos principales de la historia clínica',
+      };
+    }
+
+    // Insertar datos médicos dinámicos (batch insert)
+    const dinamicosFormateados = datosDinamicos.map((dato) => ({
+      cita_id: registro.citaId,
+      clave: dato.clave,
+      valor: dato.valor,
+    }));
+
+    const { error: errorDinamicos } = await Supabase.from(
+      'datos_medicos_dinamicos',
+    ).insert(dinamicosFormateados);
+
+    if (errorDinamicos) {
+      return {
+        success: false,
+        message:
+          'Error al guardar los datos adicionales de la historia clínica',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Historia clínica guardada correctamente',
+    };
   }
 }

@@ -5,7 +5,8 @@
 ></div>
 
 <div
-  class="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-2xl bg-white p-11 shadow-lg"
+  class="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-8 shadow-xl transition-all duration-300 md:max-w-3xl"
+  [ngClass]="{ 'max-w-3xl p-10': mostrarFormularioHistoriaClinica }"
   (click)="$event.stopPropagation()"
 >
   <!-- Vista principal de botones -->
@@ -51,6 +52,14 @@
       class="rounded-lg bg-pink-400 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-pink-700"
     >
       Ver reseña
+    </button>
+
+    <button
+      *ngIf="puedeCargarHistoriaClinica"
+      (click)="mostrarFormularioHistoriaClinica = true"
+      class="rounded-lg bg-indigo-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-indigo-700"
+    >
+      Cargar historia clínica
     </button>
   </div>
 
@@ -181,5 +190,195 @@
     >
       Volver
     </button>
+  </div>
+
+  <!-- Formulario de Historia Clínica -->
+  <div *ngIf="mostrarFormularioHistoriaClinica" class="flex flex-col gap-4">
+    <h3
+      class="text-center text-xl font-bold text-[color:var(--color-azul-oscuro)]"
+    >
+      Cargar historia clínica
+    </h3>
+
+    <!-- Datos estáticos -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700"
+          >Altura (cm)</label
+        >
+        <input
+          [(ngModel)]="registro.alturaCm"
+          required
+          type="number"
+          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+          [ngClass]="{ 'border-red-500 ring-red-300': !registro.alturaCm }"
+        />
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700"
+          >Peso (kg)</label
+        >
+        <input
+          [(ngModel)]="registro.pesoKg"
+          required
+          type="number"
+          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+          [ngClass]="{ 'border-red-500 ring-red-300': !registro.pesoKg }"
+        />
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700"
+          >Temperatura (°C)</label
+        >
+        <input
+          [(ngModel)]="registro.temperaturaC"
+          required
+          type="number"
+          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+          [ngClass]="{ 'border-red-500 ring-red-300': !registro.temperaturaC }"
+        />
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700"
+          >Presión arterial</label
+        >
+        <input
+          [(ngModel)]="registro.presionArterial"
+          required
+          type="text"
+          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+          [ngClass]="{ 'border-red-500 ring-red-300': !registro.presionArterial.trim() }"
+        />
+      </div>
+    </div>
+
+    <!-- Datos dinámicos -->
+    <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+      <!-- Texto -->
+      <div class="flex flex-col gap-4">
+        <ng-container *ngFor="let dato of datosTexto; let i = index">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700"
+                >Clave #{{ i + 1 }}</label
+              >
+              <input
+                [(ngModel)]="dato.clave"
+                type="text"
+                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+              />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700"
+                >Valor</label
+              >
+              <input
+                [(ngModel)]="dato.valor"
+                type="text"
+                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+              />
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Controles especiales -->
+      <div class="mt-6 flex flex-col gap-6">
+        <!-- Slider -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-medium text-gray-700"
+              >Clave slider</label
+            >
+            <input
+              [(ngModel)]="datoSlider.clave"
+              required
+              type="text"
+              class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+              [ngClass]="{ 'border-red-500 ring-red-300': !datoSlider.clave.trim() }"
+            />
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-700">
+              Valor (0–100): {{ datoSlider.valor }}
+            </label>
+            <input
+              [(ngModel)]="datoSlider.valor"
+              type="range"
+              min="0"
+              max="100"
+              class="w-full accent-indigo-500"
+            />
+          </div>
+        </div>
+
+        <!-- Número -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-medium text-gray-700"
+              >Clave numérica</label
+            >
+            <input
+              [(ngModel)]="datoNumero.clave"
+              required
+              type="text"
+              class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+              [ngClass]="{ 'border-red-500 ring-red-300': !datoNumero.clave.trim() }"
+            />
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-700">Valor</label>
+            <input
+              [(ngModel)]="datoNumero.valor"
+              required
+              type="number"
+              class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+              [ngClass]="{ 'border-red-500 ring-red-300': datoNumero.valor === null }"
+            />
+          </div>
+        </div>
+
+        <!-- Booleano -->
+        <div class="grid grid-cols-2 items-center gap-4">
+          <div>
+            <label class="text-sm font-medium text-gray-700"
+              >Clave boolean</label
+            >
+            <input
+              [(ngModel)]="datoBoolean.clave"
+              required
+              type="text"
+              class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+              [ngClass]="{ 'border-red-500 ring-red-300': !datoBoolean.clave.trim() }"
+            />
+          </div>
+          <div class="mt-6 flex items-center gap-2">
+            <input
+              type="checkbox"
+              [(ngModel)]="datoBoolean.valor"
+              class="h-5 w-5 accent-indigo-600"
+            />
+            <span class="text-sm text-gray-700">Sí / No</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end gap-4">
+      <button
+        (click)="guardarHistoriaClinica()"
+        [disabled]="cargando() || !esFormularioHistoriaClinicaValido()"
+        class="rounded-lg px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+        [ngClass]="{
+    'bg-indigo-600 hover:bg-indigo-800': esFormularioHistoriaClinicaValido() && !cargando(),
+    'bg-gray-400': !esFormularioHistoriaClinicaValido() || cargando()
+  }"
+      >
+        Guardar historia clínica
+      </button>
+    </div>
   </div>
 </div>

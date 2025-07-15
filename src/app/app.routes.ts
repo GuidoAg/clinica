@@ -127,6 +127,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'pacientes',
+        loadComponent: () =>
+          import('./components/inicio/pacientes/pacientes').then(
+            (m) => m.Pacientes,
+          ),
+      },
+      {
         path: 'usuarios',
         loadComponent: () =>
           import('./components/inicio/usuarios/usuarios').then(
