@@ -51,32 +51,44 @@
           Home
         </button>
         <button
+          *ngIf="usuarioActual?.rol === 'paciente'"
           class="text-left hover:text-lg hover:text-white"
           (click)="navigate('mis-turnos-paciente')"
         >
           Mis Turnos
         </button>
         <button
+          *ngIf="usuarioActual?.rol === 'especialista'"
           class="text-left hover:text-lg hover:text-white"
           (click)="navigate('mis-turnos-especialista')"
         >
-          Mis Turnos especialista
+          Mis Turnos
         </button>
         <button
+          *ngIf="usuarioActual?.rol === 'admin'"
           class="text-left hover:text-lg hover:text-white"
           (click)="navigate('tabla-turnos')"
         >
           Turnos
         </button>
         <button
+          *ngIf="usuarioActual?.rol === 'especialista'"
           class="text-left hover:text-lg hover:text-white"
           (click)="navigate('pacientes')"
         >
           Pacientes
         </button>
         <button
+          *ngIf="usuarioActual?.rol === 'paciente'"
           class="text-left hover:text-lg hover:text-white"
           (click)="clickSolicitarTurno()"
+        >
+          Solicitar Turno
+        </button>
+        <button
+          *ngIf="usuarioActual?.rol === 'admin'"
+          class="text-left hover:text-lg hover:text-white"
+          (click)="clickSolicitarTurnoAdmin()"
         >
           Solicitar Turno
         </button>
@@ -87,6 +99,7 @@
           Mi Perfil
         </button>
         <button
+          *ngIf="usuarioActual?.rol === 'admin'"
           class="text-left hover:text-lg hover:text-white"
           (click)="clickUsuario()"
         >

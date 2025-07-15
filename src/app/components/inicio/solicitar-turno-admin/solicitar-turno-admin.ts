@@ -12,6 +12,7 @@ import { Observable, Subject, firstValueFrom } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthSupabase } from '../../../services/auth-supabase';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UsuariosService } from '../../../services/usuarios';
 import {
   trigger,
   transition,
@@ -25,11 +26,10 @@ import {
 } from '@angular/animations';
 
 @Component({
-  selector: 'app-solicitar-turno',
-  standalone: true,
+  selector: 'app-solicitar-turno-admin',
   imports: [CommonModule, TrackImage, LoadingWrapper],
-  templateUrl: './solicitar-turno.html',
-  styleUrl: './solicitar-turno.css',
+  templateUrl: './solicitar-turno-admin.html',
+  styleUrl: './solicitar-turno-admin.css',
   animations: [
     trigger('especialidadAnimacion', [
       transition(':enter', [
@@ -50,7 +50,7 @@ import {
     ]),
   ],
 })
-export class SolicitarTurno implements OnInit, OnDestroy {
+export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
   usuario$: Observable<Usuario | null>;
   usuarioActual: Usuario | null = null;
 
@@ -70,6 +70,9 @@ export class SolicitarTurno implements OnInit, OnDestroy {
   diasBuscados = signal(false);
   horasBuscadas = signal(false);
 
+  pacientes = signal<Usuario[]>([]);
+  pacienteSeleccionado = signal<Usuario | null>(null);
+
   cargando = signal(false);
 
   constructor(
@@ -77,6 +80,7 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     private loadin: LoadingOverlayService,
     private authSupabase: AuthSupabase,
     private snackBar: MatSnackBar,
+    private usuariosService: UsuariosService,
   ) {
     this.usuario$ = this.authSupabase.user$;
   }
@@ -109,18 +113,21 @@ export class SolicitarTurno implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.usuario$.pipe(takeUntil(this.destroy$)).subscribe((usuario) => {
-      if (!usuario) {
-        this.usuarioActual = null;
-        return;
-      }
-      // Asegurar que id sea número
+      if (!usuario) return;
       usuario.id =
         typeof usuario.id === 'string' ? Number(usuario.id) : usuario.id;
-
       this.usuarioActual = usuario;
     });
 
     this.especialistas.set(await this.turnosService.obtenerEspecialistas());
+
+    // 🆕 cargar pacientes
+    const todosUsuarios = await this.usuariosService.obtenerTodosUsuarios();
+    this.pacientes.set(
+      todosUsuarios.filter(
+        (u) => u.rol === 'paciente' && u.emailVerificado === true,
+      ),
+    );
 
     this.loadin.hide();
   }
@@ -128,6 +135,10 @@ export class SolicitarTurno implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  seleccionarPaciente(p: Usuario) {
+    this.pacienteSeleccionado.set(p);
   }
 
   async seleccionarEspecialista(e: EspecialistaTurnos) {
@@ -189,7 +200,7 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     const hora = this.horaSelecionada();
     const especialista = this.especialistaSeleccionado();
     const especialidad = this.especialidadSeleccionada();
-    const paciente = this.usuarioActual;
+    const paciente = this.pacienteSeleccionado(); // 🆕 ahora se usa el paciente seleccionado
 
     if (!fecha || !hora || !especialista || !especialidad || !paciente) {
       console.error('Datos incompletos para agendar la cita');
@@ -201,7 +212,7 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     const cita: CitaTurnos = {
       fechaHora: miFechaHora,
       duracionMin: especialidad.duracion,
-      pacienteId: paciente.id,
+      pacienteId: paciente.id, // 🆕 importante
       especialistaId: especialista.id,
       especialidadId: especialidad.id,
       estado: 'solicitado',
@@ -212,27 +223,27 @@ export class SolicitarTurno implements OnInit, OnDestroy {
 
     try {
       const resultado = await this.turnosService.darAltaCita(cita);
-      console.log('Cita creada exitosamente', resultado);
-
       this.snackBar.open('Cita agendada', 'exito', {
         duration: 4000,
         panelClass: ['bg-blue-600', 'text-white'],
       });
+
+      // 🆕 Resetear flujo
+      this.pacienteSeleccionado.set(null);
       this.especialistaSeleccionado.set(null);
       this.especialidadSeleccionada.set(null);
       this.fechaSeleccionada.set(null);
       this.horaSelecionada.set(null);
     } catch (error) {
-      console.error('Error al cargar la cita:', error);
-
       this.snackBar.open('Ups algo salio mal', 'error', {
         duration: 4000,
         panelClass: ['bg-red-600', 'text-white'],
       });
-      this.especialistaSeleccionado.set(null);
-      this.especialidadSeleccionada.set(null);
-      this.fechaSeleccionada.set(null);
-      this.horaSelecionada.set(null);
     }
+  }
+
+  async btenerPacientes() {
+    const todosUsuarios = await this.usuariosService.obtenerTodosUsuarios();
+    const pacientes = todosUsuarios.filter((u) => u.rol === 'paciente');
   }
 }

@@ -533,4 +533,16 @@ export class AuthSupabase {
       answerHash: item.respuesta,
     }));
   }
+
+  async registrarIngreso(perfilId: number): Promise<void> {
+    const { error } = await Supabase.from('registro_ingresos').insert({
+      perfil_id: perfilId,
+      // fecha_ingreso se setea solo si tiene default value `now()` en Supabase
+    });
+
+    if (error) {
+      console.error('Error al registrar el ingreso:', error.message);
+      // Podés manejarlo con tu sistema de errores si querés
+    }
+  }
 }

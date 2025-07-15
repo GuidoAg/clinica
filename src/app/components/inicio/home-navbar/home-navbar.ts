@@ -6,17 +6,19 @@ import { AuthSupabase } from '../../../services/auth-supabase';
 import { Usuario } from '../../../models/Auth/Usuario';
 import { Observable } from 'rxjs';
 import { LoadingOverlayService } from '../../../services/loading-overlay-service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home-navbar',
-  imports: [RouterOutlet, MatIconModule],
+  imports: [RouterOutlet, MatIconModule, FormsModule, CommonModule],
   templateUrl: './home-navbar.html',
   styleUrl: './home-navbar.css',
 })
 export class HomeNavbar implements OnInit {
   sidebarOpen = true;
   usuario$: Observable<Usuario | null>;
-  private usuarioActual: Usuario | null = null;
+  usuarioActual: Usuario | null = null;
 
   constructor(
     private router: Router,
@@ -62,6 +64,19 @@ export class HomeNavbar implements OnInit {
 
     // ✅ Solo si la ruta es distinta
     this.router.navigate(['/home/solicitar-turnos']);
+  }
+
+  clickSolicitarTurnoAdmin() {
+    if (!this.usuarioActual) return;
+    this.loadin.show();
+
+    if (this.router.url === '/home/solicitar-turnos-admin') {
+      this.loadin.hide();
+      return;
+    }
+
+    // ✅ Solo si la ruta es distinta
+    this.router.navigate(['/home/solicitar-turnos-admin']);
   }
 
   clickUsuario() {

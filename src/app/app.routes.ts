@@ -2,6 +2,9 @@ import { Routes } from '@angular/router';
 import { WelcomeNavbar } from './components/welcome/welcome-navbar/welcome-navbar';
 import { HomeNavbar } from './components/inicio/home-navbar/home-navbar';
 import { authGuard } from './guards/auth-guard';
+import { AdminGuard } from './guards/auth-admin';
+import { EspecialistaGuard } from './guards/auth-especialista';
+import { PacienteGuard } from './guards/auth-paciente';
 
 export const routes: Routes = [
   {
@@ -83,6 +86,7 @@ export const routes: Routes = [
           import(
             './components/inicio/perfil/perfil-paciente/perfil-paciente'
           ).then((m) => m.PerfilPaciente),
+        canActivate: [PacienteGuard],
       },
       {
         path: 'perfil-especialista',
@@ -90,6 +94,7 @@ export const routes: Routes = [
           import(
             './components/inicio/perfil/perfil-especialista/perfil-especialista'
           ).then((m) => m.PerfilEspecialista),
+        canActivate: [EspecialistaGuard],
       },
       {
         path: 'perfil-admin',
@@ -97,6 +102,7 @@ export const routes: Routes = [
           import('./components/inicio/perfil/perfil-admin/perfil-admin').then(
             (m) => m.PerfilAdmin,
           ),
+        canActivate: [AdminGuard],
       },
       {
         path: 'tabla-turnos',
@@ -104,6 +110,7 @@ export const routes: Routes = [
           import('./components/inicio/tabla-turnos/tabla-turnos').then(
             (m) => m.TablaTurnos,
           ),
+        canActivate: [AdminGuard],
       },
       {
         path: 'mis-turnos-paciente',
@@ -111,6 +118,7 @@ export const routes: Routes = [
           import(
             './components/inicio/mis-turnos-paciente/mis-turnos-paciente'
           ).then((m) => m.MisTurnosPaciente),
+        canActivate: [PacienteGuard],
       },
       {
         path: 'mis-turnos-especialista',
@@ -118,6 +126,7 @@ export const routes: Routes = [
           import(
             './components/inicio/mis-turnos-especialista/mis-turnos-especialista'
           ).then((m) => m.MisTurnosEspecialista),
+        canActivate: [EspecialistaGuard],
       },
       {
         path: 'solicitar-turnos',
@@ -125,6 +134,15 @@ export const routes: Routes = [
           import('./components/inicio/solicitar-turno/solicitar-turno').then(
             (m) => m.SolicitarTurno,
           ),
+        canActivate: [PacienteGuard],
+      },
+      {
+        path: 'solicitar-turnos-admin',
+        loadComponent: () =>
+          import(
+            './components/inicio/solicitar-turno-admin/solicitar-turno-admin'
+          ).then((m) => m.SolicitarTurnoAdmin),
+        canActivate: [AdminGuard],
       },
       {
         path: 'pacientes',
@@ -132,6 +150,7 @@ export const routes: Routes = [
           import('./components/inicio/pacientes/pacientes').then(
             (m) => m.Pacientes,
           ),
+        canActivate: [EspecialistaGuard],
       },
       {
         path: 'usuarios',
@@ -139,6 +158,7 @@ export const routes: Routes = [
           import('./components/inicio/usuarios/usuarios').then(
             (m) => m.Usuarios,
           ),
+        canActivate: [AdminGuard],
       },
     ],
   },

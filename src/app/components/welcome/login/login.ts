@@ -129,7 +129,13 @@ export class Login implements OnInit, AfterViewInit {
       return;
     }
 
-    //this.overlay.hide();
+    // ✅ Obtener perfil logueado
+    const user = await this.auth.getCurrentUser();
+
+    if (user) {
+      await this.auth.registrarIngreso(user.id); // esto guarda en Supabase
+    }
+
     this.router.navigate(['/home']);
   }
 
