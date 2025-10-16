@@ -1,19 +1,18 @@
 import {
   Component,
   OnInit,
+  AfterViewInit,
   ViewChild,
   signal,
   WritableSignal,
   inject,
-} from '@angular/core';
-import { NgFor } from '@angular/common';
-import { Estadisticas } from '../../../services/estadisticas';
-import { LoadingOverlayService } from '../../../services/loading-overlay-service';
-import { TurnosPorDiaChart } from '../../charts/turnos-por-dia-chart/turnos-por-dia-chart';
-import { TurnosPorEspecialidadChart } from '../../charts/turnos-por-especialidad-chart/turnos-por-especialidad-chart';
-import { TurnosPorMedicoChart } from '../../charts/turnos-por-medico-chart/turnos-por-medico-chart';
-import { TurnosFinalizadosPorMedicoChart } from '../../charts/turnos-finalizados-chart/turnos-finalizados-chart';
-import { LogIngresoChart } from '../../charts/log-ingreso-chart/log-ingreso-chart'; // ✅ Importado
+} from "@angular/core";
+import { LoadingOverlayService } from "../../../services/loading-overlay-service";
+import { TurnosPorDiaChart } from "../../charts/turnos-por-dia-chart/turnos-por-dia-chart";
+import { TurnosPorEspecialidadChart } from "../../charts/turnos-por-especialidad-chart/turnos-por-especialidad-chart";
+import { TurnosPorMedicoChart } from "../../charts/turnos-por-medico-chart/turnos-por-medico-chart";
+import { TurnosFinalizadosPorMedicoChart } from "../../charts/turnos-finalizados-chart/turnos-finalizados-chart";
+import { LogIngresoChart } from "../../charts/log-ingreso-chart/log-ingreso-chart"; // ✅ Importado
 
 interface FechaRango {
   desde: string;
@@ -21,24 +20,23 @@ interface FechaRango {
 }
 
 @Component({
-  selector: 'app-home',
+  selector: "app-home",
   standalone: true,
   imports: [
-    NgFor,
     TurnosPorDiaChart,
     TurnosPorEspecialidadChart,
     TurnosPorMedicoChart,
     TurnosFinalizadosPorMedicoChart,
     LogIngresoChart, // ✅ Agregado
   ],
-  templateUrl: './home.html',
+  templateUrl: "./home.html",
 })
-export class Home implements OnInit {
+export class Home implements OnInit, AfterViewInit {
   private loading = inject(LoadingOverlayService);
 
   rangoFechas: WritableSignal<FechaRango> = signal({
-    desde: '',
-    hasta: '',
+    desde: "",
+    hasta: "",
   });
 
   @ViewChild(TurnosPorDiaChart) turnosPorDiaChart?: TurnosPorDiaChart;
@@ -105,11 +103,11 @@ export class Home implements OnInit {
 
   private fechaDesdeInicioDeAnio(): string {
     const ahora = new Date();
-    return new Date(ahora.getFullYear(), 0, 1).toISOString().split('T')[0];
+    return new Date(ahora.getFullYear(), 0, 1).toISOString().split("T")[0];
   }
 
   private fechaHastaFinDeAnio(): string {
     const ahora = new Date();
-    return new Date(ahora.getFullYear(), 11, 31).toISOString().split('T')[0];
+    return new Date(ahora.getFullYear(), 11, 31).toISOString().split("T")[0];
   }
 }
