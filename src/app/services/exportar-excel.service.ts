@@ -1,65 +1,68 @@
-import { Injectable } from '@angular/core';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
+import { Injectable } from "@angular/core";
+import { Workbook } from "exceljs";
+import * as FileSaver from "file-saver";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class ExportarExcelService {
-  constructor() {}
-
-  exportarAExcel(
+  async exportarAExcel(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     datos: any[],
     titulo: string,
     nombreArchivo: string,
-    sheetName: string = 'Reporte',
+    sheetName = "Reporte",
   ) {
     if (!datos || datos.length === 0) {
-      console.warn('No hay datos para exportar.');
+      console.warn("No hay datos para exportar.");
       return;
     }
 
-    const hojaComoArray = [
-      [titulo],
-      ...(XLSX.utils.sheet_to_json(XLSX.utils.json_to_sheet(datos), {
-        header: 1,
-      }) as any[][]),
-    ];
+    // Crear un nuevo workbook y worksheet
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet(sheetName);
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(hojaComoArray);
+    // Obtener las columnas (headers) del primer objeto
+    const headers = Object.keys(datos[0]);
 
-    const colWidths = hojaComoArray[1].map((_: any, colIndex: number) => {
-      const maxLength = hojaComoArray.reduce((max, row) => {
-        const cell = row[colIndex];
-        const cellLength = cell ? cell.toString().length : 0;
-        return Math.max(max, cellLength);
-      }, 10);
-      return { wch: maxLength + 2 };
-    });
-    worksheet['!cols'] = colWidths;
+    // Agregar la fila del título
+    const tituloRow = worksheet.addRow([titulo]);
+    tituloRow.font = { bold: true, size: 14 };
+    tituloRow.alignment = { horizontal: "center", vertical: "middle" };
 
-    worksheet['!merges'] = [
-      { s: { r: 0, c: 0 }, e: { r: 0, c: hojaComoArray[1].length - 1 } },
-    ];
+    // Merge las celdas del título para que ocupen todas las columnas
+    worksheet.mergeCells(1, 1, 1, headers.length);
 
-    worksheet['A1'].s = {
-      alignment: { horizontal: 'center' },
-      font: { bold: true },
-    };
+    // Agregar la fila de encabezados
+    const headerRow = worksheet.addRow(headers);
+    headerRow.font = { bold: true };
+    headerRow.alignment = { horizontal: "center", vertical: "middle" };
 
-    const workbook: XLSX.WorkBook = {
-      Sheets: { [sheetName]: worksheet },
-      SheetNames: [sheetName],
-    };
-
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-      cellStyles: true,
+    // Agregar los datos
+    datos.forEach((item) => {
+      const row = headers.map((header) => item[header]);
+      worksheet.addRow(row);
     });
 
-    const blob: Blob = new Blob([excelBuffer], {
-      type: 'application/octet-stream',
+    // Auto-ajustar el ancho de las columnas
+    worksheet.columns.forEach((column, index) => {
+      let maxLength = headers[index].length;
+
+      datos.forEach((row) => {
+        const cellValue = row[headers[index]];
+        const cellLength = cellValue ? cellValue.toString().length : 0;
+        if (cellLength > maxLength) {
+          maxLength = cellLength;
+        }
+      });
+
+      column.width = maxLength + 2;
+    });
+
+    // Generar el archivo Excel
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     const fecha = new Date().toISOString().slice(0, 10);
