@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { AuthSupabase } from '../../../../services/auth-supabase';
 import { Usuario } from '../../../../models/Auth/Usuario';
 import { Observable, Subject, firstValueFrom } from 'rxjs';
@@ -18,13 +18,12 @@ import { Supabase } from '../../../../supabase';
   selector: 'app-perfil-especialista',
   standalone: true,
   imports: [
-    CommonModule,
     FormatoDniPipe,
     FormatoBoolSiNOPipe,
     Horarios,
     FormsModule,
-    AgregarEspecialidad,
-  ],
+    AgregarEspecialidad
+],
   templateUrl: './perfil-especialista.html',
   styleUrl: './perfil-especialista.css',
 })

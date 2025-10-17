@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Turnos } from '../../../services/turnos';
 import { EspecialistaTurnos } from '../../../models/Turnos/EspecialistaTurnos';
 import { EspecialidadTurnos } from '../../../models/Turnos/EspecialidadTurnos';
@@ -27,7 +27,7 @@ import {
 @Component({
   selector: 'app-solicitar-turno',
   standalone: true,
-  imports: [CommonModule, TrackImage, LoadingWrapper],
+  imports: [TrackImage, LoadingWrapper],
   templateUrl: './solicitar-turno.html',
   styleUrl: './solicitar-turno.css',
   animations: [

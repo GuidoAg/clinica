@@ -3,20 +3,21 @@
     Nuestras Sedes
   </h2>
   <div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 md:grid-cols-3">
-    <div
-      *ngFor="let sede of sedes"
-      class="overflow-hidden rounded-2xl bg-white shadow-md"
-    >
-      <img
-        [src]="sede.imagen"
-        alt="{{ sede.nombre }}"
-        class="h-48 w-full object-cover"
-      />
-      <div class="p-4">
-        <h3 class="text-xl font-bold text-verde-oscuro">{{ sede.nombre }}</h3>
-        <p class="text-gray-600">{{ sede.direccion }}</p>
-      </div>
+    @for (sede of sedes; track sede) {
+      <div
+        class="overflow-hidden rounded-2xl bg-white shadow-md"
+        >
+        <img
+          [src]="sede.imagen"
+          alt="{{ sede.nombre }}"
+          class="h-48 w-full object-cover"
+          />
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-verde-oscuro">{{ sede.nombre }}</h3>
+            <p class="text-gray-600">{{ sede.direccion }}</p>
+          </div>
+        </div>
+      }
     </div>
+    <div class="py-25"></div>
   </div>
-  <div class="py-25"></div>
-</div>

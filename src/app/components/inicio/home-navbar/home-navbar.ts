@@ -7,11 +7,11 @@ import { Usuario } from '../../../models/Auth/Usuario';
 import { Observable } from 'rxjs';
 import { LoadingOverlayService } from '../../../services/loading-overlay-service';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-home-navbar',
-  imports: [RouterOutlet, MatIconModule, FormsModule, CommonModule],
+  imports: [RouterOutlet, MatIconModule, FormsModule],
   templateUrl: './home-navbar.html',
   styleUrl: './home-navbar.css',
 })

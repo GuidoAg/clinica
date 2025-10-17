@@ -19,10 +19,8 @@
     </h2>
 
     <!-- Selección de tipo de usuario -->
-    <div
-      *ngIf="!tipoUsuario && registroForm"
-      class="space-y-6 p-10 text-center"
-    >
+    @if (!tipoUsuario && registroForm) {
+    <div class="space-y-6 p-10 text-center">
       <p class="text-xl text-gray-700">Seleccionar tipo usuario para alta</p>
       <div class="flex flex-col justify-center gap-6 sm:flex-row">
         <button
@@ -47,10 +45,11 @@
         </button>
       </div>
     </div>
+    }
 
     <!-- Formulario -->
+    @if (tipoUsuario && registroForm) {
     <form
-      *ngIf="tipoUsuario && registroForm"
       [formGroup]="registroForm"
       (ngSubmit)="registrar()"
       class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2"
@@ -59,74 +58,65 @@
       <mat-form-field appearance="fill">
         <mat-label>Nombre</mat-label>
         <input matInput formControlName="nombre" />
-        <mat-error *ngIf="registroForm.get('nombre')?.hasError('required')">
-          Campo obligatorio
-        </mat-error>
-        <mat-error *ngIf="registroForm.get('nombre')?.hasError('minlength')">
-          Mínimo 2 caracteres
-        </mat-error>
-        <mat-error *ngIf="registroForm.get('nombre')?.hasError('pattern')">
-          Solo letras
-        </mat-error>
+        @if (registroForm.get('nombre')?.hasError('required')) {
+        <mat-error> Campo obligatorio </mat-error>
+        } @if (registroForm.get('nombre')?.hasError('minlength')) {
+        <mat-error> Mínimo 2 caracteres </mat-error>
+        } @if (registroForm.get('nombre')?.hasError('pattern')) {
+        <mat-error> Solo letras </mat-error>
+        }
       </mat-form-field>
-
       <!-- Apellido -->
       <mat-form-field appearance="fill">
         <mat-label>Apellido</mat-label>
         <input matInput formControlName="apellido" />
-        <mat-error *ngIf="registroForm.get('apellido')?.hasError('required')">
-          Campo obligatorio
-        </mat-error>
-        <mat-error *ngIf="registroForm.get('apellido')?.hasError('minlength')">
-          Mínimo 2 caracteres
-        </mat-error>
-        <mat-error *ngIf="registroForm.get('apellido')?.hasError('pattern')">
-          Solo letras
-        </mat-error>
+        @if (registroForm.get('apellido')?.hasError('required')) {
+        <mat-error> Campo obligatorio </mat-error>
+        } @if (registroForm.get('apellido')?.hasError('minlength')) {
+        <mat-error> Mínimo 2 caracteres </mat-error>
+        } @if (registroForm.get('apellido')?.hasError('pattern')) {
+        <mat-error> Solo letras </mat-error>
+        }
       </mat-form-field>
-
       <!-- Edad -->
       <mat-form-field appearance="fill">
         <mat-label>Edad</mat-label>
         <input matInput type="number" formControlName="edad" />
-        <mat-error *ngIf="registroForm.get('edad')?.hasError('required')">
-          Campo obligatorio
-        </mat-error>
-        <mat-error *ngIf="registroForm.get('edad')?.hasError('min')">
-          Mínimo 18
-        </mat-error>
-        <mat-error *ngIf="registroForm.get('edad')?.hasError('max')">
-          Máximo 99
-        </mat-error>
+        @if (registroForm.get('edad')?.hasError('required')) {
+        <mat-error> Campo obligatorio </mat-error>
+        } @if (registroForm.get('edad')?.hasError('min')) {
+        <mat-error> Mínimo 18 </mat-error>
+        } @if (registroForm.get('edad')?.hasError('max')) {
+        <mat-error> Máximo 99 </mat-error>
+        }
       </mat-form-field>
-
       <!-- DNI -->
       <mat-form-field appearance="fill">
         <mat-label>DNI</mat-label>
         <input matInput formControlName="dni" />
-        <mat-error *ngIf="registroForm.get('dni')?.hasError('required')">
-          Campo obligatorio
-        </mat-error>
-        <mat-error *ngIf="registroForm.get('dni')?.hasError('pattern')">
-          Debe contener 8 dígitos
-        </mat-error>
+        @if (registroForm.get('dni')?.hasError('required')) {
+        <mat-error> Campo obligatorio </mat-error>
+        } @if (registroForm.get('dni')?.hasError('pattern')) {
+        <mat-error> Debe contener 8 dígitos </mat-error>
+        }
       </mat-form-field>
-
       <!-- Obra Social -->
-      <mat-form-field *ngIf="tipoUsuario === 'paciente'" appearance="fill">
+      @if (tipoUsuario === 'paciente') {
+      <mat-form-field appearance="fill">
         <mat-label>Obra Social</mat-label>
         <mat-select formControlName="obraSocial">
-          <mat-option *ngFor="let obra of obraSocialOptions" [value]="obra">
-            {{ obra }}
-          </mat-option>
+          @for (obra of obraSocialOptions; track obra) {
+          <mat-option [value]="obra"> {{ obra }} </mat-option>
+          }
         </mat-select>
-        <mat-error *ngIf="registroForm.get('obraSocial')?.hasError('required')">
-          Campo obligatorio
-        </mat-error>
+        @if (registroForm.get('obraSocial')?.hasError('required')) {
+        <mat-error> Campo obligatorio </mat-error>
+        }
       </mat-form-field>
-
+      }
       <!-- Especialidades (Solo especialista) -->
-      <div *ngIf="tipoUsuario === 'especialista'" class="col-span-2">
+      @if (tipoUsuario === 'especialista') {
+      <div class="col-span-2">
         <div class="mb-1 text-sm font-medium text-azul-oscuro">
           Especialidades (seleccioná al menos una)
         </div>
@@ -147,23 +137,22 @@
               "expand_more" }}</mat-icon
             >
           </div>
-
           <!-- Desplegable con checkboxes -->
+          @if (desplegableEspecialidadesAbierto) {
           <div
-            *ngIf="desplegableEspecialidadesAbierto"
             class="absolute top-full right-0 left-0 z-10 mt-1 max-h-60 overflow-y-auto rounded-lg border border-gray-300 bg-white p-3 shadow-lg"
           >
             <div class="space-y-2">
+              @for (especialidad of especialidadOptions; track especialidad) {
               <mat-checkbox
-                *ngFor="let especialidad of especialidadOptions"
                 [checked]="esEspecialidadSeleccionada(especialidad.id)"
                 (change)="toggleEspecialidad(especialidad.id)"
                 class="block text-sm"
               >
                 {{ especialidad.nombre }}
               </mat-checkbox>
+              }
             </div>
-
             <!-- Botón para agregar nueva especialidad -->
             <div class="mt-3 border-t pt-2">
               <button
@@ -175,66 +164,60 @@
                 {{ mostrarCampoOtraEspecialidad ? "✕ Cancelar" : "+ Agregar
                 nueva especialidad" }}
               </button>
-
               <!-- Campo para nueva especialidad dentro del desplegable -->
-              <div *ngIf="mostrarCampoOtraEspecialidad" class="mt-2">
+              @if (mostrarCampoOtraEspecialidad) {
+              <div class="mt-2">
                 <input
                   formControlName="nuevaEspecialidad"
                   placeholder="Nombre de la especialidad"
                   class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-azul-oscuro focus:outline-none"
                   (click)="$event.stopPropagation()"
                 />
-                <div
-                  *ngIf="registroForm.get('nuevaEspecialidad')?.hasError('minlength')"
-                  class="mt-1 text-xs text-red-600"
-                >
-                  Mínimo 2 caracteres
-                </div>
-                <div
-                  *ngIf="registroForm.get('nuevaEspecialidad')?.hasError('pattern')"
-                  class="mt-1 text-xs text-red-600"
-                >
+                @if
+                (registroForm.get('nuevaEspecialidad')?.hasError('minlength')) {
+                <div class="mt-1 text-xs text-red-600">Mínimo 2 caracteres</div>
+                } @if
+                (registroForm.get('nuevaEspecialidad')?.hasError('pattern')) {
+                <div class="mt-1 text-xs text-red-600">
                   Solo letras y espacios
                 </div>
+                }
               </div>
+              }
             </div>
           </div>
+          }
         </div>
-
         <!-- Error si no hay especialidades seleccionadas -->
-        <div
-          *ngIf="registroForm.get('especialidadesSeleccionadas')?.hasError('alMenosUna') && 
-                 registroForm.get('especialidadesSeleccionadas')?.touched"
-          class="mt-1 text-sm text-red-600"
-        >
+        @if
+        (registroForm.get('especialidadesSeleccionadas')?.hasError('alMenosUna')
+        && registroForm.get('especialidadesSeleccionadas')?.touched) {
+        <div class="mt-1 text-sm text-red-600">
           Debés seleccionar al menos una especialidad o agregar una nueva
         </div>
+        }
       </div>
-
+      }
       <!-- Email -->
       <mat-form-field appearance="fill">
         <mat-label>Email</mat-label>
         <input matInput type="email" formControlName="mail" />
-        <mat-error *ngIf="registroForm.get('mail')?.hasError('required')">
-          Campo obligatorio
-        </mat-error>
-        <mat-error *ngIf="registroForm.get('mail')?.hasError('email')">
-          Email inválido
-        </mat-error>
+        @if (registroForm.get('mail')?.hasError('required')) {
+        <mat-error> Campo obligatorio </mat-error>
+        } @if (registroForm.get('mail')?.hasError('email')) {
+        <mat-error> Email inválido </mat-error>
+        }
       </mat-form-field>
-
       <!-- Password -->
       <mat-form-field appearance="fill">
         <mat-label>Contraseña</mat-label>
         <input matInput type="password" formControlName="password" />
-        <mat-error *ngIf="registroForm.get('password')?.hasError('required')">
-          Campo obligatorio
-        </mat-error>
-        <mat-error *ngIf="registroForm.get('password')?.hasError('minlength')">
-          Mínimo 7 caracteres
-        </mat-error>
+        @if (registroForm.get('password')?.hasError('required')) {
+        <mat-error> Campo obligatorio </mat-error>
+        } @if (registroForm.get('password')?.hasError('minlength')) {
+        <mat-error> Mínimo 7 caracteres </mat-error>
+        }
       </mat-form-field>
-
       <!-- Imagen Perfil -->
       <div class="md:col-span-2">
         <label
@@ -249,15 +232,13 @@
           accept="image/*"
           class="register-input"
         />
-        <mat-error
-          *ngIf="registroForm.get('imagenPerfil')?.hasError('required')"
-        >
-          Campo obligatorio
-        </mat-error>
+        @if (registroForm.get('imagenPerfil')?.hasError('required')) {
+        <mat-error> Campo obligatorio </mat-error>
+        }
       </div>
-
       <!-- Imagen Fondo -->
-      <div *ngIf="tipoUsuario === 'paciente'" class="md:col-span-2">
+      @if (tipoUsuario === 'paciente') {
+      <div class="md:col-span-2">
         <label
           for="imagenFondoAdmin"
           class="block text-sm font-medium text-gray-700"
@@ -271,28 +252,7 @@
           class="register-input"
         />
       </div>
-
-      <!-- Imagen de fondo (solo paciente) -->
-      <!-- <div
-        *ngIf="tipoUsuario==='paciente'"
-        class="col-span-2 flex flex-col gap-2"
-      >
-        <label class="font-semibold text-azul-oscuro">Foto Fondo</label>
-        <input
-          type="file"
-          (change)="onFileSelected($event, 'fondo')"
-          class="register-input"
-          accept="image/*"
-        />
-        <mat-error
-          *ngIf="registroForm.get('imagenFondo')?.hasError('required')"
-        >
-          Debe seleccionar una imagen de fondo.
-        </mat-error>
-        <mat-error *ngIf="registroForm.get('imagen')?.hasError('invalidType')">
-          Solo se permiten archivos .jpg o .png
-        </mat-error>
-      </div> -->
+      }
 
       <!-- Botón -->
       <div class="flex justify-center pt-2 md:col-span-2">
@@ -306,7 +266,6 @@
           Registrar
         </button>
       </div>
-
       <!-- Cambiar tipo -->
       <div class="text-center md:col-span-2">
         <button
@@ -319,5 +278,6 @@
         </button>
       </div>
     </form>
+    }
   </div>
 </div>

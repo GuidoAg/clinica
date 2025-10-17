@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
@@ -12,11 +12,10 @@ import { LoadingWrapper } from '../../loading-wrapper/loading-wrapper';
   selector: 'app-welcome-page',
   imports: [
     MatIconModule,
-    CommonModule,
     FormsModule,
     TrackImage,
-    LoadingWrapper,
-  ],
+    LoadingWrapper
+],
   templateUrl: './welcome-page.html',
   styleUrl: './welcome-page.css',
 })

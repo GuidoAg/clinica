@@ -8,7 +8,7 @@ import {
   WritableSignal,
   inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -24,7 +24,7 @@ import { EncuestaTurnos } from '../../../models/Turnos/EncuestaTurnos';
 @Component({
   selector: 'app-acciones-paciente',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './acciones-paciente.html',
 })
 export class AccionesPaciente implements OnInit {

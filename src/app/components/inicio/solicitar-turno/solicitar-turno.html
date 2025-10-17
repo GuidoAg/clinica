@@ -2,138 +2,154 @@
   <div class="h-full w-full p-1">
     <div
       class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
-    >
+      >
       <div class="mx-auto max-w-4xl space-y-8 p-4">
         <!-- Paso 1: Profesionales -->
-        <div *ngIf="especialistas().length">
-          <h2 class="mb-4 text-center text-xl font-semibold">
-            Seleccioná un profesional
-          </h2>
-          <div class="flex flex-wrap justify-center gap-4">
-            <button
-              *ngFor="let prof of especialistasValidados()"
-              (click)="seleccionarEspecialista(prof)"
-              [class.opacity-50]="especialistaSeleccionado() && especialistaSeleccionado()!.id !== prof.id"
-              class="flex flex-col items-center space-y-1 focus:outline-none"
-            >
-              <img
-                [src]="prof.imagenPerfil || 'assets/default-avatar.png'"
-                alt="profesional"
-                class="h-20 w-20 rounded-full border object-cover shadow"
-                [class.border-blue-600]="especialistaSeleccionado()?.id === prof.id"
-                appTrackImage
-              />
-              <span class="text-center text-sm"
-                >{{ prof.nombre }} {{ prof.apellido }}</span
-              >
-            </button>
+        @if (especialistas().length) {
+          <div>
+            <h2 class="mb-4 text-center text-xl font-semibold">
+              Seleccioná un profesional
+            </h2>
+            <div class="flex flex-wrap justify-center gap-4">
+              @for (prof of especialistasValidados(); track prof) {
+                <button
+                  (click)="seleccionarEspecialista(prof)"
+                  [class.opacity-50]="especialistaSeleccionado() && especialistaSeleccionado()!.id !== prof.id"
+                  class="flex flex-col items-center space-y-1 focus:outline-none"
+                  >
+                  <img
+                    [src]="prof.imagenPerfil || 'assets/default-avatar.png'"
+                    alt="profesional"
+                    class="h-20 w-20 rounded-full border object-cover shadow"
+                    [class.border-blue-600]="especialistaSeleccionado()?.id === prof.id"
+                    appTrackImage
+                    />
+                    <span class="text-center text-sm"
+                      >{{ prof.nombre }} {{ prof.apellido }}</span
+                      >
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Paso 2: Especialidades -->
+            <!-- Paso 2: Especialidades -->
+            @if (especialistaSeleccionado()) {
+              <div>
+                <h2 class="mb-4 text-center text-xl font-semibold">
+                  ---- Seleccioná una especialidad ----
+                </h2>
+                <div class="flex flex-wrap justify-center gap-4" @listaAnimacion>
+                  @for (esp of especialidades(); track esp) {
+                    <button
+                      (click)="seleccionarEspecialidad(esp)"
+                      @especialidadAnimacion
+                      class="flex h-21 w-21 flex-col items-center justify-center rounded-lg border bg-white shadow hover:bg-blue-50"
+                      [class.border-blue-600]="especialidadSeleccionada()?.id === esp.id"
+                      [class.opacity-50]="especialidadSeleccionada()  && especialidadSeleccionada()!.id !== esp.id"
+                      >
+                      <img
+                        [src]="esp.icono || 'assets/default-icon.png'"
+                        alt="icono"
+                        class="mb-2 h-10 w-10"
+                        appTrackImage
+                        />
+                        <span class="text-center text-xs">{{ esp.nombre }}</span>
+                      </button>
+                    }
+                  </div>
+                  @if (noHayEspecialidades()) {
+                    <p
+                      class="mt-4 text-center text-red-500"
+                      >
+                      No hay especialidades disponibles.
+                    </p>
+                  }
+                </div>
+              }
+
+              <!-- Paso 3: Fechas disponibles -->
+              @if (especialidadSeleccionada()) {
+                <div>
+                  <h2 class="mb-4 text-center text-xl font-semibold">
+                    ---- Seleccioná un día ----
+                  </h2>
+                  <div class="flex flex-wrap justify-center gap-2">
+                    @for (fecha of fechasDisponibles(); track fecha) {
+                      <button
+                        (click)="seleccionarFecha(fecha)"
+                        class="rounded bg-blue-100 px-4 py-2 text-sm font-medium hover:bg-blue-200"
+                        [class.bg-blue-600]="fechaSeleccionada() === fecha"
+                        [class.text-white]="fechaSeleccionada() === fecha"
+                        >
+                        {{ fecha }}
+                      </button>
+                    }
+                  </div>
+                  @if (noHayFechas()) {
+                    <p class="mt-4 text-center text-red-500">
+                      No hay días disponibles.
+                    </p>
+                  }
+                </div>
+              }
+
+              <!-- Paso 4: Horarios disponibles -->
+              @if (fechaSeleccionada() ) {
+                <div>
+                  <h2 class="mb-4 text-center text-xl font-semibold">
+                    ---- Seleccioná un horario ----
+                  </h2>
+                  <div class="flex flex-wrap justify-center gap-2">
+                    @for (hora of horariosDisponibles(); track hora) {
+                      <button
+                        (click)="seleccionarHorario(hora)"
+                        class="h-12 w-16 rounded-lg bg-green-200 text-sm font-semibold hover:bg-green-300"
+                        [class.bg-green-500]="horaSelecionada() === hora"
+                        [class.text-white]="horaSelecionada() === hora"
+                        >
+                        {{ hora }}
+                      </button>
+                    }
+                  </div>
+                  @if (noHayHorarios()) {
+                    <p class="mt-4 text-center text-red-500">
+                      No hay turnos disponibles.
+                    </p>
+                  }
+                </div>
+              }
+
+              <!-- Confirmación visual simple -->
+              @if (horaSelecionada()) {
+                <div class="mt-8 text-center">
+                  <p class="text-sm text-gray-600">
+                    Seleccionaste:
+                    <strong
+                      >{{ especialistaSeleccionado()?.nombre }} {{
+                      especialistaSeleccionado()?.apellido }}</strong
+                      >
+                      <br />
+                      Especialidad:
+                      <strong>{{ especialidadSeleccionada()?.nombre }}</strong>
+                      <br />
+                      Día: <strong>{{ fechaSeleccionada() }}</strong>
+                      <br />
+                      Hora: <strong>{{ horaSelecionada() }}</strong>
+                    </p>
+                    <div class="pt-4">
+                      <button
+                        (click)="cargarCita()"
+                        class="rounded bg-blue-200 px-4 py-2 text-lg font-medium hover:bg-blue-300"
+                        >
+                        Confirmar
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
           </div>
-        </div>
-
-        <!-- Paso 2: Especialidades -->
-        <!-- Paso 2: Especialidades -->
-        <div *ngIf="especialistaSeleccionado()">
-          <h2 class="mb-4 text-center text-xl font-semibold">
-            ---- Seleccioná una especialidad ----
-          </h2>
-
-          <div class="flex flex-wrap justify-center gap-4" @listaAnimacion>
-            <button
-              *ngFor="let esp of especialidades()"
-              (click)="seleccionarEspecialidad(esp)"
-              @especialidadAnimacion
-              class="flex h-21 w-21 flex-col items-center justify-center rounded-lg border bg-white shadow hover:bg-blue-50"
-              [class.border-blue-600]="especialidadSeleccionada()?.id === esp.id"
-              [class.opacity-50]="especialidadSeleccionada()  && especialidadSeleccionada()!.id !== esp.id"
-            >
-              <img
-                [src]="esp.icono || 'assets/default-icon.png'"
-                alt="icono"
-                class="mb-2 h-10 w-10"
-                appTrackImage
-              />
-              <span class="text-center text-xs">{{ esp.nombre }}</span>
-            </button>
-          </div>
-
-          <p
-            *ngIf="noHayEspecialidades()"
-            class="mt-4 text-center text-red-500"
-          >
-            No hay especialidades disponibles.
-          </p>
-        </div>
-
-        <!-- Paso 3: Fechas disponibles -->
-        <div *ngIf="especialidadSeleccionada()">
-          <h2 class="mb-4 text-center text-xl font-semibold">
-            ---- Seleccioná un día ----
-          </h2>
-          <div class="flex flex-wrap justify-center gap-2">
-            <button
-              *ngFor="let fecha of fechasDisponibles()"
-              (click)="seleccionarFecha(fecha)"
-              class="rounded bg-blue-100 px-4 py-2 text-sm font-medium hover:bg-blue-200"
-              [class.bg-blue-600]="fechaSeleccionada() === fecha"
-              [class.text-white]="fechaSeleccionada() === fecha"
-            >
-              {{ fecha }}
-            </button>
-          </div>
-          <p *ngIf="noHayFechas()" class="mt-4 text-center text-red-500">
-            No hay días disponibles.
-          </p>
-        </div>
-
-        <!-- Paso 4: Horarios disponibles -->
-        <div *ngIf="fechaSeleccionada() ">
-          <h2 class="mb-4 text-center text-xl font-semibold">
-            ---- Seleccioná un horario ----
-          </h2>
-          <div class="flex flex-wrap justify-center gap-2">
-            <button
-              *ngFor="let hora of horariosDisponibles()"
-              (click)="seleccionarHorario(hora)"
-              class="h-12 w-16 rounded-lg bg-green-200 text-sm font-semibold hover:bg-green-300"
-              [class.bg-green-500]="horaSelecionada() === hora"
-              [class.text-white]="horaSelecionada() === hora"
-            >
-              {{ hora }}
-            </button>
-          </div>
-          <p *ngIf="noHayHorarios()" class="mt-4 text-center text-red-500">
-            No hay turnos disponibles.
-          </p>
-        </div>
-
-        <!-- Confirmación visual simple -->
-        <div *ngIf="horaSelecionada()" class="mt-8 text-center">
-          <p class="text-sm text-gray-600">
-            Seleccionaste:
-            <strong
-              >{{ especialistaSeleccionado()?.nombre }} {{
-              especialistaSeleccionado()?.apellido }}</strong
-            >
-            <br />
-            Especialidad:
-            <strong>{{ especialidadSeleccionada()?.nombre }}</strong>
-            <br />
-            Día: <strong>{{ fechaSeleccionada() }}</strong>
-            <br />
-            Hora: <strong>{{ horaSelecionada() }}</strong>
-          </p>
-
-          <div class="pt-4">
-            <button
-              (click)="cargarCita()"
-              class="rounded bg-blue-200 px-4 py-2 text-lg font-medium hover:bg-blue-300"
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</app-loading-wrapper>
+        </app-loading-wrapper>
 

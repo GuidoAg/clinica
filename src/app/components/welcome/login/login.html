@@ -2,37 +2,39 @@
   <h2 class="pb-1 text-center text-4xl font-bold text-azul-oscuro">Login</h2>
 
   <!-- Auto Log Panel -->
-  <div
-    *ngIf="autoLogVisible"
-    class="absolute ml-5 flex w-32 flex-col items-start gap-4"
-  >
-    <button
-      *ngFor="let user of usuariosAutoLog; let i = index"
-      class="flex h-23 w-23 flex-col items-center justify-center rounded-lg bg-crema align-middle text-azul-oscuro shadow-md transition-transform hover:scale-110"
-      [style.animationDelay]="i * 100 + 'ms'"
-      style="opacity: 0"
-      [class.animate-fade-slide-up-scale]="autoLogVisible"
-      (click)="autocompletar(user)"
-    >
-      <img
-        [src]="user.imagenUrl"
-        alt="{{ user.nombre }}"
-        class="mb-1 justify-center align-middle"
-      />
-      <span class="text-xs font-bold capitalize"> {{ user.nombre }} </span>
-    </button>
-  </div>
+  @if (autoLogVisible) {
+    <div
+      class="absolute ml-5 flex w-32 flex-col items-start gap-4"
+      >
+      @for (user of usuariosAutoLog; track user; let i = $index) {
+        <button
+          class="flex h-23 w-23 flex-col items-center justify-center rounded-lg bg-crema align-middle text-azul-oscuro shadow-md transition-transform hover:scale-110"
+          [style.animationDelay]="i * 100 + 'ms'"
+          style="opacity: 0"
+          [class.animate-fade-slide-up-scale]="autoLogVisible"
+          (click)="autocompletar(user)"
+          >
+          <img
+            [src]="user.imagenUrl"
+            alt="{{ user.nombre }}"
+            class="mb-1 justify-center align-middle"
+            />
+            <span class="text-xs font-bold capitalize"> {{ user.nombre }} </span>
+          </button>
+        }
+      </div>
+    }
 
-  <div class="flex justify-center py-8">
-    <form
-      [formGroup]="loginForm"
-      (ngSubmit)="login()"
-      class="flex w-full max-w-xl flex-col items-center rounded-xl bg-crema p-8 shadow-lg"
-    >
-      <!-- Email -->
-      <mat-form-field
-        appearance="fill"
-        class="w-80"
+    <div class="flex justify-center py-8">
+      <form
+        [formGroup]="loginForm"
+        (ngSubmit)="login()"
+        class="flex w-full max-w-xl flex-col items-center rounded-xl bg-crema p-8 shadow-lg"
+        >
+        <!-- Email -->
+        <mat-form-field
+          appearance="fill"
+          class="w-80"
         [ngClass]="{
           'mat-form-field-valid':
             loginForm.get('mail')?.valid &&
@@ -41,21 +43,25 @@
             loginForm.get('mail')?.invalid &&
             (loginForm.get('mail')?.dirty || loginForm.get('mail')?.touched)
         }"
-      >
-        <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="mail" #emailInput />
-        <mat-error *ngIf="loginForm.get('mail')?.hasError('required')">
-          Campo obligatorio
-        </mat-error>
-        <mat-error *ngIf="loginForm.get('mail')?.hasError('email')">
-          Email inválido
-        </mat-error>
-      </mat-form-field>
+          >
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="mail" #emailInput />
+          @if (loginForm.get('mail')?.hasError('required')) {
+            <mat-error>
+              Campo obligatorio
+            </mat-error>
+          }
+          @if (loginForm.get('mail')?.hasError('email')) {
+            <mat-error>
+              Email inválido
+            </mat-error>
+          }
+        </mat-form-field>
 
-      <!-- Password -->
-      <mat-form-field
-        appearance="fill"
-        class="w-80"
+        <!-- Password -->
+        <mat-form-field
+          appearance="fill"
+          class="w-80"
         [ngClass]="{
           'mat-form-field-valid':
             loginForm.get('password')?.valid &&
@@ -64,52 +70,56 @@
             loginForm.get('password')?.invalid &&
             (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)
         }"
-      >
-        <mat-label>Contraseña</mat-label>
-        <input
-          matInput
-          [type]="hidePassword ? 'password' : 'text'"
-          formControlName="password"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="hidePassword = !hidePassword"
-        >
-          <mat-icon
-            >{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon
           >
-        </button>
-        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
-          Campo obligatorio
-        </mat-error>
-        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
-          Mínimo 7 caracteres
-        </mat-error>
-      </mat-form-field>
+          <mat-label>Contraseña</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hidePassword = !hidePassword"
+              >
+              <mat-icon
+                >{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon
+                >
+              </button>
+              @if (loginForm.get('password')?.hasError('required')) {
+                <mat-error>
+                  Campo obligatorio
+                </mat-error>
+              }
+              @if (loginForm.get('password')?.hasError('minlength')) {
+                <mat-error>
+                  Mínimo 7 caracteres
+                </mat-error>
+              }
+            </mat-form-field>
 
-      <!-- Botón -->
-      <div class="flex justify-center gap-4 pt-4">
-        <button
-          mat-raised-button
-          color="primary"
-          [disabled]="loginForm.invalid"
-          type="submit"
-          class="rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
-        >
-          Login
-        </button>
-        <button
-          mat-raised-button
-          color="primary"
-          type="button"
-          (click)="toggleAutoLog()"
-          class="rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
-        >
-          Auto Log
-        </button>
+            <!-- Botón -->
+            <div class="flex justify-center gap-4 pt-4">
+              <button
+                mat-raised-button
+                color="primary"
+                [disabled]="loginForm.invalid"
+                type="submit"
+                class="rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
+                >
+                Login
+              </button>
+              <button
+                mat-raised-button
+                color="primary"
+                type="button"
+                (click)="toggleAutoLog()"
+                class="rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
+                >
+                Auto Log
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </form>
-  </div>
-</div>

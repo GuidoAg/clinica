@@ -3,36 +3,31 @@ import {
   EventEmitter,
   Output,
   Input,
-  OnInit,
   signal,
-  WritableSignal,
   inject,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Turnos } from '../../../services/turnos';
-import { CitaCompletaTurnos } from '../../../models/Turnos/CitaCompletaTurnos';
-import { EncuestaTurnos } from '../../../models/Turnos/EncuestaTurnos';
-import { RegistroMedicoTurnos } from '../../../models/Turnos/RegistroMedicoTurnos';
-import { DatoDinamicoTurnos } from '../../../models/Turnos/DatoDinamicoTurnos';
+} from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule, ReactiveFormsModule, FormBuilder } from "@angular/forms";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Turnos } from "../../../services/turnos";
+import { CitaCompletaTurnos } from "../../../models/Turnos/CitaCompletaTurnos";
+import { RegistroMedicoTurnos } from "../../../models/Turnos/RegistroMedicoTurnos";
+import { DatoDinamicoTurnos } from "../../../models/Turnos/DatoDinamicoTurnos";
 
 @Component({
-  selector: 'app-acciones-especialista',
+  selector: "app-acciones-especialista",
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './acciones-especialista.html',
-  styleUrl: './acciones-especialista.css',
+  templateUrl: "./acciones-especialista.html",
+  styleUrl: "./acciones-especialista.css",
 })
 export class AccionesEspecialista {
   @Input() cita!: CitaCompletaTurnos;
   @Output() cerrar = new EventEmitter<void>();
   @Output() accionRealizada = new EventEmitter<string>();
+
+  private turnos = inject(Turnos);
+  private fb = inject(FormBuilder);
+  private snackBar = inject(MatSnackBar);
 
   cargando = signal(false);
 
@@ -43,22 +38,16 @@ export class AccionesEspecialista {
   mostrarFormularioResenia = false;
   mostrarFormularioHistoriaClinica = false;
 
-  comentarioCancelar = '';
-  comentarioRechazar = '';
-  reseniaFinalizar = '';
-
-  constructor(
-    private turnos: Turnos,
-    private fb: FormBuilder,
-    private snackBar: MatSnackBar,
-  ) {}
+  comentarioCancelar = "";
+  comentarioRechazar = "";
+  reseniaFinalizar = "";
 
   get puedeCancelar() {
     return (
-      this.cita.estado !== 'completado' &&
-      this.cita.estado !== 'cancelado' &&
-      this.cita.estado !== 'aceptado' &&
-      this.cita.estado !== 'rechazado' &&
+      this.cita.estado !== "completado" &&
+      this.cita.estado !== "cancelado" &&
+      this.cita.estado !== "aceptado" &&
+      this.cita.estado !== "rechazado" &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
@@ -70,10 +59,10 @@ export class AccionesEspecialista {
 
   get puedeRechazar() {
     return (
-      this.cita.estado !== 'completado' &&
-      this.cita.estado !== 'cancelado' &&
-      this.cita.estado !== 'aceptado' &&
-      this.cita.estado !== 'rechazado' &&
+      this.cita.estado !== "completado" &&
+      this.cita.estado !== "cancelado" &&
+      this.cita.estado !== "aceptado" &&
+      this.cita.estado !== "rechazado" &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
@@ -85,10 +74,10 @@ export class AccionesEspecialista {
 
   get puedeAceptar() {
     return (
-      this.cita.estado !== 'completado' &&
-      this.cita.estado !== 'cancelado' &&
-      this.cita.estado !== 'aceptado' &&
-      this.cita.estado !== 'rechazado' &&
+      this.cita.estado !== "completado" &&
+      this.cita.estado !== "cancelado" &&
+      this.cita.estado !== "aceptado" &&
+      this.cita.estado !== "rechazado" &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
@@ -100,7 +89,7 @@ export class AccionesEspecialista {
 
   get puedeFinalizar() {
     return (
-      this.cita.estado === 'aceptado' &&
+      this.cita.estado === "aceptado" &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
@@ -112,7 +101,7 @@ export class AccionesEspecialista {
 
   get puedeCargarHistoriaClinica() {
     return (
-      this.cita.estado === 'completado' &&
+      this.cita.estado === "completado" &&
       !this.yaTieneHistoriaClinica &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioAceptar &&
@@ -149,23 +138,23 @@ export class AccionesEspecialista {
     alturaCm: 0,
     pesoKg: 0,
     temperaturaC: 0,
-    presionArterial: '',
+    presionArterial: "",
     citaId: 0,
   };
 
   datosTexto: { clave: string; valor: string }[] = [
-    { clave: '', valor: '' },
-    { clave: '', valor: '' },
-    { clave: '', valor: '' },
+    { clave: "", valor: "" },
+    { clave: "", valor: "" },
+    { clave: "", valor: "" },
   ];
 
-  datoSlider = { clave: '', valor: 50 };
-  datoNumero = { clave: '', valor: null };
-  datoBoolean = { clave: '', valor: false };
+  datoSlider = { clave: "", valor: 50 };
+  datoNumero = { clave: "", valor: null };
+  datoBoolean = { clave: "", valor: false };
 
   cancelarAccionCancelar() {
     this.mostrarFormularioCancelar = false;
-    this.comentarioCancelar = '';
+    this.comentarioCancelar = "";
   }
 
   confirmarCancelarTurno() {
@@ -177,26 +166,26 @@ export class AccionesEspecialista {
       .then((res) => {
         this.cargando.set(false);
         if (res.success) {
-          this.snackBar.open('Turno cancelado exitosamente.', 'Cerrar', {
+          this.snackBar.open("Turno cancelado exitosamente.", "Cerrar", {
             duration: 3000,
           });
-          this.accionRealizada.emit('cancelado');
+          this.accionRealizada.emit("cancelado");
           this.cerrar.emit();
         } else {
-          this.snackBar.open(res.message ?? 'Ocurrió un error', 'Cerrar', {
+          this.snackBar.open(res.message ?? "Ocurrió un error", "Cerrar", {
             duration: 4000,
           });
         }
       })
       .finally(() => {
         this.mostrarFormularioCancelar = false;
-        this.comentarioCancelar = '';
+        this.comentarioCancelar = "";
       });
   }
 
   cancelarAccionRechazar() {
     this.mostrarFormularioRechazar = false;
-    this.comentarioRechazar = '';
+    this.comentarioRechazar = "";
   }
 
   confirmarRechazarTurno() {
@@ -208,20 +197,20 @@ export class AccionesEspecialista {
       .then((res) => {
         this.cargando.set(false);
         if (res.success) {
-          this.snackBar.open('Turno rechazado exitosamente.', 'Cerrar', {
+          this.snackBar.open("Turno rechazado exitosamente.", "Cerrar", {
             duration: 3000,
           });
-          this.accionRealizada.emit('rechazado');
+          this.accionRealizada.emit("rechazado");
           this.cerrar.emit();
         } else {
-          this.snackBar.open(res.message ?? 'Ocurrió un error', 'Cerrar', {
+          this.snackBar.open(res.message ?? "Ocurrió un error", "Cerrar", {
             duration: 4000,
           });
         }
       })
       .finally(() => {
         this.mostrarFormularioRechazar = false;
-        this.comentarioRechazar = '';
+        this.comentarioRechazar = "";
       });
   }
 
@@ -236,13 +225,13 @@ export class AccionesEspecialista {
       .then((res) => {
         this.cargando.set(false);
         if (res.success) {
-          this.snackBar.open('Turno aceptado exitosamente.', 'Cerrar', {
+          this.snackBar.open("Turno aceptado exitosamente.", "Cerrar", {
             duration: 3000,
           });
-          this.accionRealizada.emit('aceptado');
+          this.accionRealizada.emit("aceptado");
           this.cerrar.emit();
         } else {
-          this.snackBar.open(res.message ?? 'Ocurrió un error', 'Cerrar', {
+          this.snackBar.open(res.message ?? "Ocurrió un error", "Cerrar", {
             duration: 4000,
           });
         }
@@ -254,7 +243,7 @@ export class AccionesEspecialista {
 
   cancelarAccionFinalizar() {
     this.mostrarFormularioFinalizar = false;
-    this.reseniaFinalizar = '';
+    this.reseniaFinalizar = "";
   }
 
   confirmarFinalizarTurno() {
@@ -266,20 +255,20 @@ export class AccionesEspecialista {
       .then((res) => {
         this.cargando.set(false);
         if (res.success) {
-          this.snackBar.open('Turno finalizado exitosamente.', 'Cerrar', {
+          this.snackBar.open("Turno finalizado exitosamente.", "Cerrar", {
             duration: 3000,
           });
-          this.accionRealizada.emit('completado');
+          this.accionRealizada.emit("completado");
           this.cerrar.emit();
         } else {
-          this.snackBar.open(res.message ?? 'Ocurrió un error', 'Cerrar', {
+          this.snackBar.open(res.message ?? "Ocurrió un error", "Cerrar", {
             duration: 4000,
           });
         }
       })
       .finally(() => {
         this.mostrarFormularioFinalizar = false;
-        this.reseniaFinalizar = '';
+        this.reseniaFinalizar = "";
       });
   }
 
@@ -321,7 +310,7 @@ export class AccionesEspecialista {
       {
         id: 0,
         clave: this.datoBoolean.clave,
-        valor: this.datoBoolean.valor ? 'Sí' : 'No',
+        valor: this.datoBoolean.valor ? "Sí" : "No",
         citaId: this.registro.citaId,
       },
     ].filter((d) => d.clave && d.valor);
@@ -336,7 +325,7 @@ export class AccionesEspecialista {
       this.datoNumero.valor === null ||
       !this.datoBoolean.clave.trim()
     ) {
-      this.snackBar.open('Completá todos los campos obligatorios', 'Cerrar', {
+      this.snackBar.open("Completá todos los campos obligatorios", "Cerrar", {
         duration: 3000,
       });
       return;
@@ -351,13 +340,13 @@ export class AccionesEspecialista {
     this.cargando.set(false);
 
     if (res.success) {
-      this.snackBar.open('Historia clínica guardada', 'Cerrar', {
+      this.snackBar.open("Historia clínica guardada", "Cerrar", {
         duration: 3000,
       });
-      this.accionRealizada.emit('historia_clinica');
+      this.accionRealizada.emit("historia_clinica");
       this.cerrar.emit();
     } else {
-      this.snackBar.open(res.message ?? 'Error al guardar', 'Cerrar', {
+      this.snackBar.open(res.message ?? "Error al guardar", "Cerrar", {
         duration: 4000,
       });
     }
@@ -366,10 +355,10 @@ export class AccionesEspecialista {
   esFormularioHistoriaClinicaValido(): boolean {
     const r = this.registro;
 
-    const sliderValido = this.datoSlider.clave.trim() !== '';
+    const sliderValido = this.datoSlider.clave.trim() !== "";
     const numeroValido =
-      this.datoNumero.clave.trim() !== '' && this.datoNumero.valor !== null;
-    const booleanoValido = this.datoBoolean.clave.trim() !== '';
+      this.datoNumero.clave.trim() !== "" && this.datoNumero.valor !== null;
+    const booleanoValido = this.datoBoolean.clave.trim() !== "";
 
     const datosTextoValidos = this.datosTexto.every((d) => {
       const clave = d.clave.trim();

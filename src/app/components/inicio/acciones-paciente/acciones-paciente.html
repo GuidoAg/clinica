@@ -9,45 +9,44 @@
   (click)="$event.stopPropagation()"
 >
   <!-- Vista principal de botones -->
-  <div
-    *ngIf="!mostrarFormularioCancelar && !mostrarFormularioEncuesta && !mostrarFormularioCalificar && !mostrarFormularioResenia"
-    class="flex flex-col gap-3"
-  >
+  @if (!mostrarFormularioCancelar && !mostrarFormularioEncuesta &&
+  !mostrarFormularioCalificar && !mostrarFormularioResenia) {
+  <div class="flex flex-col gap-3">
+    @if (puedeCancelar) {
     <button
-      *ngIf="puedeCancelar"
       (click)="mostrarFormularioCancelar = true"
       class="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-red-700"
     >
       Cancelar turno
     </button>
-
+    } @if (puedeVerResenia) {
     <button
-      *ngIf="puedeVerResenia"
       (click)="verResenia()"
       class="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-blue-700"
     >
       Ver reseña
     </button>
-
+    } @if (puedeCompletarEncuesta) {
     <button
-      *ngIf="puedeCompletarEncuesta"
       (click)="mostrarFormularioEncuesta = true"
       class="rounded-lg bg-green-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-green-700"
     >
       Completar encuesta
     </button>
-
+    } @if (puedeCalificar) {
     <button
-      *ngIf="puedeCalificar"
       (click)="mostrarFormularioCalificar = true"
       class="rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-purple-700"
     >
       Calificar atención
     </button>
+    }
   </div>
+  }
 
   <!-- Formulario para cancelar turno -->
-  <div *ngIf="mostrarFormularioCancelar" class="flex flex-col gap-3">
+  @if (mostrarFormularioCancelar) {
+  <div class="flex flex-col gap-3">
     <textarea
       [(ngModel)]="comentarioCancelar"
       placeholder="Ingrese el motivo de cancelación"
@@ -74,10 +73,11 @@
       </button>
     </div>
   </div>
+  }
 
   <!-- Formulario para encuesta -->
+  @if (mostrarFormularioEncuesta) {
   <form
-    *ngIf="mostrarFormularioEncuesta"
     [formGroup]="encuestaForm"
     (ngSubmit)="enviarEncuesta()"
     class="flex flex-col gap-3"
@@ -133,9 +133,11 @@
       </button>
     </div>
   </form>
+  }
 
   <!-- Formulario para calificar atención -->
-  <div *ngIf="mostrarFormularioCalificar" class="flex flex-col gap-3">
+  @if (mostrarFormularioCalificar) {
+  <div class="flex flex-col gap-3">
     <textarea
       [(ngModel)]="comentarioCalificar"
       placeholder="Dejá un comentario sobre la atención recibida"
@@ -162,12 +164,11 @@
       </button>
     </div>
   </div>
+  }
 
   <!-- Vista para mostrar reseña -->
-  <div
-    *ngIf="mostrarFormularioResenia"
-    class="flex flex-col items-center gap-4 text-center"
-  >
+  @if (mostrarFormularioResenia) {
+  <div class="flex flex-col items-center gap-4 text-center">
     <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
       Reseña
     </h3>
@@ -183,4 +184,5 @@
       Volver
     </button>
   </div>
+  }
 </div>

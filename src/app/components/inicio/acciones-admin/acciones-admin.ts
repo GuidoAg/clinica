@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, Input, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Turnos } from '../../../services/turnos';
@@ -7,7 +7,7 @@ import { CitaCompletaTurnos } from '../../../models/Turnos/CitaCompletaTurnos';
 
 @Component({
   selector: 'app-acciones-admin',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './acciones-admin.html',
   styleUrl: './acciones-admin.css',
 })

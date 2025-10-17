@@ -1,17 +1,16 @@
-// @ts-check
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 const eslint = require("@eslint/js");
 const tseslint = require("typescript-eslint");
 const angular = require("angular-eslint");
 
 module.exports = tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  ...tseslint.configs.stylistic,
   {
     files: ["**/*.ts"],
-    extends: [
-      eslint.configs.recommended,
-      ...tseslint.configs.recommended,
-      ...tseslint.configs.stylistic,
-      ...angular.configs.tsRecommended,
-    ],
+    extends: [...angular.configs.tsRecommended],
     processor: angular.processInlineTemplates,
     rules: {
       "@angular-eslint/directive-selector": [
@@ -39,5 +38,20 @@ module.exports = tseslint.config(
       ...angular.configs.templateAccessibility,
     ],
     rules: {},
+  },
+  {
+    // Ignora los archivos de configuración JavaScript
+    files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-var-requires": "off",
+    },
+    languageOptions: {
+      globals: {
+        require: "readonly",
+        module: "readonly",
+        __dirname: "readonly",
+      },
+    },
   },
 );

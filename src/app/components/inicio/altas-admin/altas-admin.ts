@@ -15,7 +15,7 @@ import {
   Validators,
   ReactiveFormsModule,
 } from "@angular/forms";
-import { CommonModule } from "@angular/common";
+
 import { Subscription } from "rxjs";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -40,17 +40,15 @@ import { RegistroAdmin } from "../../../models/Auth/RegistroAdmin";
 @Component({
   selector: "app-altas-admin",
   imports: [
-    CommonModule,
     FormsModule,
-    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatCheckboxModule,
-  ],
+    MatCheckboxModule
+],
   templateUrl: "./altas-admin.html",
   styleUrl: "./altas-admin.css",
 })

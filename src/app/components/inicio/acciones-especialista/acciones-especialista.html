@@ -8,377 +8,372 @@
   class="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-8 shadow-xl transition-all duration-300 md:max-w-3xl"
   [ngClass]="{ 'max-w-3xl p-10': mostrarFormularioHistoriaClinica }"
   (click)="$event.stopPropagation()"
->
-  <!-- Vista principal de botones -->
-  <div
-    *ngIf="!mostrarFormularioCancelar && !mostrarFormularioRechazar && !mostrarFormularioAceptar && !mostrarFormularioFinalizar && !mostrarFormularioResenia"
-    class="flex flex-col gap-3"
   >
-    <button
-      *ngIf="puedeCancelar"
-      (click)="mostrarFormularioCancelar = true"
-      class="rounded-lg bg-gray-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-gray-800"
-    >
-      Cancelar turno
-    </button>
-
-    <button
-      *ngIf="puedeRechazar"
-      (click)="mostrarFormularioRechazar = true"
-      class="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-red-700"
-    >
-      Rechazar turno
-    </button>
-
-    <button
-      *ngIf="puedeAceptar"
-      (click)="mostrarFormularioAceptar = true"
-      class="rounded-lg bg-green-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-green-800"
-    >
-      Aceptar turno
-    </button>
-
-    <button
-      *ngIf="puedeFinalizar"
-      (click)="mostrarFormularioFinalizar = true"
-      class="rounded-lg bg-blue-400 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-blue-800"
-    >
-      Finalizar turno
-    </button>
-
-    <button
-      *ngIf="puedeVerResenia"
-      (click)="verResenia()"
-      class="rounded-lg bg-pink-400 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-pink-700"
-    >
-      Ver reseña
-    </button>
-
-    <button
-      *ngIf="puedeCargarHistoriaClinica"
-      (click)="mostrarFormularioHistoriaClinica = true"
-      class="rounded-lg bg-indigo-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-indigo-700"
-    >
-      Cargar historia clínica
-    </button>
-  </div>
+  <!-- Vista principal de botones -->
+  @if (!mostrarFormularioCancelar && !mostrarFormularioRechazar && !mostrarFormularioAceptar && !mostrarFormularioFinalizar && !mostrarFormularioResenia) {
+    <div
+      class="flex flex-col gap-3"
+      >
+      @if (puedeCancelar) {
+        <button
+          (click)="mostrarFormularioCancelar = true"
+          class="rounded-lg bg-gray-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-gray-800"
+          >
+          Cancelar turno
+        </button>
+      }
+      @if (puedeRechazar) {
+        <button
+          (click)="mostrarFormularioRechazar = true"
+          class="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-red-700"
+          >
+          Rechazar turno
+        </button>
+      }
+      @if (puedeAceptar) {
+        <button
+          (click)="mostrarFormularioAceptar = true"
+          class="rounded-lg bg-green-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-green-800"
+          >
+          Aceptar turno
+        </button>
+      }
+      @if (puedeFinalizar) {
+        <button
+          (click)="mostrarFormularioFinalizar = true"
+          class="rounded-lg bg-blue-400 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-blue-800"
+          >
+          Finalizar turno
+        </button>
+      }
+      @if (puedeVerResenia) {
+        <button
+          (click)="verResenia()"
+          class="rounded-lg bg-pink-400 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-pink-700"
+          >
+          Ver reseña
+        </button>
+      }
+      @if (puedeCargarHistoriaClinica) {
+        <button
+          (click)="mostrarFormularioHistoriaClinica = true"
+          class="rounded-lg bg-indigo-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-indigo-700"
+          >
+          Cargar historia clínica
+        </button>
+      }
+    </div>
+  }
 
   <!-- Formulario para cancelar turno -->
-  <div *ngIf="mostrarFormularioCancelar" class="flex flex-col gap-3">
-    <textarea
-      [(ngModel)]="comentarioCancelar"
-      placeholder="Ingrese el motivo de cancelación"
-      rows="3"
-      class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
-    ></textarea>
-
-    <div class="flex justify-end gap-3">
-      <button
-        type="button"
-        (click)="cancelarAccionCancelar()"
-        class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-      >
-        Cancelar
-      </button>
-
-      <button
-        type="button"
-        (click)="confirmarCancelarTurno()"
-        [disabled]="!comentarioCancelar.trim() || cargando()"
-        class="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-50"
-      >
-        Confirmar cancelación
-      </button>
+  @if (mostrarFormularioCancelar) {
+    <div class="flex flex-col gap-3">
+      <textarea
+        [(ngModel)]="comentarioCancelar"
+        placeholder="Ingrese el motivo de cancelación"
+        rows="3"
+        class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
+      ></textarea>
+      <div class="flex justify-end gap-3">
+        <button
+          type="button"
+          (click)="cancelarAccionCancelar()"
+          class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          (click)="confirmarCancelarTurno()"
+          [disabled]="!comentarioCancelar.trim() || cargando()"
+          class="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-50"
+          >
+          Confirmar cancelación
+        </button>
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Formulario para rechazar turno -->
-  <div *ngIf="mostrarFormularioRechazar" class="flex flex-col gap-3">
-    <textarea
-      [(ngModel)]="comentarioRechazar"
-      placeholder="Ingrese el motivo de rechazo"
-      rows="3"
-      class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
-    ></textarea>
-
-    <div class="flex justify-end gap-3">
-      <button
-        type="button"
-        (click)="cancelarAccionRechazar()"
-        class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-      >
-        Cancelar
-      </button>
-
-      <button
-        type="button"
-        (click)="confirmarRechazarTurno()"
-        [disabled]="!comentarioRechazar.trim() || cargando()"
-        class="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-50"
-      >
-        Confirmar Rechazo
-      </button>
+  @if (mostrarFormularioRechazar) {
+    <div class="flex flex-col gap-3">
+      <textarea
+        [(ngModel)]="comentarioRechazar"
+        placeholder="Ingrese el motivo de rechazo"
+        rows="3"
+        class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
+      ></textarea>
+      <div class="flex justify-end gap-3">
+        <button
+          type="button"
+          (click)="cancelarAccionRechazar()"
+          class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          (click)="confirmarRechazarTurno()"
+          [disabled]="!comentarioRechazar.trim() || cargando()"
+          class="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-50"
+          >
+          Confirmar Rechazo
+        </button>
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Formulario para aceptar turno -->
-  <div *ngIf="mostrarFormularioAceptar" class="flex flex-col gap-3">
-    <div class="flex justify-end gap-3">
-      <button
-        type="button"
-        (click)="cancelarAccionAceptar()"
-        class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-      >
-        Cancelar
-      </button>
-
-      <button
-        type="button"
-        (click)="confirmarAceptarTurno()"
-        class="rounded bg-green-500 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50"
-      >
-        Confirmar Aceptar
-      </button>
+  @if (mostrarFormularioAceptar) {
+    <div class="flex flex-col gap-3">
+      <div class="flex justify-end gap-3">
+        <button
+          type="button"
+          (click)="cancelarAccionAceptar()"
+          class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          (click)="confirmarAceptarTurno()"
+          class="rounded bg-green-500 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50"
+          >
+          Confirmar Aceptar
+        </button>
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Formulario para finalizar turno -->
-  <div *ngIf="mostrarFormularioFinalizar" class="flex flex-col gap-3">
-    <textarea
-      [(ngModel)]="reseniaFinalizar"
-      placeholder="Ingrese una reseña"
-      rows="3"
-      class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none"
-    ></textarea>
-
-    <div class="flex justify-end gap-3">
-      <button
-        type="button"
-        (click)="cancelarAccionFinalizar()"
-        class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-      >
-        Cancelar
-      </button>
-
-      <button
-        type="button"
-        (click)="confirmarFinalizarTurno()"
-        [disabled]="!reseniaFinalizar.trim() || cargando()"
-        class="rounded bg-pink-400 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-600 disabled:opacity-50"
-      >
-        Confirmar Finalizar
-      </button>
+  @if (mostrarFormularioFinalizar) {
+    <div class="flex flex-col gap-3">
+      <textarea
+        [(ngModel)]="reseniaFinalizar"
+        placeholder="Ingrese una reseña"
+        rows="3"
+        class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none"
+      ></textarea>
+      <div class="flex justify-end gap-3">
+        <button
+          type="button"
+          (click)="cancelarAccionFinalizar()"
+          class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          (click)="confirmarFinalizarTurno()"
+          [disabled]="!reseniaFinalizar.trim() || cargando()"
+          class="rounded bg-pink-400 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-600 disabled:opacity-50"
+          >
+          Confirmar Finalizar
+        </button>
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Vista para mostrar reseña -->
-  <div
-    *ngIf="mostrarFormularioResenia"
-    class="flex flex-col items-center gap-4 text-center"
-  >
-    <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
-      Reseña
-    </h3>
-
-    <p class="px-2 text-gray-700 italic">
-      {{ cita.resenia || 'No se ha dejado una reseña para este turno.' }}
-    </p>
-
-    <button
-      (click)="volverDesdeVistaResenia()"
-      class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
-    >
-      Volver
-    </button>
-  </div>
+  @if (mostrarFormularioResenia) {
+    <div
+      class="flex flex-col items-center gap-4 text-center"
+      >
+      <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
+        Reseña
+      </h3>
+      <p class="px-2 text-gray-700 italic">
+        {{ cita.resenia || 'No se ha dejado una reseña para este turno.' }}
+      </p>
+      <button
+        (click)="volverDesdeVistaResenia()"
+        class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
+        >
+        Volver
+      </button>
+    </div>
+  }
 
   <!-- Formulario de Historia Clínica -->
-  <div *ngIf="mostrarFormularioHistoriaClinica" class="flex flex-col gap-4">
-    <h3
-      class="text-center text-xl font-bold text-[color:var(--color-azul-oscuro)]"
-    >
-      Cargar historia clínica
-    </h3>
-
-    <!-- Datos estáticos -->
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <label class="mb-1 block text-sm font-medium text-gray-700"
-          >Altura (cm)</label
+  @if (mostrarFormularioHistoriaClinica) {
+    <div class="flex flex-col gap-4">
+      <h3
+        class="text-center text-xl font-bold text-[color:var(--color-azul-oscuro)]"
         >
-        <input
-          [(ngModel)]="registro.alturaCm"
-          required
-          type="number"
-          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-          [ngClass]="{ 'border-red-500 ring-red-300': !registro.alturaCm }"
-        />
-      </div>
-
-      <div>
-        <label class="mb-1 block text-sm font-medium text-gray-700"
-          >Peso (kg)</label
-        >
-        <input
-          [(ngModel)]="registro.pesoKg"
-          required
-          type="number"
-          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-          [ngClass]="{ 'border-red-500 ring-red-300': !registro.pesoKg }"
-        />
-      </div>
-
-      <div>
-        <label class="mb-1 block text-sm font-medium text-gray-700"
-          >Temperatura (°C)</label
-        >
-        <input
-          [(ngModel)]="registro.temperaturaC"
-          required
-          type="number"
-          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-          [ngClass]="{ 'border-red-500 ring-red-300': !registro.temperaturaC }"
-        />
-      </div>
-
-      <div>
-        <label class="mb-1 block text-sm font-medium text-gray-700"
-          >Presión arterial</label
-        >
-        <input
-          [(ngModel)]="registro.presionArterial"
-          required
-          type="text"
-          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-          [ngClass]="{ 'border-red-500 ring-red-300': !registro.presionArterial.trim() }"
-        />
-      </div>
-    </div>
-
-    <!-- Datos dinámicos -->
-    <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-      <!-- Texto -->
-      <div class="flex flex-col gap-4">
-        <ng-container *ngFor="let dato of datosTexto; let i = index">
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="mb-1 block text-sm font-medium text-gray-700"
-                >Clave #{{ i + 1 }}</label
-              >
-              <input
-                [(ngModel)]="dato.clave"
-                type="text"
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-              />
-            </div>
-            <div>
-              <label class="mb-1 block text-sm font-medium text-gray-700"
-                >Valor</label
-              >
-              <input
-                [(ngModel)]="dato.valor"
-                type="text"
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-              />
-            </div>
-          </div>
-        </ng-container>
-      </div>
-
-      <!-- Controles especiales -->
-      <div class="mt-6 flex flex-col gap-6">
-        <!-- Slider -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="text-sm font-medium text-gray-700"
-              >Clave slider</label
+        Cargar historia clínica
+      </h3>
+      <!-- Datos estáticos -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700"
+            >Altura (cm)</label
             >
             <input
-              [(ngModel)]="datoSlider.clave"
-              required
-              type="text"
-              class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-              [ngClass]="{ 'border-red-500 ring-red-300': !datoSlider.clave.trim() }"
-            />
-          </div>
-          <div>
-            <label class="text-sm font-medium text-gray-700">
-              Valor (0–100): {{ datoSlider.valor }}
-            </label>
-            <input
-              [(ngModel)]="datoSlider.valor"
-              type="range"
-              min="0"
-              max="100"
-              class="w-full accent-indigo-500"
-            />
-          </div>
-        </div>
-
-        <!-- Número -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="text-sm font-medium text-gray-700"
-              >Clave numérica</label
-            >
-            <input
-              [(ngModel)]="datoNumero.clave"
-              required
-              type="text"
-              class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-              [ngClass]="{ 'border-red-500 ring-red-300': !datoNumero.clave.trim() }"
-            />
-          </div>
-          <div>
-            <label class="text-sm font-medium text-gray-700">Valor</label>
-            <input
-              [(ngModel)]="datoNumero.valor"
+              [(ngModel)]="registro.alturaCm"
               required
               type="number"
               class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-              [ngClass]="{ 'border-red-500 ring-red-300': datoNumero.valor === null }"
-            />
-          </div>
-        </div>
-
-        <!-- Booleano -->
-        <div class="grid grid-cols-2 items-center gap-4">
-          <div>
-            <label class="text-sm font-medium text-gray-700"
-              >Clave boolean</label
-            >
-            <input
-              [(ngModel)]="datoBoolean.clave"
-              required
-              type="text"
-              class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-              [ngClass]="{ 'border-red-500 ring-red-300': !datoBoolean.clave.trim() }"
-            />
-          </div>
-          <div class="mt-6 flex items-center gap-2">
-            <input
-              type="checkbox"
-              [(ngModel)]="datoBoolean.valor"
-              class="h-5 w-5 accent-indigo-600"
-            />
-            <span class="text-sm text-gray-700">Sí / No</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-6 flex justify-end gap-4">
-      <button
-        (click)="guardarHistoriaClinica()"
-        [disabled]="cargando() || !esFormularioHistoriaClinicaValido()"
-        class="rounded-lg px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+              [ngClass]="{ 'border-red-500 ring-red-300': !registro.alturaCm }"
+              />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700"
+                >Peso (kg)</label
+                >
+                <input
+                  [(ngModel)]="registro.pesoKg"
+                  required
+                  type="number"
+                  class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                  [ngClass]="{ 'border-red-500 ring-red-300': !registro.pesoKg }"
+                  />
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-gray-700"
+                    >Temperatura (°C)</label
+                    >
+                    <input
+                      [(ngModel)]="registro.temperaturaC"
+                      required
+                      type="number"
+                      class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                      [ngClass]="{ 'border-red-500 ring-red-300': !registro.temperaturaC }"
+                      />
+                    </div>
+                    <div>
+                      <label class="mb-1 block text-sm font-medium text-gray-700"
+                        >Presión arterial</label
+                        >
+                        <input
+                          [(ngModel)]="registro.presionArterial"
+                          required
+                          type="text"
+                          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                          [ngClass]="{ 'border-red-500 ring-red-300': !registro.presionArterial.trim() }"
+                          />
+                        </div>
+                      </div>
+                      <!-- Datos dinámicos -->
+                      <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <!-- Texto -->
+                        <div class="flex flex-col gap-4">
+                          @for (dato of datosTexto; track dato; let i = $index) {
+                            <div class="grid grid-cols-2 gap-2">
+                              <div>
+                                <label class="mb-1 block text-sm font-medium text-gray-700"
+                                  >Clave #{{ i + 1 }}</label
+                                  >
+                                  <input
+                                    [(ngModel)]="dato.clave"
+                                    type="text"
+                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label class="mb-1 block text-sm font-medium text-gray-700"
+                                      >Valor</label
+                                      >
+                                      <input
+                                        [(ngModel)]="dato.valor"
+                                        type="text"
+                                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                                        />
+                                      </div>
+                                    </div>
+                                  }
+                                </div>
+                                <!-- Controles especiales -->
+                                <div class="mt-6 flex flex-col gap-6">
+                                  <!-- Slider -->
+                                  <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <label class="text-sm font-medium text-gray-700"
+                                        >Clave slider</label
+                                        >
+                                        <input
+                                          [(ngModel)]="datoSlider.clave"
+                                          required
+                                          type="text"
+                                          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                                          [ngClass]="{ 'border-red-500 ring-red-300': !datoSlider.clave.trim() }"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label class="text-sm font-medium text-gray-700">
+                                            Valor (0–100): {{ datoSlider.valor }}
+                                          </label>
+                                          <input
+                                            [(ngModel)]="datoSlider.valor"
+                                            type="range"
+                                            min="0"
+                                            max="100"
+                                            class="w-full accent-indigo-500"
+                                            />
+                                          </div>
+                                        </div>
+                                        <!-- Número -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                          <div>
+                                            <label class="text-sm font-medium text-gray-700"
+                                              >Clave numérica</label
+                                              >
+                                              <input
+                                                [(ngModel)]="datoNumero.clave"
+                                                required
+                                                type="text"
+                                                class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                                                [ngClass]="{ 'border-red-500 ring-red-300': !datoNumero.clave.trim() }"
+                                                />
+                                              </div>
+                                              <div>
+                                                <label class="text-sm font-medium text-gray-700">Valor</label>
+                                                <input
+                                                  [(ngModel)]="datoNumero.valor"
+                                                  required
+                                                  type="number"
+                                                  class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                                                  [ngClass]="{ 'border-red-500 ring-red-300': datoNumero.valor === null }"
+                                                  />
+                                                </div>
+                                              </div>
+                                              <!-- Booleano -->
+                                              <div class="grid grid-cols-2 items-center gap-4">
+                                                <div>
+                                                  <label class="text-sm font-medium text-gray-700"
+                                                    >Clave boolean</label
+                                                    >
+                                                    <input
+                                                      [(ngModel)]="datoBoolean.clave"
+                                                      required
+                                                      type="text"
+                                                      class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                                                      [ngClass]="{ 'border-red-500 ring-red-300': !datoBoolean.clave.trim() }"
+                                                      />
+                                                    </div>
+                                                    <div class="mt-6 flex items-center gap-2">
+                                                      <input
+                                                        type="checkbox"
+                                                        [(ngModel)]="datoBoolean.valor"
+                                                        class="h-5 w-5 accent-indigo-600"
+                                                        />
+                                                        <span class="text-sm text-gray-700">Sí / No</span>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <div class="mt-6 flex justify-end gap-4">
+                                                  <button
+                                                    (click)="guardarHistoriaClinica()"
+                                                    [disabled]="cargando() || !esFormularioHistoriaClinicaValido()"
+                                                    class="rounded-lg px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
         [ngClass]="{
     'bg-indigo-600 hover:bg-indigo-800': esFormularioHistoriaClinicaValido() && !cargando(),
     'bg-gray-400': !esFormularioHistoriaClinicaValido() || cargando()
   }"
-      >
-        Guardar historia clínica
-      </button>
-    </div>
-  </div>
-</div>
+                                                    >
+                                                    Guardar historia clínica
+                                                  </button>
+                                                </div>
+                                              </div>
+                                            }
+                                          </div>

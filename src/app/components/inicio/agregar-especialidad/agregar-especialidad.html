@@ -8,21 +8,23 @@
 <div
   class="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-2xl bg-white p-11 shadow-lg"
   (click)="$event.stopPropagation()"
->
+  >
   <h2
     class="mb-4 items-center justify-center text-xl font-semibold text-azul-oscuro"
-  >
+    >
     Agregar Especialidad
   </h2>
 
   <select
     class="mb-3 w-full rounded border border-gray-300 px-3 py-2 text-azul-oscuro"
     [(ngModel)]="seleccionada"
-  >
+    >
     <option value="" disabled selected>Seleccione una especialidad</option>
-    <option *ngFor="let esp of especialidades()" [value]="esp.nombre">
-      {{ esp.nombre }}
-    </option>
+    @for (esp of especialidades(); track esp) {
+      <option [value]="esp.nombre">
+        {{ esp.nombre }}
+      </option>
+    }
     <option value="otra">Otra...</option>
   </select>
 
@@ -32,24 +34,28 @@
     class="mb-4 w-full rounded border border-gray-300 px-3 py-2 text-azul-oscuro disabled:bg-gray-100 disabled:text-gray-400"
     [(ngModel)]="nuevaEspecialidad"
     [disabled]="seleccionada() !== 'otra'"
-  />
+    />
 
-  <div class="flex items-center justify-center gap-3 pt-4">
-    <button
-      class="rounded border border-gray-400 px-4 py-2 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
-      (click)="cerrarModal()"
-      [disabled]="cargando()"
-    >
-      Cancelar
-    </button>
+    <div class="flex items-center justify-center gap-3 pt-4">
+      <button
+        class="rounded border border-gray-400 px-4 py-2 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+        (click)="cerrarModal()"
+        [disabled]="cargando()"
+        >
+        Cancelar
+      </button>
 
-    <button
-      class="rounded bg-azul-oscuro px-4 py-2 text-white hover:bg-azul-oscuro/90 disabled:opacity-50"
-      (click)="agregar()"
-      [disabled]="cargando()"
-    >
-      <span *ngIf="!cargando()">Agregar</span>
-      <span *ngIf="cargando()">Agregando...</span>
-    </button>
+      <button
+        class="rounded bg-azul-oscuro px-4 py-2 text-white hover:bg-azul-oscuro/90 disabled:opacity-50"
+        (click)="agregar()"
+        [disabled]="cargando()"
+        >
+        @if (!cargando()) {
+          <span>Agregar</span>
+        }
+        @if (cargando()) {
+          <span>Agregando...</span>
+        }
+      </button>
+    </div>
   </div>
-</div>

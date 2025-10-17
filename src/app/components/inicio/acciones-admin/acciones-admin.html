@@ -7,76 +7,77 @@
 <div
   class="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-2xl bg-white p-11 shadow-lg"
   (click)="$event.stopPropagation()"
->
-  <!-- Vista principal de botones -->
-  <div
-    *ngIf="!mostrarFormularioCancelar && !mostrarFormularioResenia"
-    class="flex flex-col gap-3"
   >
-    <button
-      *ngIf="puedeCancelar"
-      (click)="mostrarFormularioCancelar = true"
-      class="rounded-lg bg-gray-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-gray-800"
-    >
-      Cancelar turno
-    </button>
-
-    <button
-      *ngIf="puedeVerResenia"
-      (click)="verResenia()"
-      class="rounded-lg bg-pink-400 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-pink-700"
-    >
-      Ver reseña
-    </button>
-  </div>
+  <!-- Vista principal de botones -->
+  @if (!mostrarFormularioCancelar && !mostrarFormularioResenia) {
+    <div
+      class="flex flex-col gap-3"
+      >
+      @if (puedeCancelar) {
+        <button
+          (click)="mostrarFormularioCancelar = true"
+          class="rounded-lg bg-gray-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-gray-800"
+          >
+          Cancelar turno
+        </button>
+      }
+      @if (puedeVerResenia) {
+        <button
+          (click)="verResenia()"
+          class="rounded-lg bg-pink-400 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-pink-700"
+          >
+          Ver reseña
+        </button>
+      }
+    </div>
+  }
 
   <!-- Formulario para cancelar turno -->
-  <div *ngIf="mostrarFormularioCancelar" class="flex flex-col gap-3">
-    <textarea
-      [(ngModel)]="comentarioCancelar"
-      placeholder="Ingrese el motivo de cancelación"
-      rows="3"
-      class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
-    ></textarea>
-
-    <div class="flex justify-end gap-3">
-      <button
-        type="button"
-        (click)="cancelarAccionCancelar()"
-        class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-      >
-        Cancelar
-      </button>
-
-      <button
-        type="button"
-        (click)="confirmarCancelarTurno()"
-        [disabled]="!comentarioCancelar.trim() || cargando()"
-        class="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-50"
-      >
-        Confirmar cancelación
-      </button>
+  @if (mostrarFormularioCancelar) {
+    <div class="flex flex-col gap-3">
+      <textarea
+        [(ngModel)]="comentarioCancelar"
+        placeholder="Ingrese el motivo de cancelación"
+        rows="3"
+        class="w-full resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
+      ></textarea>
+      <div class="flex justify-end gap-3">
+        <button
+          type="button"
+          (click)="cancelarAccionCancelar()"
+          class="rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          (click)="confirmarCancelarTurno()"
+          [disabled]="!comentarioCancelar.trim() || cargando()"
+          class="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-50"
+          >
+          Confirmar cancelación
+        </button>
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Vista para mostrar reseña -->
-  <div
-    *ngIf="mostrarFormularioResenia"
-    class="flex flex-col items-center gap-4 text-center"
-  >
-    <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
-      Reseña
-    </h3>
-
-    <p class="px-2 text-gray-700 italic">
-      {{ cita.resenia || 'No se ha dejado una reseña para este turno.' }}
-    </p>
-
-    <button
-      (click)="volverDesdeVistaResenia()"
-      class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
-    >
-      Volver
-    </button>
-  </div>
+  @if (mostrarFormularioResenia) {
+    <div
+      class="flex flex-col items-center gap-4 text-center"
+      >
+      <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
+        Reseña
+      </h3>
+      <p class="px-2 text-gray-700 italic">
+        {{ cita.resenia || 'No se ha dejado una reseña para este turno.' }}
+      </p>
+      <button
+        (click)="volverDesdeVistaResenia()"
+        class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
+        >
+        Volver
+      </button>
+    </div>
+  }
 </div>

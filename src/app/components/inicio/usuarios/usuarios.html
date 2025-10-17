@@ -2,7 +2,7 @@
   <div class="h-full w-full p-1">
     <div
       class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 pb-6 shadow-inner"
-    >
+      >
       <!-- Solapas -->
       <!-- Solapas + Botón Definir horarios -->
       <div class="flex flex-wrap items-center justify-between pb-7">
@@ -14,7 +14,7 @@
             [class.border-azul-oscuro]="solapaActiva === 'pacientes'"
             [class.text-azul-oscuro]="solapaActiva === 'pacientes'"
             class="px-4 py-2 font-semibold text-gray-600 hover:text-azul-oscuro"
-          >
+            >
             Pacientes
           </button>
 
@@ -24,7 +24,7 @@
             [class.border-azul-oscuro]="solapaActiva === 'especialistas'"
             [class.text-azul-oscuro]="solapaActiva === 'especialistas'"
             class="px-4 py-2 font-semibold text-gray-600 hover:text-azul-oscuro"
-          >
+            >
             Especialistas
           </button>
 
@@ -34,7 +34,7 @@
             [class.border-azul-oscuro]="solapaActiva === 'administradores'"
             [class.text-azul-oscuro]="solapaActiva === 'administradores'"
             class="px-4 py-2 font-semibold text-gray-600 hover:text-azul-oscuro"
-          >
+            >
             Administradores
           </button>
         </div>
@@ -44,139 +44,149 @@
           <button
             class="btn btn-primary h-12 rounded-2xl bg-azul-oscuro px-6 py-2 text-base text-white transition-all duration-50 hover:bg-azul-claro hover:text-lg"
             (click)="abrirPopupAltas()"
-          >
+            >
             Dar Alta Usuario
           </button>
         </div>
       </div>
 
-      <app-altas-admin
-        *ngIf="mostrarPopupAltas"
-        (cerrar)="cerrarPopupAltas()"
-        (altaExitosa)="onAltaExitosa()"
-      ></app-altas-admin>
+      @if (mostrarPopupAltas) {
+        <app-altas-admin
+          (cerrar)="cerrarPopupAltas()"
+          (altaExitosa)="onAltaExitosa()"
+        ></app-altas-admin>
+      }
 
       <!-- Cards de pacientes -->
-      <div
-        *ngIf="solapaActiva === 'pacientes'"
-        class="grid justify-center gap-x-1 gap-y-3"
-        style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))"
-      >
+      @if (solapaActiva === 'pacientes') {
         <div
-          *ngFor="let usuario of pacientes"
-          class="w-full rounded-lg border border-gray-300 bg-white p-4 shadow-sm"
-        >
-          <img
-            *ngIf="usuario.urlImagenPerfil"
-            [src]="usuario.urlImagenPerfil"
-            alt="Avatar"
-            class="mb-2 h-14 w-14 rounded-full object-cover"
-            appTrackImage
-          />
-          <div class="text-sm">
-            <p class="font-semibold text-azul-oscuro">
-              {{ usuario.nombre }} {{ usuario.apellido }}
-            </p>
-            <p class="text-gray-600">{{ usuario.email }}</p>
-            <p>DNI: {{ usuario.dni }}</p>
-            <p>Edad: {{ usuario.edad }}</p>
-            <p>
-              Email verificado:
-              <span
-                [ngClass]="usuario.emailVerificado ? 'text-verde-oscuro' : 'text-red-600'"
+          class="grid justify-center gap-x-1 gap-y-3"
+          style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))"
+          >
+          @for (usuario of pacientes; track usuario) {
+            <div
+              class="w-full rounded-lg border border-gray-300 bg-white p-4 shadow-sm"
               >
-                {{ usuario.emailVerificado ? 'Verificado' : 'Sin Verificar' }}
-              </span>
-            </p>
-          </div>
+              @if (usuario.urlImagenPerfil) {
+                <img
+                  [src]="usuario.urlImagenPerfil"
+                  alt="Avatar"
+                  class="mb-2 h-14 w-14 rounded-full object-cover"
+                  appTrackImage
+                  />
+              }
+              <div class="text-sm">
+                <p class="font-semibold text-azul-oscuro">
+                  {{ usuario.nombre }} {{ usuario.apellido }}
+                </p>
+                <p class="text-gray-600">{{ usuario.email }}</p>
+                <p>DNI: {{ usuario.dni }}</p>
+                <p>Edad: {{ usuario.edad }}</p>
+                <p>
+                  Email verificado:
+                  <span
+                    [ngClass]="usuario.emailVerificado ? 'text-verde-oscuro' : 'text-red-600'"
+                    >
+                    {{ usuario.emailVerificado ? 'Verificado' : 'Sin Verificar' }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          }
         </div>
-      </div>
+      }
 
       <!-- Cards de especialistas -->
-      <div
-        *ngIf="solapaActiva === 'especialistas'"
-        class="grid justify-center gap-x-1 gap-y-3"
-        style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))"
-      >
+      @if (solapaActiva === 'especialistas') {
         <div
-          *ngFor="let usuario of especialistas"
-          class="w-full rounded-lg border border-gray-300 bg-white p-4 shadow-sm"
-        >
-          <img
-            *ngIf="usuario.urlImagenPerfil"
-            [src]="usuario.urlImagenPerfil"
-            alt="Avatar"
-            class="mb-2 h-14 w-14 rounded-full object-cover"
-            appTrackImage
-          />
-          <div class="text-sm">
-            <p class="font-semibold text-azul-oscuro">
-              {{ usuario.nombre }} {{ usuario.apellido }}
-            </p>
-            <p class="text-gray-600">{{ usuario.email }}</p>
-            <p>DNI: {{ usuario.dni }}</p>
-            <p>Edad: {{ usuario.edad }}</p>
-            <p>
-              Email verificado:
-              <span
-                [ngClass]="usuario.emailVerificado ? 'text-verde-oscuro' : 'text-red-600'"
-              >
-                {{ usuario.emailVerificado ? 'Verificado' : 'Sin Verificar' }}
-              </span>
-            </p>
-            <p>
-              Estado:
-              <span
-                [ngClass]="usuario.validadoAdmin ? 'text-verde-oscuro' : 'text-red-600'"
-              >
-                {{ usuario.validadoAdmin ? 'Habilitado' : 'Inhabilitado' }}
-              </span>
-            </p>
-          </div>
-          <button
-            class="mt-2 w-full rounded bg-azul-claro px-3 py-1 text-sm text-white hover:bg-azul-oscuro"
-            (click)="toggleValidadoAdmin(usuario)"
+          class="grid justify-center gap-x-1 gap-y-3"
+          style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))"
           >
-            {{ usuario.validadoAdmin ? 'Deshabilitar' : 'Habilitar' }}
-          </button>
+          @for (usuario of especialistas; track usuario) {
+            <div
+              class="w-full rounded-lg border border-gray-300 bg-white p-4 shadow-sm"
+              >
+              @if (usuario.urlImagenPerfil) {
+                <img
+                  [src]="usuario.urlImagenPerfil"
+                  alt="Avatar"
+                  class="mb-2 h-14 w-14 rounded-full object-cover"
+                  appTrackImage
+                  />
+              }
+              <div class="text-sm">
+                <p class="font-semibold text-azul-oscuro">
+                  {{ usuario.nombre }} {{ usuario.apellido }}
+                </p>
+                <p class="text-gray-600">{{ usuario.email }}</p>
+                <p>DNI: {{ usuario.dni }}</p>
+                <p>Edad: {{ usuario.edad }}</p>
+                <p>
+                  Email verificado:
+                  <span
+                    [ngClass]="usuario.emailVerificado ? 'text-verde-oscuro' : 'text-red-600'"
+                    >
+                    {{ usuario.emailVerificado ? 'Verificado' : 'Sin Verificar' }}
+                  </span>
+                </p>
+                <p>
+                  Estado:
+                  <span
+                    [ngClass]="usuario.validadoAdmin ? 'text-verde-oscuro' : 'text-red-600'"
+                    >
+                    {{ usuario.validadoAdmin ? 'Habilitado' : 'Inhabilitado' }}
+                  </span>
+                </p>
+              </div>
+              <button
+                class="mt-2 w-full rounded bg-azul-claro px-3 py-1 text-sm text-white hover:bg-azul-oscuro"
+                (click)="toggleValidadoAdmin(usuario)"
+                >
+                {{ usuario.validadoAdmin ? 'Deshabilitar' : 'Habilitar' }}
+              </button>
+            </div>
+          }
         </div>
-      </div>
+      }
 
       <!-- Cards de administradores -->
-      <div
-        *ngIf="solapaActiva === 'administradores'"
-        class="grid justify-center gap-x-1 gap-y-3"
-        style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))"
-      >
+      @if (solapaActiva === 'administradores') {
         <div
-          *ngFor="let usuario of administradores"
-          class="w-full rounded-lg border border-gray-300 bg-white p-4 shadow-sm"
-        >
-          <img
-            *ngIf="usuario.urlImagenPerfil"
-            [src]="usuario.urlImagenPerfil"
-            alt="Avatar"
-            class="mb-2 h-14 w-14 rounded-full object-cover"
-            appTrackImage
-          />
-          <div class="text-sm">
-            <p class="font-semibold text-azul-oscuro">
-              {{ usuario.nombre }} {{ usuario.apellido }}
-            </p>
-            <p class="text-gray-600">{{ usuario.email }}</p>
-            <p>DNI: {{ usuario.dni }}</p>
-            <p>Edad: {{ usuario.edad }}</p>
-            <p>
-              Email verificado:
-              <span
-                [ngClass]="usuario.emailVerificado ? 'text-verde-oscuro' : 'text-red-600'"
+          class="grid justify-center gap-x-1 gap-y-3"
+          style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))"
+          >
+          @for (usuario of administradores; track usuario) {
+            <div
+              class="w-full rounded-lg border border-gray-300 bg-white p-4 shadow-sm"
               >
-                {{ usuario.emailVerificado ? 'Verificado' : 'Sin Verificar' }}
-              </span>
-            </p>
-          </div>
+              @if (usuario.urlImagenPerfil) {
+                <img
+                  [src]="usuario.urlImagenPerfil"
+                  alt="Avatar"
+                  class="mb-2 h-14 w-14 rounded-full object-cover"
+                  appTrackImage
+                  />
+              }
+              <div class="text-sm">
+                <p class="font-semibold text-azul-oscuro">
+                  {{ usuario.nombre }} {{ usuario.apellido }}
+                </p>
+                <p class="text-gray-600">{{ usuario.email }}</p>
+                <p>DNI: {{ usuario.dni }}</p>
+                <p>Edad: {{ usuario.edad }}</p>
+                <p>
+                  Email verificado:
+                  <span
+                    [ngClass]="usuario.emailVerificado ? 'text-verde-oscuro' : 'text-red-600'"
+                    >
+                    {{ usuario.emailVerificado ? 'Verificado' : 'Sin Verificar' }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          }
         </div>
-      </div>
+      }
     </div>
   </div>
 </app-loading-wrapper>

@@ -7,7 +7,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Especialidad } from '../../../models/SupaBase/Especialidad';
 import { AuthSupabase } from '../../../services/auth-supabase';
@@ -16,7 +16,7 @@ import { Supabase } from '../../../supabase';
 
 @Component({
   selector: 'app-agregar-especialidad',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './agregar-especialidad.html',
   styleUrl: './agregar-especialidad.css',
 })
