@@ -2,11 +2,17 @@
 <div
   class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
   (click)="cerrarPopup()"
+  (keyup.escape)="cerrarPopup()"
+  tabindex="-1"
+  role="dialog"
+  aria-modal="true"
 >
   <!-- Modal Content -->
   <div
     class="w-full max-w-3xl rounded-2xl bg-white px-6 py-1 shadow-xl"
     (click)="$event.stopPropagation()"
+    (keyup)="$event.stopPropagation()"
+    tabindex="0"
   >
     <h2 class="mt-2 mb-4 text-center text-4xl font-bold text-azul-oscuro">
       Alta
@@ -119,45 +125,91 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Especialidad -->
-      <mat-form-field *ngIf="tipoUsuario === 'especialista'" appearance="fill">
-        <mat-label>Especialidad</mat-label>
-        <mat-select formControlName="especialidad">
-          <mat-option *ngFor="let esp of especialidadOptions" [value]="esp">
-            {{ esp.nombre }}
-          </mat-option>
-        </mat-select>
-        <mat-error
-          *ngIf="registroForm.get('especialidad')?.hasError('required')"
-        >
-          Campo obligatorio
-        </mat-error>
-      </mat-form-field>
+      <!-- Especialidades (Solo especialista) -->
+      <div *ngIf="tipoUsuario === 'especialista'" class="col-span-2">
+        <div class="mb-1 text-sm font-medium text-azul-oscuro">
+          Especialidades (seleccioná al menos una)
+        </div>
+        <div class="relative">
+          <div
+            class="flex min-h-[56px] cursor-pointer items-center rounded-md border border-gray-300 bg-white px-4 py-3 transition-colors hover:border-azul-oscuro"
+            (click)="toggleDesplegableEspecialidades($event)"
+            (keyup.enter)="toggleDesplegableEspecialidades($event)"
+            (keyup.space)="toggleDesplegableEspecialidades($event)"
+            tabindex="0"
+            [class.border-azul-oscuro]="desplegableEspecialidadesAbierto"
+          >
+            <span class="flex-1 text-sm text-gray-700">
+              {{ obtenerEspecialidadesSeleccionadasTexto() }}
+            </span>
+            <mat-icon class="text-gray-500"
+              >{{ desplegableEspecialidadesAbierto ? "expand_less" :
+              "expand_more" }}</mat-icon
+            >
+          </div>
 
-      <!-- Otra Especialidad -->
-      <mat-form-field *ngIf="tipoUsuario === 'especialista'" appearance="fill">
-        <mat-label>Otra Especialidad</mat-label>
-        <input
-          matInput
-          formControlName="otraEspecialidad"
-          [disabled]="!registroForm.get('otraEspecialidad')?.enabled"
-        />
-        <mat-error
-          *ngIf="registroForm.get('otraEspecialidad')?.hasError('required')"
+          <!-- Desplegable con checkboxes -->
+          <div
+            *ngIf="desplegableEspecialidadesAbierto"
+            class="absolute top-full right-0 left-0 z-10 mt-1 max-h-60 overflow-y-auto rounded-lg border border-gray-300 bg-white p-3 shadow-lg"
+          >
+            <div class="space-y-2">
+              <mat-checkbox
+                *ngFor="let especialidad of especialidadOptions"
+                [checked]="esEspecialidadSeleccionada(especialidad.id)"
+                (change)="toggleEspecialidad(especialidad.id)"
+                class="block text-sm"
+              >
+                {{ especialidad.nombre }}
+              </mat-checkbox>
+            </div>
+
+            <!-- Botón para agregar nueva especialidad -->
+            <div class="mt-3 border-t pt-2">
+              <button
+                type="button"
+                mat-button
+                (click)="toggleMostrarNuevaEspecialidad(); $event.stopPropagation()"
+                class="w-full text-left text-sm text-azul-oscuro"
+              >
+                {{ mostrarCampoOtraEspecialidad ? "✕ Cancelar" : "+ Agregar
+                nueva especialidad" }}
+              </button>
+
+              <!-- Campo para nueva especialidad dentro del desplegable -->
+              <div *ngIf="mostrarCampoOtraEspecialidad" class="mt-2">
+                <input
+                  formControlName="nuevaEspecialidad"
+                  placeholder="Nombre de la especialidad"
+                  class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-azul-oscuro focus:outline-none"
+                  (click)="$event.stopPropagation()"
+                />
+                <div
+                  *ngIf="registroForm.get('nuevaEspecialidad')?.hasError('minlength')"
+                  class="mt-1 text-xs text-red-600"
+                >
+                  Mínimo 2 caracteres
+                </div>
+                <div
+                  *ngIf="registroForm.get('nuevaEspecialidad')?.hasError('pattern')"
+                  class="mt-1 text-xs text-red-600"
+                >
+                  Solo letras y espacios
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error si no hay especialidades seleccionadas -->
+        <div
+          *ngIf="registroForm.get('especialidadesSeleccionadas')?.hasError('alMenosUna') && 
+                 registroForm.get('especialidadesSeleccionadas')?.touched"
+          class="mt-1 text-sm text-red-600"
         >
-          Campo obligatorio
-        </mat-error>
-        <mat-error
-          *ngIf="registroForm.get('otraEspecialidad')?.hasError('minlength')"
-        >
-          Mínimo 2 caracteres
-        </mat-error>
-        <mat-error
-          *ngIf="registroForm.get('otraEspecialidad')?.hasError('pattern')"
-        >
-          Solo letras
-        </mat-error>
-      </mat-form-field>
+          Debés seleccionar al menos una especialidad o agregar una nueva
+        </div>
+      </div>
 
       <!-- Email -->
       <mat-form-field appearance="fill">
@@ -185,10 +237,13 @@
 
       <!-- Imagen Perfil -->
       <div class="md:col-span-2">
-        <label class="block text-sm font-medium text-gray-700"
+        <label
+          for="imagenPerfilAdmin"
+          class="block text-sm font-medium text-gray-700"
           >Imagen de perfil</label
         >
         <input
+          id="imagenPerfilAdmin"
           type="file"
           (change)="onFileSelected($event, 'perfil')"
           accept="image/*"
@@ -203,10 +258,13 @@
 
       <!-- Imagen Fondo -->
       <div *ngIf="tipoUsuario === 'paciente'" class="md:col-span-2">
-        <label class="block text-sm font-medium text-gray-700"
+        <label
+          for="imagenFondoAdmin"
+          class="block text-sm font-medium text-gray-700"
           >Imagen de fondo</label
         >
         <input
+          id="imagenFondoAdmin"
           type="file"
           (change)="onFileSelected($event, 'fondo')"
           accept="image/*"

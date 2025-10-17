@@ -1,20 +1,20 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Usuario } from '../models/Auth/Usuario';
-import { Supabase } from '../supabase';
-import { mapPerfilToUsuario } from '../mappers/mapPerfilToUsuario';
-import { RegistroPaciente } from '../models/Auth/RegistroPaciente';
-import { subirImagenDesdeBase64 } from '../helpers/upload-base64';
-import { RespuestaApi } from '../models/RespuestaApi';
-import { RegistroEspecialista } from '../models/Auth/RegistroEspecialista';
-import { RegistroAdmin } from '../models/Auth/RegistroAdmin';
-import { Especialidad } from '../models/SupaBase/Especialidad';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject } from "rxjs";
+import { Usuario } from "../models/Auth/Usuario";
+import { Supabase } from "../supabase";
+import { mapPerfilToUsuario } from "../mappers/mapPerfilToUsuario";
+import { RegistroPaciente } from "../models/Auth/RegistroPaciente";
+import { subirImagenDesdeBase64 } from "../helpers/upload-base64";
+import { RespuestaApi } from "../models/RespuestaApi";
+import { RegistroEspecialista } from "../models/Auth/RegistroEspecialista";
+import { RegistroAdmin } from "../models/Auth/RegistroAdmin";
+import { Especialidad } from "../models/SupaBase/Especialidad";
 
-import { mapSupabaseError } from '../mappers/mapAuthError';
-import { Captcha } from '../models/captcha';
+import { mapSupabaseError } from "../mappers/mapAuthError";
+import { Captcha } from "../models/captcha";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class AuthSupabase {
   private userSubject = new BehaviorSubject<Usuario | null>(null);
@@ -46,14 +46,14 @@ export class AuthSupabase {
   }
 
   getAvatarUrl(path: string): string {
-    return Supabase.storage.from('imagenes').getPublicUrl(path).data.publicUrl;
+    return Supabase.storage.from("imagenes").getPublicUrl(path).data.publicUrl;
   }
 
   private async restoreUserFromSession(): Promise<void> {
     const { data, error } = await Supabase.auth.getUser();
 
     // Si el token quedó inválido, cerramos sesión y limpiamos
-    if (error?.message === 'User from sub claim in JWT does not exist') {
+    if (error?.message === "User from sub claim in JWT does not exist") {
       await Supabase.auth.signOut();
       localStorage.clear();
       sessionStorage.clear();
@@ -66,7 +66,7 @@ export class AuthSupabase {
       return;
     }
 
-    await this.loadUsuarioDesdePerfil(data.user.id, data.user.email ?? '');
+    await this.loadUsuarioDesdePerfil(data.user.id, data.user.email ?? "");
   }
 
   async loadUsuarioDesdePerfil(
@@ -78,7 +78,7 @@ export class AuthSupabase {
       return { success: false };
     }
 
-    const { data: perfil, error } = await Supabase.from('perfiles')
+    const { data: perfil, error } = await Supabase.from("perfiles")
       .select(
         `
         id,
@@ -108,7 +108,7 @@ export class AuthSupabase {
         )
       `,
       )
-      .eq('auth_id', auth_id)
+      .eq("auth_id", auth_id)
       .maybeSingle();
 
     if (error || !perfil) {
@@ -119,25 +119,25 @@ export class AuthSupabase {
     const usuario = mapPerfilToUsuario(perfil, email);
 
     // Si es especialista pero no validado, no dejamos pasar
-    if (usuario.rol === 'especialista' && !usuario.validadoAdmin) {
+    if (usuario.rol === "especialista" && !usuario.validadoAdmin) {
       this.userSubject.next(null);
       return {
         success: false,
-        errorCode: 'Tu cuenta aún no fue validada por un administrador',
+        errorCode: "Tu cuenta aún no fue validada por un administrador",
       };
     }
 
     if (!usuario.emailVerificado) {
-      const { error: updateError } = await Supabase.from('perfiles')
+      const { error: updateError } = await Supabase.from("perfiles")
         .update({ email_verificado: true })
-        .eq('auth_id', auth_id);
+        .eq("auth_id", auth_id);
 
       if (updateError) {
-        console.error('Error al actualizar email_verificado:', updateError);
+        console.error("Error al actualizar email_verificado:", updateError);
         return {
           success: false,
           errorCode:
-            'No se pudo actualizar el estado de verificación del email',
+            "No se pudo actualizar el estado de verificación del email",
         };
       }
 
@@ -159,13 +159,13 @@ export class AuthSupabase {
       return {
         success: false,
         errorCode: mapSupabaseError(error),
-        message: error?.message ?? 'Error desconocido al iniciar sesión',
+        message: error?.message ?? "Error desconocido al iniciar sesión",
       };
     }
 
     const respuesta = await this.loadUsuarioDesdePerfil(
       data.user.id,
-      data.user.email ?? '',
+      data.user.email ?? "",
     );
 
     if (respuesta.success == false) {
@@ -193,7 +193,7 @@ export class AuthSupabase {
       return {
         success: false,
         errorCode: mapSupabaseError(error),
-        message: 'Ya existe una cuenta registrada con este email.',
+        message: "Ya existe una cuenta registrada con este email.",
       };
     }
 
@@ -201,17 +201,17 @@ export class AuthSupabase {
       return {
         success: false,
         errorCode: mapSupabaseError(error),
-        message: error?.message ?? 'Error desconocido al registrar',
+        message: error?.message ?? "Error desconocido al registrar",
       };
     }
 
     const auth_id = data.user.id;
-    const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, '');
+    const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, "");
 
     // Paso 2: Subir imágenes
     const imagenPerfilRes = await subirImagenDesdeBase64(
       dataRegistro.imagenPerfil,
-      'fotoPerfilPaciente',
+      "fotoPerfilPaciente",
       `perfil-${nombreSanitizado}`,
     );
 
@@ -221,7 +221,7 @@ export class AuthSupabase {
 
     const imagenFondoRes = await subirImagenDesdeBase64(
       dataRegistro.imagenFondo,
-      'fotoFondoPaciente',
+      "fotoFondoPaciente",
       `fondo-${nombreSanitizado}`,
     );
 
@@ -231,7 +231,7 @@ export class AuthSupabase {
 
     // Paso 3: Insertar perfil y obtener el id generado
     const { data: perfilData, error: perfilError } = await Supabase.from(
-      'perfiles',
+      "perfiles",
     )
       .insert({
         auth_id,
@@ -240,21 +240,21 @@ export class AuthSupabase {
         edad: parseInt(dataRegistro.edad, 10),
         dni: dataRegistro.dni,
         url_imagen_perfil: imagenPerfilRes.data,
-        rol: 'paciente',
+        rol: "paciente",
       })
-      .select('id')
+      .select("id")
       .single();
 
     if (perfilError || !perfilData) {
       return {
         success: false,
-        message: 'Error al guardar el perfil del usuario.',
+        message: "Error al guardar el perfil del usuario.",
       };
     }
 
     // Paso 4: Insertar detalles_paciente usando perfilData.id
     const { error: detallesError } = await Supabase.from(
-      'detalles_paciente',
+      "detalles_paciente",
     ).insert({
       perfil_id: perfilData.id,
       obra_social: dataRegistro.obraSocial,
@@ -264,7 +264,7 @@ export class AuthSupabase {
     if (detallesError) {
       return {
         success: false,
-        message: 'Error al guardar la obra social del paciente.',
+        message: "Error al guardar la obra social del paciente.",
       };
     }
 
@@ -284,7 +284,7 @@ export class AuthSupabase {
       return {
         success: false,
         errorCode: mapSupabaseError(error),
-        message: 'Ya existe una cuenta registrada con este email.',
+        message: "Ya existe una cuenta registrada con este email.",
       };
     }
 
@@ -292,17 +292,17 @@ export class AuthSupabase {
       return {
         success: false,
         errorCode: mapSupabaseError(error),
-        message: error?.message ?? 'Error desconocido al iniciar sesión',
+        message: error?.message ?? "Error desconocido al iniciar sesión",
       };
     }
 
     const auth_id = data.user.id;
-    const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, '');
+    const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, "");
 
     // Paso 2: Subir imagen de perfil
     const imagenPerfilRes = await subirImagenDesdeBase64(
       dataRegistro.imagenPerfil,
-      'fotoPerfilEspecialista',
+      "fotoPerfilEspecialista",
       `perfil-${nombreSanitizado}`,
     );
 
@@ -312,7 +312,7 @@ export class AuthSupabase {
 
     // Paso 3: Insertar en perfiles y obtener el id generado
     const { data: perfilData, error: perfilError } = await Supabase.from(
-      'perfiles',
+      "perfiles",
     )
       .insert({
         auth_id,
@@ -321,21 +321,21 @@ export class AuthSupabase {
         edad: parseInt(dataRegistro.edad, 10),
         dni: dataRegistro.dni,
         url_imagen_perfil: imagenPerfilRes.data,
-        rol: 'especialista',
+        rol: "especialista",
       })
-      .select('id')
+      .select("id")
       .single();
 
     if (perfilError || !perfilData) {
       return {
         success: false,
-        message: 'Error al guardar el perfil del especialista.',
+        message: "Error al guardar el perfil del especialista.",
       };
     }
 
     // Paso 4: Insertar en detalles_especialista usando perfilData.id
     const { error: detallesError } = await Supabase.from(
-      'detalles_especialista',
+      "detalles_especialista",
     ).insert({
       perfil_id: perfilData.id,
       validado_admin: false,
@@ -345,43 +345,54 @@ export class AuthSupabase {
     if (detallesError) {
       return {
         success: false,
-        message: 'Error al guardar los detalles del especialista.',
+        message: "Error al guardar los detalles del especialista.",
       };
     }
 
-    // Paso 5: Insertar especialidad
-    const parsedId = Number(dataRegistro.especialidad);
-    const esNueva = !Number.isInteger(parsedId);
+    // Paso 5: Insertar especialidades (múltiples)
+    const especialidadesParaInsertar = [];
 
-    let especialidadId: number;
+    for (const especialidad of dataRegistro.especialidades) {
+      const parsedId = Number(especialidad);
+      const esNueva = !Number.isInteger(parsedId);
 
-    if (esNueva) {
-      const resultado = await this.agregarEspecialidadSiNoExiste(
-        String(dataRegistro.especialidad),
-      );
+      let especialidadId: number;
 
-      if (!resultado.success || !resultado.data) {
-        return { success: false, message: resultado.message };
+      if (esNueva) {
+        // Es una nueva especialidad (texto)
+        const resultado = await this.agregarEspecialidadSiNoExiste(
+          String(especialidad),
+        );
+
+        if (!resultado.success || !resultado.data) {
+          return { success: false, message: resultado.message };
+        }
+
+        especialidadId = resultado.data;
+      } else {
+        // Es un ID existente
+        especialidadId = parsedId;
       }
 
-      especialidadId = resultado.data;
-    } else {
-      especialidadId = parsedId;
+      especialidadesParaInsertar.push({
+        perfil_id: perfilData.id,
+        especialidad_id: especialidadId,
+        duracion: 30,
+      });
     }
 
-    const { error: especialidadError } = await Supabase.from(
-      'especialista_especialidades',
-    ).insert({
-      perfil_id: perfilData.id,
-      especialidad_id: especialidadId,
-      duracion: 30,
-    });
+    // Insertar todas las especialidades
+    if (especialidadesParaInsertar.length > 0) {
+      const { error: especialidadError } = await Supabase.from(
+        "especialista_especialidades",
+      ).insert(especialidadesParaInsertar);
 
-    if (especialidadError) {
-      return {
-        success: false,
-        message: 'Error al asignar la especialidad al especialista.',
-      };
+      if (especialidadError) {
+        return {
+          success: false,
+          message: "Error al asignar las especialidades al especialista.",
+        };
+      }
     }
 
     return { success: true };
@@ -400,7 +411,7 @@ export class AuthSupabase {
       return {
         success: false,
         errorCode: mapSupabaseError(error),
-        message: 'Ya existe una cuenta registrada con este email.',
+        message: "Ya existe una cuenta registrada con este email.",
       };
     }
 
@@ -408,17 +419,17 @@ export class AuthSupabase {
       return {
         success: false,
         errorCode: mapSupabaseError(error),
-        message: error?.message ?? 'Error desconocido al iniciar sesión',
+        message: error?.message ?? "Error desconocido al iniciar sesión",
       };
     }
 
     const auth_id = data.user.id;
-    const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, '');
+    const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, "");
 
     // Paso 2: Subir imagen de perfil
     const imagenPerfilRes = await subirImagenDesdeBase64(
       dataRegistro.imagenPerfil,
-      'fotoPerfilAdmin',
+      "fotoPerfilAdmin",
       `perfil-${nombreSanitizado}`,
     );
 
@@ -427,20 +438,20 @@ export class AuthSupabase {
     }
 
     // Paso 3: Insertar perfil y obtener el id generado
-    const { error: perfilError } = await Supabase.from('perfiles').insert({
+    const { error: perfilError } = await Supabase.from("perfiles").insert({
       auth_id,
       nombre: dataRegistro.nombre,
       apellido: dataRegistro.apellido,
       edad: parseInt(dataRegistro.edad, 10),
       dni: dataRegistro.dni,
       url_imagen_perfil: imagenPerfilRes.data,
-      rol: 'admin',
+      rol: "admin",
     });
 
     if (perfilError) {
       return {
         success: false,
-        message: 'Error al guardar el perfil del admin.',
+        message: "Error al guardar el perfil del admin.",
       };
     }
 
@@ -448,12 +459,12 @@ export class AuthSupabase {
   }
 
   async obtenerEspecialidades(): Promise<Especialidad[]> {
-    const { data, error } = await Supabase.from('especialidades')
-      .select('id, nombre, url_icono')
-      .order('nombre', { ascending: true });
+    const { data, error } = await Supabase.from("especialidades")
+      .select("id, nombre, url_icono")
+      .order("nombre", { ascending: true });
 
     if (error || !data) {
-      console.error('Error al obtener especialidades:', error);
+      console.error("Error al obtener especialidades:", error);
       return [];
     }
 
@@ -471,15 +482,15 @@ export class AuthSupabase {
 
     // Verificamos si ya existe (case-insensitive)
     const { data: existentes, error: errorConsulta } = await Supabase.from(
-      'especialidades',
+      "especialidades",
     )
-      .select('id, nombre')
-      .ilike('nombre', nombreNormalizado);
+      .select("id, nombre")
+      .ilike("nombre", nombreNormalizado);
 
     if (errorConsulta) {
       return {
         success: false,
-        message: 'Error al buscar especialidades existentes',
+        message: "Error al buscar especialidades existentes",
       };
     }
 
@@ -493,20 +504,20 @@ export class AuthSupabase {
 
     // Insertamos la nueva especialidad con URL default
     const defaultUrl =
-      'https://rtcjwvxzoxhglvqirrel.supabase.co/storage/v1/object/public/imagenes/fotoEspecialidad/default.png';
+      "https://rtcjwvxzoxhglvqirrel.supabase.co/storage/v1/object/public/imagenes/fotoEspecialidad/default.png";
 
     // Insertamos la nueva especialidad
     const { data: insertada, error: errorInsert } = await Supabase.from(
-      'especialidades',
+      "especialidades",
     )
       .insert({ nombre, url_icono: defaultUrl })
-      .select('id')
+      .select("id")
       .single();
 
     if (errorInsert || !insertada?.id) {
       return {
         success: false,
-        message: 'Error al insertar nueva especialidad.',
+        message: "Error al insertar nueva especialidad.",
       };
     }
 
@@ -514,8 +525,8 @@ export class AuthSupabase {
   }
 
   async getCaptchas(): Promise<Captcha[]> {
-    const { data, error } = await Supabase.from('captcha')
-      .select('imagenUrl, respuesta')
+    const { data, error } = await Supabase.from("captcha")
+      .select("imagenUrl, respuesta")
       .overrideTypes<
         { imagenUrl: string; respuesta: string }[],
         { merge: false }
@@ -524,7 +535,7 @@ export class AuthSupabase {
     console.log(data);
 
     if (error || !data) {
-      console.error('Error al obtener captchas:', error);
+      console.error("Error al obtener captchas:", error);
       return [];
     }
 
@@ -535,13 +546,13 @@ export class AuthSupabase {
   }
 
   async registrarIngreso(perfilId: number): Promise<void> {
-    const { error } = await Supabase.from('registro_ingresos').insert({
+    const { error } = await Supabase.from("registro_ingresos").insert({
       perfil_id: perfilId,
       // fecha_ingreso se setea solo si tiene default value `now()` en Supabase
     });
 
     if (error) {
-      console.error('Error al registrar el ingreso:', error.message);
+      console.error("Error al registrar el ingreso:", error.message);
       // Podés manejarlo con tu sistema de errores si querés
     }
   }

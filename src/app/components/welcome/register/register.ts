@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, inject } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  HostListener,
+  ElementRef,
+} from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
@@ -12,6 +19,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 import { AuthSupabase } from "../../../services/auth-supabase";
@@ -37,6 +45,7 @@ import { MiCaptcha } from "../../mi-captcha/mi-captcha";
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    MatCheckboxModule,
     MiCaptcha,
   ],
   templateUrl: "./register.html",
@@ -47,7 +56,10 @@ export class Register implements OnInit, OnDestroy {
   tipoUsuario: "paciente" | "especialista" | null = null;
   obraSocialOptions = OBRAS_SOCIALES;
   especialidadOptions: Especialidad[] = [];
+  especialidadesSeleccionadas = new Set<number>();
   captchaEsValido = false;
+  mostrarCampoOtraEspecialidad = false;
+  desplegableEspecialidadesAbierto = false;
 
   captchaValidoValidator = () => {
     return (): { captchaInvalido: true } | null => {
@@ -62,13 +74,13 @@ export class Register implements OnInit, OnDestroy {
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private loading = inject(LoadingOverlayService);
+  private elementRef = inject(ElementRef);
 
   async ngOnInit(): Promise<void> {
     try {
       this.loading.show();
       // Carga inicial de especialidades
       this.especialidadOptions = await this.auth.obtenerEspecialidades();
-      this.especialidadOptions.push({ id: -1, nombre: "Otra" });
 
       // Construcción del form
       this.registroForm = this.fb.group(
@@ -97,9 +109,9 @@ export class Register implements OnInit, OnDestroy {
           obraSocial: [""],
           mail: ["", [Validators.required, Validators.email]],
           password: ["", [Validators.required, Validators.minLength(7)]],
-          especialidad: [""],
-          otraEspecialidad: [
-            { value: "", disabled: true },
+          especialidadesSeleccionadas: [[]],
+          nuevaEspecialidad: [
+            "",
             [
               Validators.minLength(2),
               Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
@@ -112,25 +124,6 @@ export class Register implements OnInit, OnDestroy {
           validators: this.captchaValidoValidator(),
         },
       );
-
-      // Ajuste dinámico de validadores para "otraEspecialidad"
-      this.subEspecialidad = this.registroForm
-        .get("especialidad")!
-        .valueChanges.subscribe((value) => {
-          const otra = this.registroForm.get("otraEspecialidad")!;
-          if (value?.id === -1) {
-            otra.enable();
-            otra.setValidators([
-              Validators.required,
-              Validators.minLength(2),
-              Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
-            ]);
-          } else {
-            otra.disable();
-            otra.clearValidators();
-          }
-          otra.updateValueAndValidity();
-        });
     } catch {
       // Error al cargar especialidades
       console.error("Error al cargar especialidades");
@@ -140,38 +133,110 @@ export class Register implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subEspecialidad.unsubscribe();
+    if (this.subEspecialidad) {
+      this.subEspecialidad.unsubscribe();
+    }
   }
 
   seleccionarTipo(tipo: "paciente" | "especialista"): void {
     this.tipoUsuario = tipo;
 
-    if (!this.registroForm) return; // <--- chequeo de seguridad
+    if (!this.registroForm) return;
 
     if (tipo === "paciente") {
       this.registroForm.get("obraSocial")?.setValidators([Validators.required]);
       this.registroForm
         .get("imagenFondo")
         ?.setValidators([Validators.required]);
-      this.registroForm.get("especialidad")?.clearValidators();
-      this.registroForm.get("otraEspecialidad")?.clearValidators();
+      this.registroForm.get("especialidadesSeleccionadas")?.clearValidators();
+      this.registroForm.get("nuevaEspecialidad")?.clearValidators();
     } else {
       this.registroForm.get("obraSocial")?.clearValidators();
+      this.registroForm.get("imagenFondo")?.clearValidators();
+      // Validador personalizado: debe tener al menos 1 especialidad
       this.registroForm
-        .get("especialidad")
-        ?.setValidators([Validators.required]);
-      // Si especialidad no es "Otra", entonces desactivo otraEspecialidad
-      const otraEspecialidadCtrl = this.registroForm.get("otraEspecialidad")!;
-      if (this.registroForm.get("especialidad")?.value !== "Otra") {
-        otraEspecialidadCtrl.disable();
-        otraEspecialidadCtrl.clearValidators();
-      }
+        .get("especialidadesSeleccionadas")
+        ?.setValidators([this.alMenosUnaEspecialidadValidator()]);
     }
 
-    // Actualizar validez después de cambiar validadores
     this.registroForm.get("obraSocial")?.updateValueAndValidity();
-    this.registroForm.get("especialidad")?.updateValueAndValidity();
-    this.registroForm.get("otraEspecialidad")?.updateValueAndValidity();
+    this.registroForm.get("imagenFondo")?.updateValueAndValidity();
+    this.registroForm
+      .get("especialidadesSeleccionadas")
+      ?.updateValueAndValidity();
+  }
+
+  alMenosUnaEspecialidadValidator() {
+    return (control: { value: number[] }) => {
+      const especialidades = control.value || [];
+      const nuevaEsp = this.registroForm?.get("nuevaEspecialidad")?.value;
+      if (especialidades.length === 0 && !nuevaEsp) {
+        return { alMenosUna: true };
+      }
+      return null;
+    };
+  }
+
+  toggleEspecialidad(especialidadId: number): void {
+    if (this.especialidadesSeleccionadas.has(especialidadId)) {
+      this.especialidadesSeleccionadas.delete(especialidadId);
+    } else {
+      this.especialidadesSeleccionadas.add(especialidadId);
+    }
+    this.actualizarEspecialidadesEnForm();
+  }
+
+  toggleMostrarNuevaEspecialidad(): void {
+    this.mostrarCampoOtraEspecialidad = !this.mostrarCampoOtraEspecialidad;
+    if (!this.mostrarCampoOtraEspecialidad) {
+      this.registroForm.get("nuevaEspecialidad")?.setValue("");
+    }
+  }
+
+  toggleDesplegableEspecialidades(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.desplegableEspecialidadesAbierto =
+      !this.desplegableEspecialidadesAbierto;
+  }
+
+  @HostListener("document:click", ["$event"])
+  onClickOutside(event: Event): void {
+    if (!this.desplegableEspecialidadesAbierto) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+    const clickedInside = this.elementRef.nativeElement
+      .querySelector(".relative")
+      ?.contains(target);
+
+    if (!clickedInside) {
+      this.desplegableEspecialidadesAbierto = false;
+    }
+  }
+
+  obtenerEspecialidadesSeleccionadasTexto(): string {
+    if (this.especialidadesSeleccionadas.size === 0) {
+      return "Ninguna seleccionada";
+    }
+    const nombres = Array.from(this.especialidadesSeleccionadas)
+      .map((id) => this.especialidadOptions.find((e) => e.id === id)?.nombre)
+      .filter((nombre) => nombre);
+    return nombres.join(", ");
+  }
+
+  esEspecialidadSeleccionada(especialidadId: number): boolean {
+    return this.especialidadesSeleccionadas.has(especialidadId);
+  }
+
+  private actualizarEspecialidadesEnForm(): void {
+    const idsArray = Array.from(this.especialidadesSeleccionadas);
+    this.registroForm.get("especialidadesSeleccionadas")?.setValue(idsArray);
+    this.registroForm
+      .get("especialidadesSeleccionadas")
+      ?.updateValueAndValidity();
   }
 
   onFileSelected(event: Event, tipo: "perfil" | "fondo") {
@@ -250,8 +315,23 @@ export class Register implements OnInit, OnDestroy {
       const f = this.registroForm.value;
       const imgPerfil = await fileToBase64(f.imagenPerfil as File);
 
-      const especialidad =
-        f.especialidad.id === -1 ? f.otraEspecialidad : f.especialidad.nombre;
+      // Construir array de especialidades
+      const especialidades: string[] = [];
+
+      // Agregar especialidades seleccionadas (convertir IDs a string)
+      if (
+        f.especialidadesSeleccionadas &&
+        f.especialidadesSeleccionadas.length > 0
+      ) {
+        especialidades.push(
+          ...f.especialidadesSeleccionadas.map((id: number) => String(id)),
+        );
+      }
+
+      // Agregar nueva especialidad si fue ingresada
+      if (f.nuevaEspecialidad && f.nuevaEspecialidad.trim()) {
+        especialidades.push(f.nuevaEspecialidad.trim());
+      }
 
       const payload: RegistroEspecialista = {
         nombre: f.nombre,
@@ -260,7 +340,7 @@ export class Register implements OnInit, OnDestroy {
         dni: f.dni,
         mail: f.mail,
         contrasena: f.password,
-        especialidad,
+        especialidades,
         imagenPerfil: imgPerfil,
       };
 
