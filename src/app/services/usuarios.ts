@@ -55,21 +55,18 @@ export class UsuariosService {
         ? p.detalles_especialista[0]
         : (p.detalles_especialista ?? null);
 
-      const especialidades = (p.especialista_especialidades ?? []).map(
-        (ee: {
-          duracion: number;
-          especialidades: {
-            id: number;
-            nombre: string;
-            url_icono: string | null;
-          }[];
-        }) => ({
-          id: ee.especialidades[0].id,
-          nombre: ee.especialidades[0].nombre,
-          urlIcono: ee.especialidades[0].url_icono ?? undefined,
+      const especialidades = (p.especialista_especialidades ?? []).map((ee) => {
+        const esp = Array.isArray(ee.especialidades)
+          ? ee.especialidades[0]
+          : ee.especialidades;
+
+        return {
+          id: esp?.id ?? 0,
+          nombre: esp?.nombre ?? "",
+          urlIcono: esp?.url_icono ?? undefined,
           duracion: ee.duracion,
-        }),
-      );
+        };
+      });
 
       return {
         id: p.id,

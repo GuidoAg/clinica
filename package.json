@@ -9,8 +9,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "deploy": "npm run build:prod && firebase deploy --only hosting",
-    "deploy:preview": "npm run build:prod && firebase hosting:channel:deploy preview --expires 7d"
+    "copy:public": "powershell -Command \"Get-ChildItem -Path 'public' -Exclude 'assets' | Remove-Item -Recurse -Force; Get-ChildItem -Path 'dist/clinica/browser' | Copy-Item -Destination 'public/' -Recurse -Force\"",
+    "deploy": "npm run build:prod && npm run copy:public && firebase deploy --only hosting",
+    "deploy:preview": "npm run build:prod && npm run copy:public && firebase hosting:channel:deploy preview --expires 7d"
   },
   "private": true,
   "dependencies": {
