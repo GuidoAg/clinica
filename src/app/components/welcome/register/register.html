@@ -8,14 +8,19 @@
     <div class="flex flex-col items-center gap-6">
       <!-- Opción Paciente -->
       <div
-        class="w-[315px] cursor-pointer p-2 transition-transform hover:scale-105"
+        class="w-[380px] cursor-pointer p-2 transition-transform hover:scale-105"
         (click)="seleccionarTipo('paciente')"
+        (keyup.enter)="seleccionarTipo('paciente')"
+        (keyup.space)="seleccionarTipo('paciente')"
+        tabindex="0"
+        role="button"
+        aria-label="Seleccionar tipo de usuario Paciente"
       >
         <div class="rounded-2xl bg-white shadow-lg">
           <img
             src="assets/imagenes/Registro/pacientes.jpg"
             alt="Paciente"
-            class="h-50 w-full rounded-t-2xl object-cover"
+            class="h-55 w-full rounded-t-2xl object-cover"
           />
           <div class="p-4">
             <h3 class="text-xl font-bold text-azul-oscuro">Paciente</h3>
@@ -25,14 +30,19 @@
 
       <!-- Opción Especialista -->
       <div
-        class="w-[315px] cursor-pointer p-2 transition-transform hover:scale-105"
+        class="w-[380px] cursor-pointer p-2 transition-transform hover:scale-105"
         (click)="seleccionarTipo('especialista')"
+        (keyup.enter)="seleccionarTipo('especialista')"
+        (keyup.space)="seleccionarTipo('especialista')"
+        tabindex="0"
+        role="button"
+        aria-label="Seleccionar tipo de usuario Especialista"
       >
         <div class="rounded-2xl bg-white shadow-lg">
           <img
             src="assets/imagenes/Registro/especialistas.jpg"
             alt="Especialista"
-            class="h-50 w-full rounded-t-2xl object-cover"
+            class="h-55 w-full rounded-t-2xl object-cover"
           />
           <div class="p-4">
             <h3 class="text-xl font-bold text-azul-oscuro">Especialista</h3>
@@ -251,8 +261,11 @@
 
       <!-- Imagen de perfil -->
       <div class="col-span-2 flex flex-col gap-2">
-        <label class="font-semibold text-azul-oscuro">Foto Perfil</label>
+        <label for="fotoPerfil" class="font-semibold text-azul-oscuro"
+          >Foto Perfil</label
+        >
         <input
+          id="fotoPerfil"
           type="file"
           (change)="onFileSelected($event, 'perfil')"
           class="register-input"
@@ -273,8 +286,11 @@
         *ngIf="tipoUsuario==='paciente'"
         class="col-span-2 flex flex-col gap-2"
       >
-        <label class="font-semibold text-azul-oscuro">Foto Fondo</label>
+        <label for="fotoFondo" class="font-semibold text-azul-oscuro"
+          >Foto Fondo</label
+        >
         <input
+          id="fotoFondo"
           type="file"
           (change)="onFileSelected($event, 'fondo')"
           class="register-input"
