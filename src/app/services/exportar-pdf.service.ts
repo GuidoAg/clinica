@@ -1,20 +1,18 @@
-import { Injectable } from '@angular/core';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { Injectable } from "@angular/core";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class ExportarPdfService {
-  constructor() {}
-
   async generarPDF(
     subtitulo: string,
-    encabezados: any[],
-    filas: any[],
-    titulo = 'Documento',
-    nombreArchivo = 'documento',
-    logoPath = 'assets/logo_negro.png',
+    encabezados: string[],
+    filas: (string | number)[][],
+    titulo = "Documento",
+    nombreArchivo = "documento",
+    logoPath = "assets/logo_negro.png",
   ) {
     const doc = new jsPDF();
     const width = doc.internal.pageSize.getWidth();
@@ -28,10 +26,10 @@ export class ExportarPdfService {
       const xPos = (width - logoWidth) / 2;
       const yPos = 10;
 
-      doc.addImage(logo, 'PNG', xPos, yPos, logoWidth, logoHeight);
+      doc.addImage(logo, "PNG", xPos, yPos, logoWidth, logoHeight);
       doc.setFontSize(10);
       doc.text(
-        `Emitido el: ${new Date().toLocaleDateString('es-AR')}`,
+        `Emitido el: ${new Date().toLocaleDateString("es-AR")}`,
         width - 60,
         10,
       );
@@ -54,11 +52,11 @@ export class ExportarPdfService {
         headStyles: {
           fillColor: [53, 112, 221],
           textColor: 255,
-          halign: 'center',
-          fontStyle: 'bold',
+          halign: "center",
+          fontStyle: "bold",
         },
         styles: {
-          halign: 'center',
+          halign: "center",
         },
       });
 
@@ -68,12 +66,12 @@ export class ExportarPdfService {
 
   async generarPDFConFoto(
     subtitulo: string,
-    encabezados: any[],
-    filas: any[],
+    encabezados: string[],
+    filas: (string | number)[][],
     fotoPerfilPath: string,
-    titulo = 'Documento',
-    nombreArchivo = 'documento',
-    logoPath = 'assets/logo_negro.png',
+    titulo = "Documento",
+    nombreArchivo = "documento",
+    logoPath = "assets/logo_negro.png",
   ) {
     const doc = new jsPDF();
     const width = doc.internal.pageSize.getWidth();
@@ -87,15 +85,15 @@ export class ExportarPdfService {
       const xLogo = 10;
       const yLogo = 10;
 
-      doc.addImage(logo, 'PNG', xLogo, yLogo, logoWidth, logoHeight);
+      doc.addImage(logo, "PNG", xLogo, yLogo, logoWidth, logoHeight);
       doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Clínica VT', xLogo + logoWidth + 5, yLogo + 14);
+      doc.setFont("helvetica", "bold");
+      doc.text("Clínica VT", xLogo + logoWidth + 5, yLogo + 14);
 
       doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont("helvetica", "normal");
       doc.text(
-        `Emitido el: ${new Date().toLocaleDateString('es-AR')}`,
+        `Emitido el: ${new Date().toLocaleDateString("es-AR")}`,
         width - 60,
         yLogo + 5,
       );
@@ -111,13 +109,13 @@ export class ExportarPdfService {
           doc.setLineWidth(0.5);
           doc.addImage(
             foto,
-            'JPEG',
+            "JPEG",
             xFoto,
             yOffset,
             fotoSize,
             fotoSize,
-            '',
-            'FAST',
+            "",
+            "FAST",
           );
           yOffset += fotoSize + 8;
           renderTextoYTabla();
@@ -126,14 +124,14 @@ export class ExportarPdfService {
 
       const renderTextoYTabla = () => {
         doc.setFontSize(18);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont("helvetica", "bold");
         const tituloWidth = doc.getTextWidth(titulo);
         doc.text(titulo, (width - tituloWidth) / 2, yOffset);
         yOffset += 8;
 
         if (subtitulo) {
           doc.setFontSize(12);
-          doc.setFont('helvetica', 'normal');
+          doc.setFont("helvetica", "normal");
           const subtituloWidth = doc.getTextWidth(subtitulo);
           doc.text(subtitulo, (width - subtituloWidth) / 2, yOffset);
           yOffset += 8;
@@ -145,11 +143,11 @@ export class ExportarPdfService {
           headStyles: {
             fillColor: [53, 112, 221],
             textColor: 255,
-            halign: 'center',
-            fontStyle: 'bold',
+            halign: "center",
+            fontStyle: "bold",
           },
           styles: {
-            halign: 'center',
+            halign: "center",
           },
         });
         doc.save(
@@ -162,9 +160,9 @@ export class ExportarPdfService {
   async exportarGraficoPdf(
     canvas: HTMLCanvasElement,
     subtitulo: string,
-    titulo = 'Documento',
-    nombreArchivo = 'documento',
-    logoPath = 'assets/logo_negro_48.png',
+    titulo = "Documento",
+    nombreArchivo = "documento",
+    logoPath = "assets/logo_negro_48.png",
   ) {
     const doc = new jsPDF();
     const width = doc.internal.pageSize.getWidth();
@@ -178,14 +176,14 @@ export class ExportarPdfService {
       const xPos = (width - logoWidth) / 2;
       const yPos = 10;
 
-      doc.addImage(logo, 'PNG', xPos, yPos, logoWidth, logoHeight);
+      doc.addImage(logo, "PNG", xPos, yPos, logoWidth, logoHeight);
       doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Clínica VT', xPos + logoWidth + 5, yPos + 14);
+      doc.setFont("helvetica", "bold");
+      doc.text("Clínica VT", xPos + logoWidth + 5, yPos + 14);
 
       doc.setFontSize(10);
       doc.text(
-        `Emitido el: ${new Date().toLocaleDateString('es-AR')}`,
+        `Emitido el: ${new Date().toLocaleDateString("es-AR")}`,
         width - 60,
         10,
       );
@@ -202,7 +200,7 @@ export class ExportarPdfService {
       }
 
       if (canvas) {
-        const chartImage = canvas.toDataURL('image/png');
+        const chartImage = canvas.toDataURL("image/png");
         const chartXPos = 40;
         const chartYPos = yTitulo + 30;
         const chartWidth = width - 70;
@@ -210,7 +208,7 @@ export class ExportarPdfService {
 
         doc.addImage(
           chartImage,
-          'PNG',
+          "PNG",
           chartXPos,
           chartYPos,
           chartWidth,

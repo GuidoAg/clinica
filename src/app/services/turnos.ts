@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { Supabase } from '../supabase';
-import { EspecialistaTurnos } from '../models/Turnos/EspecialistaTurnos';
-import { EspecialidadTurnos } from '../models/Turnos/EspecialidadTurnos';
-import { CitaTurnos } from '../models/Turnos/CitaTurnos';
-import { RespuestaApi } from '../models/RespuestaApi';
-import { DatoDinamicoTurnos } from '../models/Turnos/DatoDinamicoTurnos';
-import { CitaCompletaTurnos } from '../models/Turnos/CitaCompletaTurnos';
-import { EncuestaTurnos } from '../models/Turnos/EncuestaTurnos';
-import { RegistroMedicoTurnos } from '../models/Turnos/RegistroMedicoTurnos';
+import { Injectable } from "@angular/core";
+import { Supabase } from "../supabase";
+import { EspecialistaTurnos } from "../models/Turnos/EspecialistaTurnos";
+import { EspecialidadTurnos } from "../models/Turnos/EspecialidadTurnos";
+import { CitaTurnos } from "../models/Turnos/CitaTurnos";
+import { RespuestaApi } from "../models/RespuestaApi";
+import { DatoDinamicoTurnos } from "../models/Turnos/DatoDinamicoTurnos";
+import { CitaCompletaTurnos } from "../models/Turnos/CitaCompletaTurnos";
+import { EncuestaTurnos } from "../models/Turnos/EncuestaTurnos";
+import { RegistroMedicoTurnos } from "../models/Turnos/RegistroMedicoTurnos";
 
 export interface DiasDisponibles {
   lunes: boolean;
@@ -19,15 +19,33 @@ export interface DiasDisponibles {
   domingo: boolean;
 }
 
+interface CitaVista {
+  cita_id: number;
+  fecha_hora: string;
+  duracion_min: number;
+  estado: string;
+  comentario_paciente: string | null;
+  comentario_especialista: string | null;
+  resenia: string | null;
+  paciente_id: number;
+  paciente_nombre_completo: string;
+  especialista_id: number;
+  especialista_nombre_completo: string;
+  especialidad_id: number;
+  especialidad_nombre: string;
+  altura_cm: number | null;
+  peso_kg: number | null;
+  temperatura_c: number | null;
+  presion_arterial: string | null;
+}
+
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class Turnos {
-  constructor() {}
-
   async obtenerEspecialistas(): Promise<EspecialistaTurnos[]> {
     const { data: perfiles, error } = await Supabase.from(
-      'vista_perfiles_con_email',
+      "vista_perfiles_con_email",
     )
       .select(
         `
@@ -59,11 +77,11 @@ export class Turnos {
       )
     `,
       )
-      .eq('rol', 'especialista')
-      .eq('email_verificado_real', true);
+      .eq("rol", "especialista")
+      .eq("email_verificado_real", true);
 
     if (error || !perfiles) {
-      console.error('Error al obtener usuarios:', error);
+      console.error("Error al obtener usuarios:", error);
       return [];
     }
 
@@ -88,7 +106,7 @@ export class Turnos {
     idEspecialista: number,
   ): Promise<EspecialidadTurnos[]> {
     const { data: especialidades, error } = await Supabase.from(
-      'vista_especialista_especialidades',
+      "vista_especialista_especialidades",
     )
       .select(
         `
@@ -99,10 +117,10 @@ export class Turnos {
           duracion_minutos
         `,
       )
-      .eq('especialista_id', idEspecialista);
+      .eq("especialista_id", idEspecialista);
 
     if (error || !especialidades) {
-      console.error('Error al obtener usuarios:', error);
+      console.error("Error al obtener usuarios:", error);
       return [];
     }
 
@@ -117,24 +135,24 @@ export class Turnos {
   }
 
   async obtenerDiasEspecialista(idEspecialista: number): Promise<string[]> {
-    const { data: dias, error } = await Supabase.from('disponibilidades')
-      .select('dia_semana')
-      .eq('perfil_id', idEspecialista)
-      .eq('habilitado', true);
+    const { data: dias, error } = await Supabase.from("disponibilidades")
+      .select("dia_semana")
+      .eq("perfil_id", idEspecialista)
+      .eq("habilitado", true);
 
     if (error || !dias) {
-      console.error('Error al obtener días disponibles:', error);
+      console.error("Error al obtener días disponibles:", error);
       return [];
     }
 
     const diasSemanaMap: Record<number, string> = {
-      1: 'lunes',
-      2: 'martes',
-      3: 'miércoles',
-      4: 'jueves',
-      5: 'viernes',
-      6: 'sábado',
-      7: 'domingo',
+      1: "lunes",
+      2: "martes",
+      3: "miércoles",
+      4: "jueves",
+      5: "viernes",
+      6: "sábado",
+      7: "domingo",
     };
 
     // Convertimos a nombres y evitamos duplicados
@@ -178,8 +196,8 @@ export class Turnos {
       if (diasHabilitadosNumericos.includes(diaJS)) {
         // Formateamos como "YYYY-MM-DD"
         const yyyy = fecha.getFullYear();
-        const mm = String(fecha.getMonth() + 1).padStart(2, '0');
-        const dd = String(fecha.getDate()).padStart(2, '0');
+        const mm = String(fecha.getMonth() + 1).padStart(2, "0");
+        const dd = String(fecha.getDate()).padStart(2, "0");
         fechasDisponibles.push(`${yyyy}-${mm}-${dd}`);
       }
     }
@@ -193,7 +211,7 @@ export class Turnos {
     duracion: number, // en minutos
   ): Promise<string[]> {
     // 1. Obtener día de la semana (1 = lunes ... 7 = domingo)
-    const [year, month, day] = fecha.split('-').map(Number);
+    const [year, month, day] = fecha.split("-").map(Number);
     const date = new Date(year, month - 1, day); // Correctamente en zona local
 
     const diaSemana = ((date.getDay() + 6) % 7) + 1;
@@ -202,25 +220,25 @@ export class Turnos {
 
     // 2. Traer disponibilidad del especialista para ese día
     const { data: disponibilidad, error: errorDisp } = await Supabase.from(
-      'disponibilidades',
+      "disponibilidades",
     )
-      .select('hora_inicio, hora_fin')
-      .eq('perfil_id', especialistaId)
-      .eq('dia_semana', diaSemana)
-      .eq('habilitado', true)
+      .select("hora_inicio, hora_fin")
+      .eq("perfil_id", especialistaId)
+      .eq("dia_semana", diaSemana)
+      .eq("habilitado", true)
       .maybeSingle();
 
     console.log(disponibilidad, fecha, especialistaId, duracion, diaSemana);
     if (errorDisp || !disponibilidad) {
-      console.error('Sin disponibilidad:', errorDisp);
+      console.error("Sin disponibilidad:", errorDisp);
       return [];
     }
 
     const { hora_inicio, hora_fin } = disponibilidad;
 
     function parseHoraLocal(fecha: string, hora: string): Date {
-      const [year, month, day] = fecha.split('-').map(Number);
-      const [hour, minute] = hora.split(':').map(Number);
+      const [year, month, day] = fecha.split("-").map(Number);
+      const [hour, minute] = hora.split(":").map(Number);
       return new Date(year, month - 1, day, hour, minute);
     }
 
@@ -231,15 +249,15 @@ export class Turnos {
     const inicioDia = new Date(`${fecha}T00:00:00`);
     const finDia = new Date(`${fecha}T23:59:59`);
 
-    const { data: citas, error: errorCitas } = await Supabase.from('citas')
-      .select('fecha_hora, duracion_min')
-      .eq('especialista_id', especialistaId)
-      .neq('estado', 'cancelado')
-      .gte('fecha_hora', inicioDia.toISOString())
-      .lte('fecha_hora', finDia.toISOString());
+    const { data: citas, error: errorCitas } = await Supabase.from("citas")
+      .select("fecha_hora, duracion_min")
+      .eq("especialista_id", especialistaId)
+      .neq("estado", "cancelado")
+      .gte("fecha_hora", inicioDia.toISOString())
+      .lte("fecha_hora", finDia.toISOString());
 
     if (errorCitas) {
-      console.error('Error al obtener citas:', errorCitas);
+      console.error("Error al obtener citas:", errorCitas);
       return [];
     }
 
@@ -286,9 +304,9 @@ export class Turnos {
 
       while (horaTurno.getTime() + duracion * 60000 <= bloque.fin.getTime()) {
         turnosDisponibles.push(
-          horaTurno.toLocaleTimeString('es-AR', {
-            hour: '2-digit',
-            minute: '2-digit',
+          horaTurno.toLocaleTimeString("es-AR", {
+            hour: "2-digit",
+            minute: "2-digit",
             hour12: false,
           }),
         );
@@ -301,7 +319,7 @@ export class Turnos {
 
   async darAltaCita(cita: CitaTurnos): Promise<RespuestaApi<CitaTurnos>> {
     try {
-      const { data, error } = await Supabase.from('citas')
+      const { data, error } = await Supabase.from("citas")
         .insert({
           fecha_hora: cita.fechaHora.toISOString(), // Supabase acepta ISO string
           duracion_min: cita.duracionMin,
@@ -317,11 +335,11 @@ export class Turnos {
         .maybeSingle();
 
       if (error || !data) {
-        console.error('Error al insertar cita:', error);
+        console.error("Error al insertar cita:", error);
         return {
           success: false,
-          message: 'No se pudo registrar la cita',
-          errorCode: error?.code ?? 'insert_error',
+          message: "No se pudo registrar la cita",
+          errorCode: error?.code ?? "insert_error",
         };
       }
 
@@ -333,11 +351,11 @@ export class Turnos {
         },
       };
     } catch (e) {
-      console.error('Excepción en darAltaCita:', e);
+      console.error("Excepción en darAltaCita:", e);
       return {
         success: false,
-        message: 'Ocurrió un error inesperado',
-        errorCode: 'unexpected_error',
+        message: "Ocurrió un error inesperado",
+        errorCode: "unexpected_error",
       };
     }
   }
@@ -345,8 +363,8 @@ export class Turnos {
   async obtenerCitasConRegistro(): Promise<CitaCompletaTurnos[]> {
     // 1. Obtener las citas con datos de registro (vista)
     const { data: citasPlano, error: errorCitas } = await Supabase.from(
-      'vista_citas_enteras',
-    ).select('*');
+      "vista_citas_enteras",
+    ).select("*");
 
     if (errorCitas)
       throw new Error(`Error al obtener citas: ${errorCitas.message}`);
@@ -354,8 +372,8 @@ export class Turnos {
 
     // 2. Obtener todos los datos dinámicos
     const { data: datosDinamicos, error: errorDatos } = await Supabase.from(
-      'datos_medicos_dinamicos',
-    ).select('*');
+      "datos_medicos_dinamicos",
+    ).select("*");
 
     if (errorDatos)
       throw new Error(
@@ -379,14 +397,14 @@ export class Turnos {
 
     // 4. Mapear al modelo final
     return citasPlano.map(
-      (c: any): CitaCompletaTurnos => ({
+      (c: CitaVista): CitaCompletaTurnos => ({
         citaId: c.cita_id,
         fechaHora: new Date(c.fecha_hora),
         duracionMin: c.duracion_min,
         estado: c.estado,
-        comentarioPaciente: c.comentario_paciente,
-        comentarioEspecialista: c.comentario_especialista,
-        resenia: c.resenia,
+        comentarioPaciente: c.comentario_paciente ?? "",
+        comentarioEspecialista: c.comentario_especialista ?? "",
+        resenia: c.resenia ?? "",
         pacienteId: c.paciente_id,
         pacienteNombreCompleto: c.paciente_nombre_completo,
         especialistaId: c.especialista_id,
@@ -396,7 +414,7 @@ export class Turnos {
         alturaCm: Number(c.altura_cm),
         pesoKg: Number(c.peso_kg),
         temperaturaC: Number(c.temperatura_c),
-        presionArterial: c.presion_arterial,
+        presionArterial: c.presion_arterial ?? "",
         datosDinamicos: datosPorCita[c.cita_id] || [],
       }),
     );
@@ -407,10 +425,10 @@ export class Turnos {
   ): Promise<CitaCompletaTurnos[]> {
     // 1. Obtener las citas con datos de registro (vista)
     const { data: citasPlano, error: errorCitas } = await Supabase.from(
-      'vista_citas_enteras',
+      "vista_citas_enteras",
     )
-      .select('*')
-      .eq('paciente_id', id_usuario);
+      .select("*")
+      .eq("paciente_id", id_usuario);
 
     if (errorCitas)
       throw new Error(`Error al obtener citas: ${errorCitas.message}`);
@@ -418,8 +436,8 @@ export class Turnos {
 
     // 2. Obtener todos los datos dinámicos
     const { data: datosDinamicos, error: errorDatos } = await Supabase.from(
-      'datos_medicos_dinamicos',
-    ).select('*');
+      "datos_medicos_dinamicos",
+    ).select("*");
 
     if (errorDatos)
       throw new Error(
@@ -443,14 +461,14 @@ export class Turnos {
 
     // 4. Mapear al modelo final
     return citasPlano.map(
-      (c: any): CitaCompletaTurnos => ({
+      (c: CitaVista): CitaCompletaTurnos => ({
         citaId: c.cita_id,
         fechaHora: new Date(c.fecha_hora),
         duracionMin: c.duracion_min,
         estado: c.estado,
-        comentarioPaciente: c.comentario_paciente,
-        comentarioEspecialista: c.comentario_especialista,
-        resenia: c.resenia,
+        comentarioPaciente: c.comentario_paciente ?? "",
+        comentarioEspecialista: c.comentario_especialista ?? "",
+        resenia: c.resenia ?? "",
         pacienteId: c.paciente_id,
         pacienteNombreCompleto: c.paciente_nombre_completo,
         especialistaId: c.especialista_id,
@@ -460,7 +478,7 @@ export class Turnos {
         alturaCm: Number(c.altura_cm),
         pesoKg: Number(c.peso_kg),
         temperaturaC: Number(c.temperatura_c),
-        presionArterial: c.presion_arterial,
+        presionArterial: c.presion_arterial ?? "",
         datosDinamicos: datosPorCita[c.cita_id] || [],
       }),
     );
@@ -470,30 +488,30 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado === 'completado') {
+    if (cita.estado === "completado") {
       return {
         success: false,
-        message: 'No se puede cancelar un turno ya realizado.',
+        message: "No se puede cancelar un turno ya realizado.",
       };
     }
 
-    const { error } = await Supabase.from('citas')
+    const { error } = await Supabase.from("citas")
       .update({
-        estado: 'cancelado',
+        estado: "cancelado",
         comentario_paciente: comentario,
       })
-      .eq('id', cita.citaId);
+      .eq("id", cita.citaId);
 
     if (error) {
       return {
         success: false,
-        message: 'Ocurrió un error al cancelar el turno.',
+        message: "Ocurrió un error al cancelar el turno.",
       };
     }
 
     return {
       success: true,
-      message: 'Turno cancelado exitosamente.',
+      message: "Turno cancelado exitosamente.",
       data: true,
     };
   }
@@ -502,22 +520,22 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     encuesta: EncuestaTurnos,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado !== 'completado') {
+    if (cita.estado !== "completado") {
       return {
         success: false,
-        message: 'El turno debe ser realizado para poder cargar encuesta.',
+        message: "El turno debe ser realizado para poder cargar encuesta.",
       };
     }
 
-    if (!cita.resenia || cita.resenia.trim() === '') {
+    if (!cita.resenia || cita.resenia.trim() === "") {
       return {
         success: false,
         message:
-          'El especialista debe cargar una reseña antes de poder cargar una encuesta',
+          "El especialista debe cargar una reseña antes de poder cargar una encuesta",
       };
     }
 
-    const { data, error } = await Supabase.from('encuesta')
+    const { data, error } = await Supabase.from("encuesta")
       .insert({
         id: cita.citaId,
         pregunta1: encuesta.pregunta1,
@@ -532,14 +550,14 @@ export class Turnos {
     if (error || !data) {
       return {
         success: false,
-        message: 'No se pudo registrar la encuesta',
-        errorCode: error?.code ?? 'insert_error',
+        message: "No se pudo registrar la encuesta",
+        errorCode: error?.code ?? "insert_error",
       };
     }
 
     return {
       success: true,
-      message: 'Encuesta registrada exitosamente.',
+      message: "Encuesta registrada exitosamente.",
       data: true,
     };
   }
@@ -548,31 +566,31 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado !== 'completado') {
+    if (cita.estado !== "completado") {
       return {
         success: false,
         message:
-          'El turno debe ser realizado para poder calificar la atencion.',
+          "El turno debe ser realizado para poder calificar la atencion.",
       };
     }
 
-    const { error } = await Supabase.from('citas')
+    const { error } = await Supabase.from("citas")
       .update({
         comentario_paciente: comentario,
       })
-      .eq('id', cita.citaId);
+      .eq("id", cita.citaId);
 
     if (error) {
       return {
         success: false,
-        message: 'No se pudo registrar la calificacion',
-        errorCode: error?.code ?? 'insert_error',
+        message: "No se pudo registrar la calificacion",
+        errorCode: error?.code ?? "insert_error",
       };
     }
 
     return {
       success: true,
-      message: 'Antencion calificada exitosamente.',
+      message: "Antencion calificada exitosamente.",
       data: true,
     };
   }
@@ -582,34 +600,34 @@ export class Turnos {
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
     if (
-      cita.estado === 'completado' ||
-      cita.estado === 'aceptado' ||
-      cita.estado === 'rechazado'
+      cita.estado === "completado" ||
+      cita.estado === "aceptado" ||
+      cita.estado === "rechazado"
     ) {
       return {
         success: false,
         message:
-          'No se puede cancelar un turno ya realizado, aceptado o rechazado.',
+          "No se puede cancelar un turno ya realizado, aceptado o rechazado.",
       };
     }
 
-    const { error } = await Supabase.from('citas')
+    const { error } = await Supabase.from("citas")
       .update({
-        estado: 'cancelado',
+        estado: "cancelado",
         comentario_especialista: comentario,
       })
-      .eq('id', cita.citaId);
+      .eq("id", cita.citaId);
 
     if (error) {
       return {
         success: false,
-        message: 'Ocurrió un error al cancelar el turno.',
+        message: "Ocurrió un error al cancelar el turno.",
       };
     }
 
     return {
       success: true,
-      message: 'Turno cancelado exitosamente.',
+      message: "Turno cancelado exitosamente.",
       data: true,
     };
   }
@@ -619,34 +637,34 @@ export class Turnos {
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
     if (
-      cita.estado === 'completado' ||
-      cita.estado === 'aceptado' ||
-      cita.estado === 'cancelado'
+      cita.estado === "completado" ||
+      cita.estado === "aceptado" ||
+      cita.estado === "cancelado"
     ) {
       return {
         success: false,
         message:
-          'No se puede rechazar un turno ya realizado, aceptado o cancelado.',
+          "No se puede rechazar un turno ya realizado, aceptado o cancelado.",
       };
     }
 
-    const { error } = await Supabase.from('citas')
+    const { error } = await Supabase.from("citas")
       .update({
-        estado: 'rechazado',
+        estado: "rechazado",
         comentario_especialista: comentario,
       })
-      .eq('id', cita.citaId);
+      .eq("id", cita.citaId);
 
     if (error) {
       return {
         success: false,
-        message: 'Ocurrió un error al rechazar el turno.',
+        message: "Ocurrió un error al rechazar el turno.",
       };
     }
 
     return {
       success: true,
-      message: 'Turno rechazado exitosamente.',
+      message: "Turno rechazado exitosamente.",
       data: true,
     };
   }
@@ -655,33 +673,33 @@ export class Turnos {
     cita: CitaCompletaTurnos,
   ): Promise<RespuestaApi<boolean>> {
     if (
-      cita.estado === 'completado' ||
-      cita.estado === 'rechazado' ||
-      cita.estado === 'cancelado'
+      cita.estado === "completado" ||
+      cita.estado === "rechazado" ||
+      cita.estado === "cancelado"
     ) {
       return {
         success: false,
         message:
-          'No se puede aceprtar un turno ya realizado, rechazado o cancelado.',
+          "No se puede aceprtar un turno ya realizado, rechazado o cancelado.",
       };
     }
 
-    const { error } = await Supabase.from('citas')
+    const { error } = await Supabase.from("citas")
       .update({
-        estado: 'aceptado',
+        estado: "aceptado",
       })
-      .eq('id', cita.citaId);
+      .eq("id", cita.citaId);
 
     if (error) {
       return {
         success: false,
-        message: 'Ocurrió un error al aceptar el turno.',
+        message: "Ocurrió un error al aceptar el turno.",
       };
     }
 
     return {
       success: true,
-      message: 'Turno aceptado exitosamente.',
+      message: "Turno aceptado exitosamente.",
       data: true,
     };
   }
@@ -690,30 +708,30 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     resenia: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado !== 'aceptado') {
+    if (cita.estado !== "aceptado") {
       return {
         success: false,
-        message: 'No se puede finalizar un turno que no fue aceptado.',
+        message: "No se puede finalizar un turno que no fue aceptado.",
       };
     }
 
-    const { error } = await Supabase.from('citas')
+    const { error } = await Supabase.from("citas")
       .update({
-        estado: 'completado',
+        estado: "completado",
         resenia: resenia,
       })
-      .eq('id', cita.citaId);
+      .eq("id", cita.citaId);
 
     if (error) {
       return {
         success: false,
-        message: 'Ocurrió un error al completar el turno.',
+        message: "Ocurrió un error al completar el turno.",
       };
     }
 
     return {
       success: true,
-      message: 'Turno completado exitosamente.',
+      message: "Turno completado exitosamente.",
       data: true,
     };
   }
@@ -723,10 +741,10 @@ export class Turnos {
   ): Promise<CitaCompletaTurnos[]> {
     // 1. Obtener las citas con datos de registro (vista)
     const { data: citasPlano, error: errorCitas } = await Supabase.from(
-      'vista_citas_enteras',
+      "vista_citas_enteras",
     )
-      .select('*')
-      .eq('especialista_id', id_usuario);
+      .select("*")
+      .eq("especialista_id", id_usuario);
 
     if (errorCitas)
       throw new Error(`Error al obtener citas: ${errorCitas.message}`);
@@ -734,8 +752,8 @@ export class Turnos {
 
     // 2. Obtener todos los datos dinámicos
     const { data: datosDinamicos, error: errorDatos } = await Supabase.from(
-      'datos_medicos_dinamicos',
-    ).select('*');
+      "datos_medicos_dinamicos",
+    ).select("*");
 
     if (errorDatos)
       throw new Error(
@@ -759,14 +777,14 @@ export class Turnos {
 
     // 4. Mapear al modelo final
     return citasPlano.map(
-      (c: any): CitaCompletaTurnos => ({
+      (c: CitaVista): CitaCompletaTurnos => ({
         citaId: c.cita_id,
         fechaHora: new Date(c.fecha_hora),
         duracionMin: c.duracion_min,
         estado: c.estado,
-        comentarioPaciente: c.comentario_paciente,
-        comentarioEspecialista: c.comentario_especialista,
-        resenia: c.resenia,
+        comentarioPaciente: c.comentario_paciente ?? "",
+        comentarioEspecialista: c.comentario_especialista ?? "",
+        resenia: c.resenia ?? "",
         pacienteId: c.paciente_id,
         pacienteNombreCompleto: c.paciente_nombre_completo,
         especialistaId: c.especialista_id,
@@ -776,7 +794,7 @@ export class Turnos {
         alturaCm: Number(c.altura_cm),
         pesoKg: Number(c.peso_kg),
         temperaturaC: Number(c.temperatura_c),
-        presionArterial: c.presion_arterial,
+        presionArterial: c.presion_arterial ?? "",
         datosDinamicos: datosPorCita[c.cita_id] || [],
       }),
     );
@@ -789,13 +807,13 @@ export class Turnos {
     if (datosDinamicos.length < 1 || datosDinamicos.length > 6) {
       return {
         success: false,
-        message: 'Debe cargar entre 1 y 6 datos médicos dinámicos',
+        message: "Debe cargar entre 1 y 6 datos médicos dinámicos",
       };
     }
 
     // Insertar en registros_medicos
     const { error: errorRegistro } = await Supabase.from(
-      'registros_medicos',
+      "registros_medicos",
     ).insert({
       cita_id: registro.citaId,
       altura_cm: registro.alturaCm,
@@ -808,7 +826,7 @@ export class Turnos {
       return {
         success: false,
         message:
-          'Error al guardar los datos principales de la historia clínica',
+          "Error al guardar los datos principales de la historia clínica",
       };
     }
 
@@ -820,20 +838,20 @@ export class Turnos {
     }));
 
     const { error: errorDinamicos } = await Supabase.from(
-      'datos_medicos_dinamicos',
+      "datos_medicos_dinamicos",
     ).insert(dinamicosFormateados);
 
     if (errorDinamicos) {
       return {
         success: false,
         message:
-          'Error al guardar los datos adicionales de la historia clínica',
+          "Error al guardar los datos adicionales de la historia clínica",
       };
     }
 
     return {
       success: true,
-      message: 'Historia clínica guardada correctamente',
+      message: "Historia clínica guardada correctamente",
     };
   }
 }

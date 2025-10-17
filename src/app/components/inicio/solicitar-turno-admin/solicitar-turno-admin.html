@@ -21,7 +21,7 @@
                 alt="paciente"
                 class="h-20 w-20 rounded-full border object-cover shadow"
                 [class.border-blue-600]="pacienteSeleccionado()?.id === pac.id"
-                TrackImage
+                appTrackImage
               />
               <span class="text-center text-sm"
                 >{{ pac.nombre }} {{ pac.apellido }}</span
@@ -47,7 +47,7 @@
                 alt="profesional"
                 class="h-20 w-20 rounded-full border object-cover shadow"
                 [class.border-blue-600]="especialistaSeleccionado()?.id === prof.id"
-                TrackImage
+                appTrackImage
               />
               <span class="text-center text-sm"
                 >{{ prof.nombre }} {{ prof.apellido }}</span
@@ -75,7 +75,7 @@
                 [src]="esp.icono || 'assets/default-icon.png'"
                 alt="icono"
                 class="mb-2 h-10 w-10"
-                TrackImage
+                appTrackImage
               />
               <span class="text-center text-xs">{{ esp.nombre }}</span>
             </button>
@@ -164,3 +164,4 @@
     </div>
   </div>
 </app-loading-wrapper>
+

@@ -1,17 +1,17 @@
-import { Injectable } from '@angular/core';
-import { Supabase } from '../supabase';
-import type { Usuario } from '../models/Auth/Usuario';
-import { AuthSupabase } from './auth-supabase';
+import { inject, Injectable } from "@angular/core";
+import { Supabase } from "../supabase";
+import type { Usuario } from "../models/Auth/Usuario";
+import { AuthSupabase } from "./auth-supabase";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class UsuariosService {
-  constructor(private auth: AuthSupabase) {}
+  private auth = inject(AuthSupabase);
 
   async obtenerTodosUsuarios(): Promise<Usuario[]> {
     const { data: perfiles, error } = await Supabase.from(
-      'vista_perfiles_con_email',
+      "vista_perfiles_con_email",
     ).select(`
       id,
       auth_id,
@@ -42,7 +42,7 @@ export class UsuariosService {
     `);
 
     if (error) {
-      console.error('Error al obtener usuarios:', error);
+      console.error("Error al obtener usuarios:", error);
       return [];
     }
 
@@ -56,10 +56,17 @@ export class UsuariosService {
         : (p.detalles_especialista ?? null);
 
       const especialidades = (p.especialista_especialidades ?? []).map(
-        (ee: any) => ({
-          id: ee.especialidades.id,
-          nombre: ee.especialidades.nombre,
-          urlIcono: ee.especialidades.url_icono ?? undefined,
+        (ee: {
+          duracion: number;
+          especialidades: {
+            id: number;
+            nombre: string;
+            url_icono: string | null;
+          }[];
+        }) => ({
+          id: ee.especialidades[0].id,
+          nombre: ee.especialidades[0].nombre,
+          urlIcono: ee.especialidades[0].url_icono ?? undefined,
           duracion: ee.duracion,
         }),
       );
@@ -72,7 +79,7 @@ export class UsuariosService {
         edad: String(p.edad),
         dni: p.dni,
         urlImagenPerfil: p.url_imagen_perfil,
-        email: p.email ?? '',
+        email: p.email ?? "",
         emailVerificado: p.email_verificado_real ?? false,
         rol: p.rol,
         activo: detallesEspecialista?.activo ?? true,
@@ -88,13 +95,13 @@ export class UsuariosService {
     perfilId: number,
     validadoAdmin: boolean,
   ): Promise<boolean> {
-    const { error } = await Supabase.from('detalles_especialista')
+    const { error } = await Supabase.from("detalles_especialista")
       .update({ validado_admin: validadoAdmin })
-      .eq('perfil_id', perfilId);
+      .eq("perfil_id", perfilId);
 
     if (error) {
       console.error(
-        'Error al actualizar validado_admin del especialista:',
+        "Error al actualizar validado_admin del especialista:",
         error,
       );
       return false;

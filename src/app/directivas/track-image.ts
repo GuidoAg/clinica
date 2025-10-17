@@ -1,22 +1,23 @@
-import { Directive, ElementRef, HostListener, inject } from '@angular/core';
-import { ImageLoader } from '../services/image-loader';
+import { Directive, ElementRef, HostListener, inject } from "@angular/core";
+import { ImageLoader } from "../services/image-loader";
 
 @Directive({
-  selector: 'img[TrackImage]',
+  selector: "img[appTrackImage]",
 })
 export class TrackImage {
   private imageService = inject(ImageLoader);
+  private el = inject(ElementRef<HTMLImageElement>);
 
-  constructor(private el: ElementRef<HTMLImageElement>) {
+  constructor() {
     this.imageService.registerImage(this.el.nativeElement);
   }
 
-  @HostListener('load')
+  @HostListener("load")
   onLoad() {
     this.imageService.markLoaded(this.el.nativeElement);
   }
 
-  @HostListener('error')
+  @HostListener("error")
   onError() {
     this.imageService.markLoaded(this.el.nativeElement);
   }
