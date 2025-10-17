@@ -9,6 +9,15 @@ export const Supabase = createClient(
       detectSessionInUrl: true,
       persistSession: true,
       autoRefreshToken: true,
+      flowType: "pkce",
+      // Deshabilita el lock completamente para evitar conflictos entre pestañas
+      lock: async <R>(
+        _name: string,
+        _acquireTimeout: number,
+        fn: () => Promise<R>,
+      ): Promise<R> => {
+        return await fn();
+      },
     },
   },
 );

@@ -76,60 +76,49 @@ export class Register implements OnInit, OnDestroy {
   private loading = inject(LoadingOverlayService);
   private elementRef = inject(ElementRef);
 
-  async ngOnInit(): Promise<void> {
-    try {
-      this.loading.show();
-      // Carga inicial de especialidades
-      this.especialidadOptions = await this.auth.obtenerEspecialidades();
-
-      // Construcción del form
-      this.registroForm = this.fb.group(
-        {
-          nombre: [
-            "",
-            [
-              Validators.required,
-              Validators.minLength(2),
-              Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
-            ],
+  ngOnInit(): void {
+    // Construcción del form
+    this.registroForm = this.fb.group(
+      {
+        nombre: [
+          "",
+          [
+            Validators.required,
+            Validators.minLength(2),
+            Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
           ],
-          apellido: [
-            "",
-            [
-              Validators.required,
-              Validators.minLength(2),
-              Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
-            ],
+        ],
+        apellido: [
+          "",
+          [
+            Validators.required,
+            Validators.minLength(2),
+            Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
           ],
-          edad: [
-            null,
-            [Validators.required, Validators.min(18), Validators.max(99)],
+        ],
+        edad: [
+          null,
+          [Validators.required, Validators.min(18), Validators.max(99)],
+        ],
+        dni: ["", [Validators.required, Validators.pattern(/^\d{8}$/)]],
+        obraSocial: [""],
+        mail: ["", [Validators.required, Validators.email]],
+        password: ["", [Validators.required, Validators.minLength(7)]],
+        especialidadesSeleccionadas: [[]],
+        nuevaEspecialidad: [
+          "",
+          [
+            Validators.minLength(2),
+            Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
           ],
-          dni: ["", [Validators.required, Validators.pattern(/^\d{8}$/)]],
-          obraSocial: [""],
-          mail: ["", [Validators.required, Validators.email]],
-          password: ["", [Validators.required, Validators.minLength(7)]],
-          especialidadesSeleccionadas: [[]],
-          nuevaEspecialidad: [
-            "",
-            [
-              Validators.minLength(2),
-              Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
-            ],
-          ],
-          imagenPerfil: [null, Validators.required],
-          imagenFondo: [""],
-        },
-        {
-          validators: this.captchaValidoValidator(),
-        },
-      );
-    } catch {
-      // Error al cargar especialidades
-      console.error("Error al cargar especialidades");
-    } finally {
-      this.loading.hide();
-    }
+        ],
+        imagenPerfil: [null, Validators.required],
+        imagenFondo: [""],
+      },
+      {
+        validators: this.captchaValidoValidator(),
+      },
+    );
   }
 
   ngOnDestroy(): void {
@@ -138,10 +127,27 @@ export class Register implements OnInit, OnDestroy {
     }
   }
 
-  seleccionarTipo(tipo: "paciente" | "especialista"): void {
+  async seleccionarTipo(tipo: "paciente" | "especialista"): Promise<void> {
     this.tipoUsuario = tipo;
 
     if (!this.registroForm) return;
+
+    // Si es especialista, cargar las especialidades
+    if (tipo === "especialista") {
+      try {
+        this.loading.show();
+        this.especialidadOptions = await this.auth.obtenerEspecialidades();
+      } catch (error) {
+        console.error("Error al obtener especialidades:", error);
+        this.snackBar.open(
+          "Error al cargar especialidades. Intente nuevamente.",
+          "Cerrar",
+          { duration: 3000 },
+        );
+      } finally {
+        this.loading.hide();
+      }
+    }
 
     if (tipo === "paciente") {
       this.registroForm.get("obraSocial")?.setValidators([Validators.required]);

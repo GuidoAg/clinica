@@ -17,7 +17,7 @@ export class MiCaptcha implements OnInit {
   private auth = inject(AuthSupabase);
 
   captchas: Captcha[] = [];
-  captchaActual!: Captcha;
+  captchaActual: Captcha | undefined;
   userInput = "";
   captchaValido = false;
   mensajeVerificacion = "";
@@ -29,15 +29,20 @@ export class MiCaptcha implements OnInit {
   }
 
   async cargarCaptchasDesdeSupabase() {
-    this.captchas = await this.auth.getCaptchas();
+    try {
+      this.captchas = await this.auth.getCaptchas();
 
-    if (!this.captchas.length) {
-      console.error("No se pudieron cargar captchas");
-      return;
+      if (!this.captchas.length) {
+        console.error("No se pudieron cargar captchas");
+        return;
+      }
+
+      this.captchaActual = this.obtenerCaptchaAleatorio();
+      this.cargado = true;
+    } catch (error) {
+      console.error("Error al cargar captchas:", error);
+      this.cargado = false;
     }
-
-    this.captchaActual = this.obtenerCaptchaAleatorio();
-    this.cargado = true;
   }
 
   obtenerCaptchaAleatorio(): Captcha {
@@ -53,6 +58,8 @@ export class MiCaptcha implements OnInit {
   }
 
   async verificarRespuesta() {
+    if (!this.captchaActual) return;
+
     this.mensajeVerificacion = "";
     this.verificando = true;
 

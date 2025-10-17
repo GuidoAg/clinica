@@ -1,4 +1,4 @@
-import{b as m}from"./chunk-OJPJNVHA.js";import{b as d}from"./chunk-PAEHXDDS.js";import{T as c,Y as u}from"./chunk-ZQYZ5UVW.js";import{i as s}from"./chunk-ODN5LVDJ.js";var _=class l{auth=u(m);obtenerTodosUsuarios(){return s(this,null,function*(){let{data:i,error:e}=yield d.from("vista_perfiles_con_email").select(`
+import{b as m}from"./chunk-5ZTSR4NX.js";import{b as d}from"./chunk-BI2JOZY7.js";import{T as c,Y as u}from"./chunk-ZQYZ5UVW.js";import{i as s}from"./chunk-ODN5LVDJ.js";var _=class l{auth=u(m);obtenerTodosUsuarios(){return s(this,null,function*(){let{data:i,error:e}=yield d.from("vista_perfiles_con_email").select(`
       id,
       auth_id,
       nombre,

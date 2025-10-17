@@ -1,79 +1,81 @@
 <div
   class="relative w-[300px] items-center justify-center align-middle text-sm"
-  >
+>
   <!-- Capa de opacidad -->
   @if (verificando || !cargado) {
+  <div
+    class="absolute inset-0 z-10 flex items-center justify-center bg-white/120 backdrop-blur-sm"
+  >
+    <svg
+      class="h-6 w-6 animate-spin text-blue-600"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+      />
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+      />
+    </svg>
+  </div>
+  }
+
+  <div class="rounded-lg border border-gray-300 bg-crema p-4 shadow-sm">
     <div
-      class="absolute inset-0 z-10 flex items-center justify-center bg-white/120 backdrop-blur-sm"
-      >
-      <svg
-        class="h-6 w-6 animate-spin text-blue-600"
-        viewBox="0 0 24 24"
-        fill="none"
-        >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-          />
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-            />
-          </svg>
-        </div>
+      class="flex flex-col items-center gap-2"
+      [class.opacity-50]="verificando"
+    >
+      @if (captchaActual) {
+      <img
+        [src]="captchaActual.imagenUrl"
+        alt="captcha"
+        class="h-24 w-full rounded border bg-white object-contain"
+      />
       }
 
-      <div class="rounded-lg border border-gray-300 bg-crema p-4 shadow-sm">
-        <div
-          class="flex flex-col items-center gap-2"
-          [class.opacity-50]="verificando"
-          >
-          <img
-            [src]="captchaActual.imagenUrl"
-            alt="captcha"
-            class="h-24 w-full rounded border bg-white object-contain"
-            />
+      <input
+        [(ngModel)]="userInput"
+        [disabled]="verificando"
+        class="w-full rounded border border-gray-300 bg-white px-3 py-1.5 focus:ring-2 focus:ring-azul-oscuro focus:outline-none"
+        placeholder="Escribí lo que ves"
+      />
 
-            <input
-              [(ngModel)]="userInput"
-              [disabled]="verificando"
-              class="w-full rounded border border-gray-300 bg-white px-3 py-1.5 focus:ring-2 focus:ring-azul-oscuro focus:outline-none"
-              placeholder="Escribí lo que ves"
-              />
+      <div class="flex w-full justify-between gap-2">
+        <button
+          (click)="verificarRespuesta()"
+          [disabled]="verificando"
+          class="flex-1 rounded bg-verde-claro px-3 py-1.5 text-lg text-white hover:bg-verde-claro/80 disabled:opacity-50"
+        >
+          Verificar
+        </button>
+        <button
+          (click)="cambiarCaptcha()"
+          [disabled]="verificando"
+          class="flex-1 rounded bg-azul-claro px-3 py-1.5 text-lg text-white hover:bg-azul-claro/80 disabled:opacity-50"
+        >
+          Cambiar
+        </button>
+      </div>
 
-              <div class="flex w-full justify-between gap-2">
-                <button
-                  (click)="verificarRespuesta()"
-                  [disabled]="verificando"
-                  class="flex-1 rounded bg-verde-claro px-3 py-1.5 text-lg text-white hover:bg-verde-claro/80 disabled:opacity-50"
-                  >
-                  Verificar
-                </button>
-                <button
-                  (click)="cambiarCaptcha()"
-                  [disabled]="verificando"
-                  class="flex-1 rounded bg-azul-claro px-3 py-1.5 text-lg text-white hover:bg-azul-claro/80 disabled:opacity-50"
-                  >
-                  Cambiar
-                </button>
-              </div>
-
-              @if (mensajeVerificacion) {
-                <p
+      @if (mensajeVerificacion) {
+      <p
         [ngClass]="{
           'text-green-600': captchaValido,
           'text-red-600': !captchaValido
         }"
-                  class="mt-1"
-                  >
-                  {{ mensajeVerificacion }}
-                </p>
-              }
-            </div>
-          </div>
-        </div>
+        class="mt-1"
+      >
+        {{ mensajeVerificacion }}
+      </p>
+      }
+    </div>
+  </div>
+</div>
