@@ -2,12 +2,15 @@ import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
-} from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations';
+  isDevMode,
+} from "@angular/core";
+import { provideRouter } from "@angular/router";
+import { provideHttpClient } from "@angular/common/http";
+import { provideAnimations } from "@angular/platform-browser/animations";
 
-import { routes } from './app.routes';
+import { routes } from "./app.routes";
+import { TranslocoHttpLoader } from "./transloco-loader";
+import { provideTransloco } from "@jsverse/transloco";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,5 +19,16 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(),
     provideAnimations(),
+    provideHttpClient(),
+    provideTransloco({
+      config: {
+        availableLangs: ["es", "en", "pt"],
+        defaultLang: "es",
+        // Remove this option if your application doesn't support changing language in runtime.
+        reRenderOnLangChange: true,
+        prodMode: !isDevMode(),
+      },
+      loader: TranslocoHttpLoader,
+    }),
   ],
 };
