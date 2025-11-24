@@ -1,0 +1,240 @@
+{
+  "welcomePage": {
+    "banner": {
+      "campana": "Campaña de Vacunación Antigripal 2025",
+      "titulo": "¿Querés asociarte?",
+      "subtitulo": "Contratá la mejor cobertura médica<br />para vos y tu familia.",
+      "botonCotizar": "Cotizá en línea"
+    },
+    "opciones": {
+      "consultas": "Consultas",
+      "farmacia": "Farmacia",
+      "turnos": "Turnos",
+      "ayuda": "Ayuda"
+    },
+    "seccionSalud": {
+      "titulo": "Tu salud en buenas manos",
+      "subtitulo": "Descubrí los beneficios de afiliarte a nuestra clínica."
+    },
+    "carrusel": {
+      "guardias": {
+        "titulo": "Guardias 24hs",
+        "descripcion": "Atención médica de urgencia todo el día."
+      },
+      "cobertura": {
+        "titulo": "Cobertura Nacional",
+        "descripcion": "Red de centros en todo el país."
+      },
+      "turnos": {
+        "titulo": "Turnos en Línea",
+        "descripcion": "Reservá desde tu casa."
+      },
+      "descuentos": {
+        "titulo": "Descuentos",
+        "descripcion": "Beneficios en farmacias y ópticas."
+      },
+      "pediatria": {
+        "titulo": "Atención Pediátrica",
+        "descripcion": "Cuidamos a los más chicos."
+      },
+      "estudios": {
+        "titulo": "Estudios Médicos",
+        "descripcion": "Tecnología de punta a tu alcance."
+      }
+    },
+    "comunidad": {
+      "titulo": "Nuestra comunidad",
+      "subtitulo": "Un espacio donde todos importan."
+    }
+  },
+  "navbar": {
+    "planes": "Planes",
+    "preguntas": "Preguntas Frecuentes",
+    "ubicaciones": "Ubicaciones",
+    "comentarios": "Comentarios",
+    "login": "Ingresar",
+    "registrarse": "Registrarse",
+    "footer": {
+      "privacidad": "Política de privacidad",
+      "terminos": "Términos y condiciones",
+      "accesibilidad": "Accesibilidad",
+      "seguridad": "Seguridad",
+      "ayuda": "Ayuda"
+    }
+  },
+  "planes": {
+    "titulo": "Planes",
+    "subtitulo": "Elegí el plan que mejor se adapte a vos y a tu familia. Contamos con cobertura integral, atención personalizada y beneficios únicos para cuidar tu salud.",
+    "plata": {
+      "nombre": "Plan Plata",
+      "beneficio1": "Consultas médicas ilimitadas",
+      "beneficio2": "Atención ambulatoria básica",
+      "beneficio3": "Acceso a laboratorio y estudios simples",
+      "beneficio4": "Odontología general",
+      "beneficio5": "Turnos programados"
+    },
+    "oro": {
+      "nombre": "Plan Oro",
+      "beneficio1": "Todo lo del Plan Plata",
+      "beneficio2": "Atención médica 24 hs",
+      "beneficio3": "Ambulancia sin costo",
+      "beneficio4": "Estudios de alta complejidad",
+      "beneficio5": "Internación en habitación compartida",
+      "beneficio6": "Oftalmología y audiología"
+    },
+    "platino": {
+      "nombre": "Plan Platino",
+      "beneficio1": "Todo lo del Plan Oro",
+      "beneficio2": "Cirugías estéticas opcionales",
+      "beneficio3": "Internación en habitación privada",
+      "beneficio4": "Cobertura internacional",
+      "beneficio5": "Check-up anual personalizado",
+      "beneficio6": "Kinesiología y fisioterapia sin tope",
+      "beneficio7": "Descuentos en farmacias y ópticas"
+    },
+    "botonElegir": "Elegir este plan"
+  },
+  "preguntas": {
+    "titulo": "Preguntas Frecuentes",
+    "items": {
+      "horarios": {
+        "pregunta": "¿Cuáles son los horarios de atención?",
+        "respuesta": "Atendemos de lunes a viernes de 8:00 a 20:00, y sábados de 9:00 a 13:00."
+      },
+      "turno": {
+        "pregunta": "¿Cómo saco un turno?",
+        "respuesta": "Podés sacar turno por nuestra web, por teléfono o presencialmente en recepción."
+      },
+      "obrasSociales": {
+        "pregunta": "¿Atienden por obras sociales?",
+        "respuesta": "Sí, trabajamos con las principales obras sociales y prepagas."
+      },
+      "estudios": {
+        "pregunta": "¿Puedo hacerme estudios sin turno?",
+        "respuesta": "Algunos estudios simples pueden hacerse sin turno. Consultá previamente."
+      },
+      "reintegros": {
+        "pregunta": "¿Ofrecen reintegros?",
+        "respuesta": "Sí, según tu cobertura médica, podés solicitar reintegros con la factura correspondiente."
+      },
+      "especialidades": {
+        "pregunta": "¿Qué especialidades médicas tienen?",
+        "respuesta": "Contamos con más de 20 especialidades incluyendo clínica, pediatría, ginecología, cardiología, entre otras."
+      },
+      "urgencias": {
+        "pregunta": "¿Tienen servicio de urgencias?",
+        "respuesta": "Sí, contamos con atención de urgencias 24/7 en nuestra sede central."
+      },
+      "resultados": {
+        "pregunta": "¿Cómo obtengo mis resultados?",
+        "respuesta": "Podés verlos en nuestro portal web o retirarlos en persona con tu DNI."
+      },
+      "pago": {
+        "pregunta": "¿Se puede pagar con tarjeta?",
+        "respuesta": "Sí, aceptamos todos los medios de pago: débito, crédito, efectivo y billeteras digitales."
+      },
+      "reclamos": {
+        "pregunta": "¿Dónde puedo hacer reclamos o sugerencias?",
+        "respuesta": "En nuestra web, sección 'Contacto', o en recepción de cualquier sede."
+      }
+    }
+  },
+  "ubicaciones": {
+    "titulo": "Nuestras Sedes"
+  },
+  "comentarios": {
+    "titulo": "Lo que dicen nuestros pacientes",
+    "items": {
+      "comentario1": {
+        "nombre": "María L.",
+        "texto": "Excelente atención, muy humanos y profesionales."
+      },
+      "comentario2": {
+        "nombre": "Juan P.",
+        "texto": "Siempre me atienden rápido y con una sonrisa."
+      },
+      "comentario3": {
+        "nombre": "Laura G.",
+        "texto": "Me ayudaron con todo el trámite del reintegro, muy agradecida."
+      },
+      "comentario4": {
+        "nombre": "Sergio T.",
+        "texto": "La pediatra fue súper amable con mi hija. 10 puntos."
+      },
+      "comentario5": {
+        "nombre": "Rocío D.",
+        "texto": "Instalaciones limpias y modernas, me sentí muy cómoda."
+      },
+      "comentario6": {
+        "nombre": "Carlos M.",
+        "texto": "Volvería sin dudar, atención muy profesional."
+      },
+      "comentario7": {
+        "nombre": "Paula V.",
+        "texto": "Me atendieron un sábado sin turno, excelente predisposición."
+      },
+      "comentario8": {
+        "nombre": "Ignacio C.",
+        "texto": "Servicio impecable, todo muy bien organizado."
+      },
+      "comentario9": {
+        "nombre": "Estela B.",
+        "texto": "¡Gracias por su atención y dedicación!"
+      },
+      "comentario10": {
+        "nombre": "Nicolás F.",
+        "texto": "Gran calidad humana en todo el personal."
+      },
+      "comentario11": {
+        "nombre": "Florencia S.",
+        "texto": "La ginecóloga fue muy clara y empática."
+      },
+      "comentario12": {
+        "nombre": "Hernán R.",
+        "texto": "Muy buena clínica, todo excelente."
+      },
+      "comentario13": {
+        "nombre": "Lucía A.",
+        "texto": "Volvería sin dudas. Me sentí cuidada."
+      },
+      "comentario14": {
+        "nombre": "Matías K.",
+        "texto": "Me resolvieron un problema que arrastraba hace meses."
+      },
+      "comentario15": {
+        "nombre": "Gabriela J.",
+        "texto": "Todo el equipo fue muy atento y profesional."
+      },
+      "comentario16": {
+        "nombre": "Martín Q.",
+        "texto": "Los resultados en línea me facilitaron todo."
+      },
+      "comentario17": {
+        "nombre": "Sabrina M.",
+        "texto": "Excelente trato desde recepción hasta los médicos."
+      },
+      "comentario18": {
+        "nombre": "Jorge L.",
+        "texto": "Agradecido por la atención que recibí."
+      },
+      "comentario19": {
+        "nombre": "Cecilia N.",
+        "texto": "Me sentí como en casa, muy buena energía."
+      },
+      "comentario20": {
+        "nombre": "Ramiro E.",
+        "texto": "Rápidos, amables y eficientes. Todo lo que uno espera."
+      }
+    }
+  },
+  "homeNavbar": {
+    "cerrarSesion": "Cerrar Sesión",
+    "home": "Inicio",
+    "misTurnos": "Mis Turnos",
+    "turnos": "Turnos",
+    "pacientes": "Pacientes",
+    "solicitarTurno": "Solicitar Turno",
+    "miPerfil": "Mi Perfil",
+    "usuarios": "Usuarios"
+  }
+}

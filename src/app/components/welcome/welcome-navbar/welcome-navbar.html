@@ -20,26 +20,67 @@
       <a
         href="welcome-page/planes"
         class="text-black transition-colors hover:text-verde-oscuro"
-        >Planes</a
+        >{{ 'navbar.planes' | transloco }}</a
       >
       <span class="text-gray-400">|</span>
       <a
         href="welcome-page/preguntas"
         class="text-black transition-colors hover:text-verde-oscuro"
-        >Preguntas Frecuentes</a
+        >{{ 'navbar.preguntas' | transloco }}</a
       >
       <span class="text-gray-400">|</span>
       <a
         href="welcome-page/ubicaciones"
         class="text-black transition-colors hover:text-verde-oscuro"
-        >Ubicaciones</a
+        >{{ 'navbar.ubicaciones' | transloco }}</a
       >
       <span class="text-gray-400">|</span>
       <a
         href="welcome-page/comentarios"
         class="text-black transition-colors hover:text-verde-oscuro"
-        >Comentarios</a
+        >{{ 'navbar.comentarios' | transloco }}</a
       >
+    </div>
+
+    <!-- Selector de idioma con dropdown -->
+    <div class="relative flex items-end">
+      <button
+        class="flex items-center gap-0.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:shadow"
+        (click)="toggleLanguageMenu()"
+      >
+        {{ currentLangDisplay }}
+        <mat-icon class="!text-base"
+          >{{ showLanguageMenu ? 'expand_less' : 'expand_more' }}</mat-icon
+        >
+      </button>
+
+      <!-- Dropdown menu -->
+      <div
+        *ngIf="showLanguageMenu"
+        class="ring-opacity-5 absolute top-full right-0 mt-1 w-32 rounded-lg bg-white shadow-lg ring-1 ring-black"
+      >
+        <button
+          (click)="changeLanguage('es')"
+          [class.bg-verde-claro]="currentLang === 'es'"
+          class="w-full rounded-t-lg px-4 py-2 text-left text-sm transition-colors hover:bg-gray-100"
+        >
+          🇪🇸 Español
+        </button>
+        <button
+          (click)="changeLanguage('en')"
+          [class.bg-verde-claro]="currentLang === 'en'"
+          class="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-gray-100"
+        >
+          🇬🇧 English
+        </button>
+        <button
+          (click)="changeLanguage('pt')"
+          [class.bg-verde-claro]="currentLang === 'pt'"
+          class="w-full rounded-b-lg px-4 py-2 text-left text-sm transition-colors hover:bg-gray-100"
+        >
+          🇧🇷 Português
+        </button>
+      </div>
     </div>
 
     <!-- Botones normales -->
@@ -48,13 +89,13 @@
         class="rounded-full bg-verde-oscuro px-6 py-1.5 font-semibold text-white transition-transform hover:scale-110"
         (click)="clickLogin()"
       >
-        Login
+        {{ 'navbar.login' | transloco }}
       </button>
       <button
         class="rounded-full bg-verde-oscuro px-6 py-1.5 font-semibold text-white transition-transform hover:scale-110"
         (click)="clickRegister()"
       >
-        Registrarse
+        {{ 'navbar.registrarse' | transloco }}
       </button>
     </div>
   </div>
@@ -65,10 +106,20 @@
 <!-- Footer tipo chin -->
 <footer class="bg-gray-400 px-4 py-6 text-sm text-gray-600">
   <div class="flex flex-wrap justify-center gap-6">
-    <a href="#" class="hover:underline">Política de privacidad</a>
-    <a href="#" class="hover:underline">Términos y condiciones</a>
-    <a href="#" class="hover:underline">Accesibilidad</a>
-    <a href="#" class="hover:underline">Seguridad</a>
-    <a href="#" class="hover:underline">Ayuda</a>
+    <a href="#" class="hover:underline"
+      >{{ 'navbar.footer.privacidad' | transloco }}</a
+    >
+    <a href="#" class="hover:underline"
+      >{{ 'navbar.footer.terminos' | transloco }}</a
+    >
+    <a href="#" class="hover:underline"
+      >{{ 'navbar.footer.accesibilidad' | transloco }}</a
+    >
+    <a href="#" class="hover:underline"
+      >{{ 'navbar.footer.seguridad' | transloco }}</a
+    >
+    <a href="#" class="hover:underline"
+      >{{ 'navbar.footer.ayuda' | transloco }}</a
+    >
   </div>
 </footer>

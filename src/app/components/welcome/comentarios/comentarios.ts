@@ -1,84 +1,99 @@
-
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { MatIconModule } from "@angular/material/icon";
+import { MatExpansionModule } from "@angular/material/expansion";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+import { TranslocoModule } from "@jsverse/transloco";
 
 @Component({
-  selector: 'app-comentarios',
-  imports: [MatIconModule, FormsModule, MatExpansionModule],
-  templateUrl: './comentarios.html',
-  styleUrl: './comentarios.css',
+  selector: "app-comentarios",
+  imports: [MatIconModule, FormsModule, MatExpansionModule, TranslocoModule],
+  templateUrl: "./comentarios.html",
+  styleUrl: "./comentarios.css",
 })
 export class Comentarios {
   constructor(private router: Router) {}
 
   comentarios = [
     {
-      nombre: 'María L.',
-      texto: 'Excelente atención, muy humanos y profesionales.',
+      nombreKey: "comentarios.items.comentario1.nombre",
+      textoKey: "comentarios.items.comentario1.texto",
     },
     {
-      nombre: 'Juan P.',
-      texto: 'Siempre me atienden rápido y con una sonrisa.',
+      nombreKey: "comentarios.items.comentario2.nombre",
+      textoKey: "comentarios.items.comentario2.texto",
     },
     {
-      nombre: 'Laura G.',
-      texto: 'Me ayudaron con todo el trámite del reintegro, muy agradecida.',
+      nombreKey: "comentarios.items.comentario3.nombre",
+      textoKey: "comentarios.items.comentario3.texto",
     },
     {
-      nombre: 'Sergio T.',
-      texto: 'La pediatra fue súper amable con mi hija. 10 puntos.',
+      nombreKey: "comentarios.items.comentario4.nombre",
+      textoKey: "comentarios.items.comentario4.texto",
     },
     {
-      nombre: 'Rocío D.',
-      texto: 'Instalaciones limpias y modernas, me sentí muy cómoda.',
+      nombreKey: "comentarios.items.comentario5.nombre",
+      textoKey: "comentarios.items.comentario5.texto",
     },
     {
-      nombre: 'Carlos M.',
-      texto: 'Volvería sin dudar, atención muy profesional.',
+      nombreKey: "comentarios.items.comentario6.nombre",
+      textoKey: "comentarios.items.comentario6.texto",
     },
     {
-      nombre: 'Paula V.',
-      texto: 'Me atendieron un sábado sin turno, excelente predisposición.',
+      nombreKey: "comentarios.items.comentario7.nombre",
+      textoKey: "comentarios.items.comentario7.texto",
     },
     {
-      nombre: 'Ignacio C.',
-      texto: 'Servicio impecable, todo muy bien organizado.',
-    },
-    { nombre: 'Estela B.', texto: '¡Gracias por su atención y dedicación!' },
-    { nombre: 'Nicolás F.', texto: 'Gran calidad humana en todo el personal.' },
-    {
-      nombre: 'Florencia S.',
-      texto: 'La ginecóloga fue muy clara y empática.',
-    },
-    { nombre: 'Hernán R.', texto: 'Muy buena clínica, todo excelente.' },
-    { nombre: 'Lucía A.', texto: 'Volvería sin dudas. Me sentí cuidada.' },
-    {
-      nombre: 'Matías K.',
-      texto: 'Me resolvieron un problema que arrastraba hace meses.',
+      nombreKey: "comentarios.items.comentario8.nombre",
+      textoKey: "comentarios.items.comentario8.texto",
     },
     {
-      nombre: 'Gabriela J.',
-      texto: 'Todo el equipo fue muy atento y profesional.',
+      nombreKey: "comentarios.items.comentario9.nombre",
+      textoKey: "comentarios.items.comentario9.texto",
     },
     {
-      nombre: 'Martín Q.',
-      texto: 'Los resultados online me facilitaron todo.',
+      nombreKey: "comentarios.items.comentario10.nombre",
+      textoKey: "comentarios.items.comentario10.texto",
     },
     {
-      nombre: 'Sabrina M.',
-      texto: 'Excelente trato desde recepción hasta los médicos.',
-    },
-    { nombre: 'Jorge L.', texto: 'Agradecido por la atención que recibí.' },
-    {
-      nombre: 'Cecilia N.',
-      texto: 'Me sentí como en casa, muy buena energía.',
+      nombreKey: "comentarios.items.comentario11.nombre",
+      textoKey: "comentarios.items.comentario11.texto",
     },
     {
-      nombre: 'Ramiro E.',
-      texto: 'Rápidos, amables y eficientes. Todo lo que uno espera.',
+      nombreKey: "comentarios.items.comentario12.nombre",
+      textoKey: "comentarios.items.comentario12.texto",
+    },
+    {
+      nombreKey: "comentarios.items.comentario13.nombre",
+      textoKey: "comentarios.items.comentario13.texto",
+    },
+    {
+      nombreKey: "comentarios.items.comentario14.nombre",
+      textoKey: "comentarios.items.comentario14.texto",
+    },
+    {
+      nombreKey: "comentarios.items.comentario15.nombre",
+      textoKey: "comentarios.items.comentario15.texto",
+    },
+    {
+      nombreKey: "comentarios.items.comentario16.nombre",
+      textoKey: "comentarios.items.comentario16.texto",
+    },
+    {
+      nombreKey: "comentarios.items.comentario17.nombre",
+      textoKey: "comentarios.items.comentario17.texto",
+    },
+    {
+      nombreKey: "comentarios.items.comentario18.nombre",
+      textoKey: "comentarios.items.comentario18.texto",
+    },
+    {
+      nombreKey: "comentarios.items.comentario19.nombre",
+      textoKey: "comentarios.items.comentario19.texto",
+    },
+    {
+      nombreKey: "comentarios.items.comentario20.nombre",
+      textoKey: "comentarios.items.comentario20.texto",
     },
   ];
 }

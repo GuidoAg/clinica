@@ -1,1 +1,50 @@
-{}
+{
+  "welcomePage": {
+    "banner": {
+      "campana": "Campaña de Vacunación Antigripal 2025",
+      "titulo": "¿Querés asociarte?",
+      "subtitulo": "Contratá la mejor cobertura médica<br />para vos y tu familia.",
+      "botonCotizar": "Cotizá online"
+    },
+    "opciones": {
+      "consultas": "Consultas",
+      "farmacia": "Farmacia",
+      "turnos": "Turnos",
+      "ayuda": "Ayuda"
+    },
+    "seccionSalud": {
+      "titulo": "Tu salud en buenas manos",
+      "subtitulo": "Descubrí los beneficios de afiliarte a nuestra clínica."
+    },
+    "carrusel": {
+      "guardias": {
+        "titulo": "Guardias 24hs",
+        "descripcion": "Atención médica de urgencia todo el día."
+      },
+      "cobertura": {
+        "titulo": "Cobertura Nacional",
+        "descripcion": "Red de centros en todo el país."
+      },
+      "turnos": {
+        "titulo": "Turnos Online",
+        "descripcion": "Reservá desde tu casa."
+      },
+      "descuentos": {
+        "titulo": "Descuentos",
+        "descripcion": "Beneficios en farmacias y ópticas."
+      },
+      "pediatria": {
+        "titulo": "Atención Pediátrica",
+        "descripcion": "Cuidamos a los más chicos."
+      },
+      "estudios": {
+        "titulo": "Estudios Médicos",
+        "descripcion": "Tecnología de punta a tu alcance."
+      }
+    },
+    "comunidad": {
+      "titulo": "Nuestra comunidad",
+      "subtitulo": "Un espacio donde todos importan."
+    }
+  }
+}

@@ -1,69 +1,59 @@
-
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { MatIconModule } from "@angular/material/icon";
+import { MatExpansionModule } from "@angular/material/expansion";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+import { TranslocoModule } from "@jsverse/transloco";
 
 @Component({
-  selector: 'app-preguntas',
-  imports: [MatIconModule, FormsModule, MatExpansionModule],
-  templateUrl: './preguntas.html',
-  styleUrl: './preguntas.css',
+  selector: "app-preguntas",
+  imports: [MatIconModule, FormsModule, MatExpansionModule, TranslocoModule],
+  templateUrl: "./preguntas.html",
+  styleUrl: "./preguntas.css",
 })
 export class Preguntas {
   constructor(private router: Router) {}
 
   preguntas = [
     {
-      pregunta: '¿Cuáles son los horarios de atención?',
-      respuesta:
-        'Atendemos de lunes a viernes de 8:00 a 20:00, y sábados de 9:00 a 13:00.',
+      preguntaKey: "preguntas.items.horarios.pregunta",
+      respuestaKey: "preguntas.items.horarios.respuesta",
     },
     {
-      pregunta: '¿Cómo saco un turno?',
-      respuesta:
-        'Podés sacar turno por nuestra web, por teléfono o presencialmente en recepción.',
+      preguntaKey: "preguntas.items.turno.pregunta",
+      respuestaKey: "preguntas.items.turno.respuesta",
     },
     {
-      pregunta: '¿Atienden por obras sociales?',
-      respuesta:
-        'Sí, trabajamos con las principales obras sociales y prepagas.',
+      preguntaKey: "preguntas.items.obrasSociales.pregunta",
+      respuestaKey: "preguntas.items.obrasSociales.respuesta",
     },
     {
-      pregunta: '¿Puedo hacerme estudios sin turno?',
-      respuesta:
-        'Algunos estudios simples pueden hacerse sin turno. Consultá previamente.',
+      preguntaKey: "preguntas.items.estudios.pregunta",
+      respuestaKey: "preguntas.items.estudios.respuesta",
     },
     {
-      pregunta: '¿Ofrecen reintegros?',
-      respuesta:
-        'Sí, según tu cobertura médica, podés solicitar reintegros con la factura correspondiente.',
+      preguntaKey: "preguntas.items.reintegros.pregunta",
+      respuestaKey: "preguntas.items.reintegros.respuesta",
     },
     {
-      pregunta: '¿Qué especialidades médicas tienen?',
-      respuesta:
-        'Contamos con más de 20 especialidades incluyendo clínica, pediatría, ginecología, cardiología, entre otras.',
+      preguntaKey: "preguntas.items.especialidades.pregunta",
+      respuestaKey: "preguntas.items.especialidades.respuesta",
     },
     {
-      pregunta: '¿Tienen servicio de urgencias?',
-      respuesta:
-        'Sí, contamos con atención de urgencias 24/7 en nuestra sede central.',
+      preguntaKey: "preguntas.items.urgencias.pregunta",
+      respuestaKey: "preguntas.items.urgencias.respuesta",
     },
     {
-      pregunta: '¿Cómo obtengo mis resultados?',
-      respuesta:
-        'Podés verlos en nuestro portal web o retirarlos en persona con tu DNI.',
+      preguntaKey: "preguntas.items.resultados.pregunta",
+      respuestaKey: "preguntas.items.resultados.respuesta",
     },
     {
-      pregunta: '¿Se puede pagar con tarjeta?',
-      respuesta:
-        'Sí, aceptamos todos los medios de pago: débito, crédito, efectivo y billeteras digitales.',
+      preguntaKey: "preguntas.items.pago.pregunta",
+      respuestaKey: "preguntas.items.pago.respuesta",
     },
     {
-      pregunta: '¿Dónde puedo hacer reclamos o sugerencias?',
-      respuesta:
-        'En nuestra web, sección "Contacto", o en recepción de cualquier sede.',
+      preguntaKey: "preguntas.items.reclamos.pregunta",
+      respuestaKey: "preguntas.items.reclamos.respuesta",
     },
   ];
 }

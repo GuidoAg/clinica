@@ -1,17 +1,17 @@
 <div class="bg-gray-200 px-6 py-28">
   <h2 class="mb-10 text-center text-5xl font-bold text-azul-oscuro">
-    Preguntas Frecuentes
+    {{ 'preguntas.titulo' | transloco }}
   </h2>
   <mat-accordion class="mx-auto max-w-3xl">
-    @for (pregunta of preguntas; track pregunta) {
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title class="font-semibold text-azul-oscuro">
-            {{ pregunta.pregunta }}
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <p class="text-gray-600">{{ pregunta.respuesta }}</p>
-      </mat-expansion-panel>
+    @for (pregunta of preguntas; track pregunta.preguntaKey) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title class="font-semibold text-azul-oscuro">
+          {{ pregunta.preguntaKey | transloco }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <p class="text-gray-600">{{ pregunta.respuestaKey | transloco }}</p>
+    </mat-expansion-panel>
     }
   </mat-accordion>
   <div class="py-25"></div>

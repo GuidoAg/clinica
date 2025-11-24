@@ -1,9 +1,9 @@
 <div class="bg-gray-200 px-6 py-28 pb-83">
-  <h2 class="mb-10 text-center text-5xl font-bold text-azul-oscuro">Planes</h2>
+  <h2 class="mb-10 text-center text-5xl font-bold text-azul-oscuro">
+    {{ 'planes.titulo' | transloco }}
+  </h2>
   <p class="mt-4 text-center text-lg text-gray-700">
-    Elegí el plan que mejor se adapte a vos y a tu familia. Contamos con
-    cobertura integral, atención personalizada y beneficios únicos para cuidar
-    tu salud.
+    {{ 'planes.subtitulo' | transloco }}
   </p>
 
   <div
@@ -13,13 +13,15 @@
     <div
       class="mx-auto flex h-[540px] w-[400px] flex-col rounded-2xl bg-white p-6 shadow transition-transform hover:scale-105"
     >
-      <h3 class="text-center text-4xl font-bold text-gray-300">Plan Plata</h3>
+      <h3 class="text-center text-4xl font-bold text-gray-300">
+        {{ 'planes.plata.nombre' | transloco }}
+      </h3>
       <ul class="mt-4 flex-grow space-y-2 text-gray-700">
-        <li>✔ Consultas médicas ilimitadas</li>
-        <li>✔ Atención ambulatoria básica</li>
-        <li>✔ Acceso a laboratorio y estudios simples</li>
-        <li>✔ Odontología general</li>
-        <li>✔ Turnos programados</li>
+        <li>✔ {{ 'planes.plata.beneficio1' | transloco }}</li>
+        <li>✔ {{ 'planes.plata.beneficio2' | transloco }}</li>
+        <li>✔ {{ 'planes.plata.beneficio3' | transloco }}</li>
+        <li>✔ {{ 'planes.plata.beneficio4' | transloco }}</li>
+        <li>✔ {{ 'planes.plata.beneficio5' | transloco }}</li>
       </ul>
 
       <!-- Sección de precios -->
@@ -33,7 +35,7 @@
           class="rounded-full bg-verde-oscuro px-6 py-2 font-semibold text-white transition-transform hover:scale-105"
           (click)="clickLogin()"
         >
-          Elegir este plan
+          {{ 'planes.botonElegir' | transloco }}
         </button>
       </div>
     </div>
@@ -42,14 +44,16 @@
     <div
       class="mx-auto flex h-[540px] w-[400px] flex-col rounded-2xl bg-white p-6 shadow-lg transition-transform hover:scale-105"
     >
-      <h3 class="text-center text-4xl font-bold text-yellow-500">Plan Oro</h3>
+      <h3 class="text-center text-4xl font-bold text-yellow-500">
+        {{ 'planes.oro.nombre' | transloco }}
+      </h3>
       <ul class="mt-4 flex-grow space-y-2 text-gray-700">
-        <li>✔ Todo lo del Plan Plata</li>
-        <li>✔ Atención médica 24 hs</li>
-        <li>✔ Ambulancia sin costo</li>
-        <li>✔ Estudios de alta complejidad</li>
-        <li>✔ Internación en habitación compartida</li>
-        <li>✔ Oftalmología y audiología</li>
+        <li>✔ {{ 'planes.oro.beneficio1' | transloco }}</li>
+        <li>✔ {{ 'planes.oro.beneficio2' | transloco }}</li>
+        <li>✔ {{ 'planes.oro.beneficio3' | transloco }}</li>
+        <li>✔ {{ 'planes.oro.beneficio4' | transloco }}</li>
+        <li>✔ {{ 'planes.oro.beneficio5' | transloco }}</li>
+        <li>✔ {{ 'planes.oro.beneficio6' | transloco }}</li>
       </ul>
 
       <div class="mt-6 flex items-baseline justify-center gap-4 text-center">
@@ -62,7 +66,7 @@
           class="rounded-full bg-verde-oscuro px-6 py-2 font-semibold text-white transition-transform hover:scale-105"
           (click)="clickLogin()"
         >
-          Elegir este plan
+          {{ 'planes.botonElegir' | transloco }}
         </button>
       </div>
     </div>
@@ -71,15 +75,17 @@
     <div
       class="mx-auto flex h-[540px] w-[400px] flex-col rounded-2xl bg-white p-6 shadow-xl transition-transform hover:scale-105"
     >
-      <h3 class="text-center text-4xl font-bold text-blue-300">Plan Platino</h3>
+      <h3 class="text-center text-4xl font-bold text-blue-300">
+        {{ 'planes.platino.nombre' | transloco }}
+      </h3>
       <ul class="mt-4 flex-grow space-y-2 text-gray-700">
-        <li>✔ Todo lo del Plan Oro</li>
-        <li>✔ Cirugías estéticas opcionales</li>
-        <li>✔ Internación en habitación privada</li>
-        <li>✔ Cobertura internacional</li>
-        <li>✔ Check-up anual personalizado</li>
-        <li>✔ Kinesiología y fisioterapia sin tope</li>
-        <li>✔ Descuentos en farmacias y ópticas</li>
+        <li>✔ {{ 'planes.platino.beneficio1' | transloco }}</li>
+        <li>✔ {{ 'planes.platino.beneficio2' | transloco }}</li>
+        <li>✔ {{ 'planes.platino.beneficio3' | transloco }}</li>
+        <li>✔ {{ 'planes.platino.beneficio4' | transloco }}</li>
+        <li>✔ {{ 'planes.platino.beneficio5' | transloco }}</li>
+        <li>✔ {{ 'planes.platino.beneficio6' | transloco }}</li>
+        <li>✔ {{ 'planes.platino.beneficio7' | transloco }}</li>
       </ul>
 
       <div class="mt-6 flex items-baseline justify-center gap-4 text-center">
@@ -92,7 +98,7 @@
           class="rounded-full bg-verde-oscuro px-6 py-2 font-semibold text-white transition-transform hover:scale-105"
           (click)="clickLogin()"
         >
-          Elegir este plan
+          {{ 'planes.botonElegir' | transloco }}
         </button>
       </div>
     </div>

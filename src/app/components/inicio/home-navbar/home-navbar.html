@@ -8,7 +8,7 @@
         mat-icon-button
         (click)="toggleSidebar()"
         class="text-azul-oscuro transition-transform hover:scale-110"
-        >
+      >
         <mat-icon>menu</mat-icon>
       </button>
 
@@ -16,7 +16,7 @@
       <div
         class="flex cursor-pointer items-center space-x-4"
         (click)="clickLogo()"
-        >
+      >
         <img src="assets/imagenes/logo.svg" alt="Logo" class="h-14" />
         <div class="text-xl leading-tight font-bold text-azul-oscuro">
           <p>
@@ -27,13 +27,57 @@
       </div>
     </div>
 
-    <!-- Botón Cerrar sesión -->
-    <button
-      class="rounded-full bg-verde-oscuro px-6 py-1.5 font-semibold text-white transition-transform hover:scale-110"
-      (click)="clickCerrarSesion()"
+    <!-- Language Selector y Cerrar Sesión -->
+    <div class="flex items-end space-x-4">
+      <!-- Language Selector -->
+      <div class="relative flex items-end">
+        <button
+          class="flex items-center gap-0.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:shadow"
+          (click)="toggleLanguageMenu()"
+        >
+          {{ currentLangDisplay }}
+          <mat-icon class="!text-base"
+            >{{ showLanguageMenu ? 'expand_less' : 'expand_more' }}</mat-icon
+          >
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div
+          *ngIf="showLanguageMenu"
+          class="ring-opacity-5 absolute top-full right-0 mt-1 w-32 rounded-lg bg-white shadow-lg ring-1 ring-black"
+        >
+          <button
+            (click)="changeLanguage('es')"
+            [class.bg-verde-claro]="currentLang === 'es'"
+            class="w-full rounded-t-lg px-4 py-2 text-left text-sm transition-colors hover:bg-gray-100"
+          >
+            🇪🇸 Español
+          </button>
+          <button
+            (click)="changeLanguage('en')"
+            [class.bg-verde-claro]="currentLang === 'en'"
+            class="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-gray-100"
+          >
+            🇬🇧 English
+          </button>
+          <button
+            (click)="changeLanguage('pt')"
+            [class.bg-verde-claro]="currentLang === 'pt'"
+            class="w-full rounded-b-lg px-4 py-2 text-left text-sm transition-colors hover:bg-gray-100"
+          >
+            🇧🇷 Português
+          </button>
+        </div>
+      </div>
+
+      <!-- Botón Cerrar sesión -->
+      <button
+        class="rounded-full bg-verde-oscuro px-6 py-1.5 text-sm font-semibold text-white transition-transform hover:scale-110"
+        (click)="clickCerrarSesion()"
       >
-      Cerrar Sesión
-    </button>
+        {{ 'homeNavbar.cerrarSesion' | transloco }}
+      </button>
+    </div>
   </nav>
 
   <!-- Contenido con sidebar + router outlet -->
@@ -42,75 +86,70 @@
     <aside
       class="w-64 bg-azul-oscuro p-6 text-crema transition-all duration-300"
       [class.-ml-64]="!sidebarOpen"
-      >
+    >
       <nav class="flex flex-col space-y-6 font-bold">
         <button
           class="text-left hover:text-lg hover:text-white"
           (click)="navigate('')"
-          >
-          Home
+        >
+          {{ 'homeNavbar.home' | transloco }}
         </button>
         @if (usuarioActual?.rol === 'paciente') {
-          <button
-            class="text-left hover:text-lg hover:text-white"
-            (click)="navigate('mis-turnos-paciente')"
-            >
-            Mis Turnos
-          </button>
-        }
-        @if (usuarioActual?.rol === 'especialista') {
-          <button
-            class="text-left hover:text-lg hover:text-white"
-            (click)="navigate('mis-turnos-especialista')"
-            >
-            Mis Turnos
-          </button>
-        }
-        @if (usuarioActual?.rol === 'admin') {
-          <button
-            class="text-left hover:text-lg hover:text-white"
-            (click)="navigate('tabla-turnos')"
-            >
-            Turnos
-          </button>
-        }
-        @if (usuarioActual?.rol === 'especialista') {
-          <button
-            class="text-left hover:text-lg hover:text-white"
-            (click)="navigate('pacientes')"
-            >
-            Pacientes
-          </button>
-        }
-        @if (usuarioActual?.rol === 'paciente') {
-          <button
-            class="text-left hover:text-lg hover:text-white"
-            (click)="clickSolicitarTurno()"
-            >
-            Solicitar Turno
-          </button>
-        }
-        @if (usuarioActual?.rol === 'admin') {
-          <button
-            class="text-left hover:text-lg hover:text-white"
-            (click)="clickSolicitarTurnoAdmin()"
-            >
-            Solicitar Turno
-          </button>
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="navigate('mis-turnos-paciente')"
+        >
+          {{ 'homeNavbar.misTurnos' | transloco }}
+        </button>
+        } @if (usuarioActual?.rol === 'especialista') {
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="navigate('mis-turnos-especialista')"
+        >
+          {{ 'homeNavbar.misTurnos' | transloco }}
+        </button>
+        } @if (usuarioActual?.rol === 'admin') {
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="navigate('tabla-turnos')"
+        >
+          {{ 'homeNavbar.turnos' | transloco }}
+        </button>
+        } @if (usuarioActual?.rol === 'especialista') {
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="navigate('pacientes')"
+        >
+          {{ 'homeNavbar.pacientes' | transloco }}
+        </button>
+        } @if (usuarioActual?.rol === 'paciente') {
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="clickSolicitarTurno()"
+        >
+          {{ 'homeNavbar.solicitarTurno' | transloco }}
+        </button>
+        } @if (usuarioActual?.rol === 'admin') {
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="clickSolicitarTurnoAdmin()"
+        >
+          {{ 'homeNavbar.solicitarTurno' | transloco }}
+        </button>
         }
         <button
           class="text-left hover:text-lg hover:text-white"
           (click)="clickPerfil()"
-          >
-          Mi Perfil
+        >
+          {{ 'homeNavbar.miPerfil' | transloco }}
         </button>
         @if (usuarioActual?.rol === 'admin') {
-          <button
-            class="text-left hover:text-lg hover:text-white"
-            (click)="clickUsuario()"
-            >
-            Usuarios
-          </button>
+        <button
+          class="text-left hover:text-lg hover:text-white"
+          (click)="clickUsuario()"
+        >
+          {{ 'homeNavbar.usuarios' | transloco }}
+        </button>
         }
       </nav>
     </aside>

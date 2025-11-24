@@ -1,7 +1,7 @@
 <app-loading-wrapper>
   <div class="pt-24">
     <div class="bg-gray-300 py-1 text-center text-sm">
-      <p>Campaña de Vacunación Antigripal 2025</p>
+      <p>{{ 'welcomePage.banner.campana' | transloco }}</p>
     </div>
 
     <div class="flex items-center">
@@ -15,19 +15,22 @@
       <div class="absolute inset-0 flex items-center pl-26">
         <div class="space-y-4">
           <!-- Título -->
-          <h1 class="text-5xl font-bold text-white">¿Querés asociarte?</h1>
+          <h1 class="text-5xl font-bold text-white">
+            {{ 'welcomePage.banner.titulo' | transloco }}
+          </h1>
 
           <!-- Subtítulo -->
-          <p class="text-2xl text-white">
-            Contratá la mejor cobertura médica<br />para vos y tu familia.
-          </p>
+          <p
+            class="text-2xl text-white"
+            [innerHTML]="'welcomePage.banner.subtitulo' | transloco"
+          ></p>
 
           <!-- Botón -->
           <button
             class="rounded-full bg-verde-oscuro px-6 py-2 font-semibold text-white transition-transform hover:scale-110"
             (click)="clickPlanes()"
           >
-            Cotizá online
+            {{ 'welcomePage.banner.botonCotizar' | transloco }}
           </button>
         </div>
       </div>
@@ -45,7 +48,7 @@
           >
         </div>
         <span class="mt-2 font-medium text-verde-oscuro"
-          >{{ opcion.label }}</span
+          >{{ opcion.labelKey | transloco }}</span
         >
       </div>
       }
@@ -54,10 +57,10 @@
     <!-- Título y subtítulo -->
     <div class="px-4 py-12 text-center">
       <h2 class="text-4xl font-bold text-azul-oscuro">
-        Tu salud en buenas manos
+        {{ 'welcomePage.seccionSalud.titulo' | transloco }}
       </h2>
       <p class="mt-4 text-lg text-gray-600">
-        Descubrí los beneficios de afiliarte a nuestra clínica.
+        {{ 'welcomePage.seccionSalud.subtitulo' | transloco }}
       </p>
     </div>
 
@@ -88,9 +91,11 @@
                 />
                 <div class="p-4">
                   <h3 class="text-xl font-bold text-azul-oscuro">
-                    {{ item.titulo }}
+                    {{ item.tituloKey | transloco }}
                   </h3>
-                  <p class="text-sm text-gray-600">{{ item.descripcion }}</p>
+                  <p class="text-sm text-gray-600">
+                    {{ item.descripcionKey | transloco }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -111,10 +116,10 @@
     <!-- Collage -->
     <div class="bg-crema py-12">
       <h2 class="text-center text-3xl font-bold text-azul-oscuro">
-        Nuestra comunidad
+        {{ 'welcomePage.comunidad.titulo' | transloco }}
       </h2>
       <p class="mt-2 text-center text-gray-600">
-        Un espacio donde todos importan.
+        {{ 'welcomePage.comunidad.subtitulo' | transloco }}
       </p>
 
       <div class="mx-auto mt-8 max-w-5xl">
