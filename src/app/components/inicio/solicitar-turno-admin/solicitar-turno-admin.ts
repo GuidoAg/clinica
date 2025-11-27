@@ -1,18 +1,18 @@
-import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, signal } from "@angular/core";
 
-import { Turnos } from '../../../services/turnos';
-import { EspecialistaTurnos } from '../../../models/Turnos/EspecialistaTurnos';
-import { EspecialidadTurnos } from '../../../models/Turnos/EspecialidadTurnos';
-import { LoadingOverlayService } from '../../../services/loading-overlay-service';
-import { CitaTurnos } from '../../../models/Turnos/CitaTurnos';
-import { TrackImage } from '../../../directivas/track-image';
-import { LoadingWrapper } from '../../loading-wrapper/loading-wrapper';
-import { Usuario } from '../../../models/Auth/Usuario';
-import { Observable, Subject, firstValueFrom } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { AuthSupabase } from '../../../services/auth-supabase';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { UsuariosService } from '../../../services/usuarios';
+import { Turnos } from "../../../services/turnos";
+import { EspecialistaTurnos } from "../../../models/Turnos/EspecialistaTurnos";
+import { EspecialidadTurnos } from "../../../models/Turnos/EspecialidadTurnos";
+import { LoadingOverlayService } from "../../../services/loading-overlay-service";
+import { CitaTurnos } from "../../../models/Turnos/CitaTurnos";
+import { TrackImage } from "../../../directivas/track-image";
+import { LoadingWrapper } from "../../loading-wrapper/loading-wrapper";
+import { Usuario } from "../../../models/Auth/Usuario";
+import { Observable, Subject, firstValueFrom } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { AuthSupabase } from "../../../services/auth-supabase";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { UsuariosService } from "../../../services/usuarios";
 import {
   trigger,
   transition,
@@ -23,27 +23,27 @@ import {
   animateChild,
   state,
   keyframes,
-} from '@angular/animations';
+} from "@angular/animations";
 
 @Component({
-  selector: 'app-solicitar-turno-admin',
+  selector: "app-solicitar-turno-admin",
   imports: [TrackImage, LoadingWrapper],
-  templateUrl: './solicitar-turno-admin.html',
-  styleUrl: './solicitar-turno-admin.css',
+  templateUrl: "./solicitar-turno-admin.html",
+  styleUrl: "./solicitar-turno-admin.css",
   animations: [
-    trigger('especialidadAnimacion', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'scale(0.5)' }),
+    trigger("especialidadAnimacion", [
+      transition(":enter", [
+        style({ opacity: 0, transform: "scale(0.5)" }),
         animate(
-          '400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-          style({ opacity: 1, transform: 'scale(1)' }),
+          "400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+          style({ opacity: 1, transform: "scale(1)" }),
         ),
       ]),
     ]),
 
-    trigger('listaAnimacion', [
-      transition(':enter', [
-        query('@especialidadAnimacion', stagger(150, animateChild()), {
+    trigger("listaAnimacion", [
+      transition(":enter", [
+        query("@especialidadAnimacion", stagger(150, animateChild()), {
           optional: true,
         }),
       ]),
@@ -69,6 +69,7 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
   especialidadesBuscadas = signal(false);
   diasBuscados = signal(false);
   horasBuscadas = signal(false);
+  especialistasBuscados = signal(false);
 
   pacientes = signal<Usuario[]>([]);
   pacienteSeleccionado = signal<Usuario | null>(null);
@@ -90,6 +91,12 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
   );
 
   // 🟡 Nuevas señales computadas
+  noHayEspecialistas = computed(
+    () =>
+      this.especialistasBuscados() === true &&
+      this.especialistas().length === 0,
+  );
+
   noHayEspecialidades = computed(
     () =>
       this.especialistaSeleccionado() !== null &&
@@ -115,17 +122,22 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     this.usuario$.pipe(takeUntil(this.destroy$)).subscribe((usuario) => {
       if (!usuario) return;
       usuario.id =
-        typeof usuario.id === 'string' ? Number(usuario.id) : usuario.id;
+        typeof usuario.id === "string" ? Number(usuario.id) : usuario.id;
       this.usuarioActual = usuario;
     });
 
-    this.especialistas.set(await this.turnosService.obtenerEspecialistas());
+    // Usamos el método centralizado del servicio
+    const especialistasConDisponibilidad =
+      await this.turnosService.obtenerEspecialistasConDisponibilidad();
+
+    this.especialistas.set(especialistasConDisponibilidad);
+    this.especialistasBuscados.set(true);
 
     // 🆕 cargar pacientes
     const todosUsuarios = await this.usuariosService.obtenerTodosUsuarios();
     this.pacientes.set(
       todosUsuarios.filter(
-        (u) => u.rol === 'paciente' && u.emailVerificado === true,
+        (u) => u.rol === "paciente" && u.emailVerificado === true,
       ),
     );
 
@@ -168,8 +180,9 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     this.horariosDisponibles.set([]);
     this.cargando.set(true);
 
-    const fechas = await this.turnosService.calcularFechasDisponibles(
+    const fechas = await this.turnosService.obtenerFechasConHorariosDisponibles(
       this.especialistaSeleccionado()!.id,
+      es.duracion,
     );
     this.fechasDisponibles.set(fechas);
     this.diasBuscados.set(true);
@@ -203,7 +216,7 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     const paciente = this.pacienteSeleccionado(); // 🆕 ahora se usa el paciente seleccionado
 
     if (!fecha || !hora || !especialista || !especialidad || !paciente) {
-      console.error('Datos incompletos para agendar la cita');
+      console.error("Datos incompletos para agendar la cita");
       return;
     }
 
@@ -215,17 +228,17 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
       pacienteId: paciente.id, // 🆕 importante
       especialistaId: especialista.id,
       especialidadId: especialidad.id,
-      estado: 'solicitado',
-      comentarioPaciente: ' ',
-      comentarioEspecialista: ' ',
-      resenia: ' ',
+      estado: "solicitado",
+      comentarioPaciente: " ",
+      comentarioEspecialista: " ",
+      resenia: " ",
     };
 
     try {
       const resultado = await this.turnosService.darAltaCita(cita);
-      this.snackBar.open('Cita agendada', 'exito', {
+      this.snackBar.open("Cita agendada", "exito", {
         duration: 4000,
-        panelClass: ['bg-blue-600', 'text-white'],
+        panelClass: ["bg-blue-600", "text-white"],
       });
 
       // 🆕 Resetear flujo
@@ -235,15 +248,15 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
       this.fechaSeleccionada.set(null);
       this.horaSelecionada.set(null);
     } catch (error) {
-      this.snackBar.open('Ups algo salio mal', 'error', {
+      this.snackBar.open("Ups algo salio mal", "error", {
         duration: 4000,
-        panelClass: ['bg-red-600', 'text-white'],
+        panelClass: ["bg-red-600", "text-white"],
       });
     }
   }
 
   async btenerPacientes() {
     const todosUsuarios = await this.usuariosService.obtenerTodosUsuarios();
-    const pacientes = todosUsuarios.filter((u) => u.rol === 'paciente');
+    const pacientes = todosUsuarios.filter((u) => u.rol === "paciente");
   }
 }

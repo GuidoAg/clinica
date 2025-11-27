@@ -5,23 +5,23 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
-} from '@angular/core';
+} from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
   Validators,
   ReactiveFormsModule,
-} from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { AuthSupabase } from '../../../services/auth-supabase';
-import { LoadingOverlayService } from '../../../services/loading-overlay-service';
+} from "@angular/forms";
+import { CommonModule } from "@angular/common";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Router } from "@angular/router";
+import { AuthSupabase } from "../../../services/auth-supabase";
+import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from "@angular/material/input";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
 
 export interface UsuarioAutoLog {
   nombre: string;
@@ -31,7 +31,7 @@ export interface UsuarioAutoLog {
 }
 
 @Component({
-  selector: 'app-login',
+  selector: "app-login",
   standalone: true,
   imports: [
     CommonModule,
@@ -41,8 +41,8 @@ export interface UsuarioAutoLog {
     MatButtonModule,
     MatIconModule,
   ],
-  templateUrl: './login.html',
-  styleUrl: './login.css',
+  templateUrl: "./login.html",
+  styleUrl: "./login.css",
 })
 export class Login implements OnInit, AfterViewInit {
   private fb = inject(FormBuilder);
@@ -57,50 +57,50 @@ export class Login implements OnInit, AfterViewInit {
 
   usuariosAutoLog: UsuarioAutoLog[] = [
     {
-      nombre: 'Admin',
-      imagenUrl: 'assets/imagenes/Login/admin.png',
-      mail: 'insua.guido@gmail.com',
-      password: '1234567',
+      nombre: "Admin",
+      imagenUrl: "assets/imagenes/Login/admin.png",
+      mail: "admin.embezzle816@passmail.net",
+      password: "1234567",
     },
     {
-      nombre: 'Pepe',
-      imagenUrl: 'assets/imagenes/Login/especialista1.png',
-      mail: 'espe.deduct310@passmail.net',
-      password: '1234567',
+      nombre: "Agustin",
+      imagenUrl: "assets/imagenes/Login/especialista2.png",
+      mail: "banova2860@okcdeals.com",
+      password: "1234567",
     },
     {
-      nombre: 'Especialista',
-      imagenUrl: 'assets/imagenes/Login/especialista2.png',
-      mail: 'paciente@demo.com',
-      password: 'paciente123',
+      nombre: "Ana",
+      imagenUrl: "assets/imagenes/Login/especialista1.png",
+      mail: "hogowa4011@okcdeals.com",
+      password: "1234567",
     },
     {
-      nombre: 'Guido',
-      imagenUrl: 'assets/imagenes/Login/paciente1.png',
-      mail: 'pepitoluis.culture104@passmail.net',
-      password: '1234567',
+      nombre: "Guido",
+      imagenUrl: "assets/imagenes/Login/paciente1.png",
+      mail: "resoc47612@okcdeals.com",
+      password: "1234567",
     },
     {
-      nombre: 'Paciente',
-      imagenUrl: 'assets/imagenes/Login/paciente2.png',
-      mail: 'user2@demo.com',
-      password: 'user123',
+      nombre: "Maria",
+      imagenUrl: "assets/imagenes/Login/paciente3.png",
+      mail: "wavate3116@moondyal.com",
+      password: "1234567",
     },
     {
-      nombre: 'Paciente',
-      imagenUrl: 'assets/imagenes/Login/paciente3.png',
-      mail: 'user3@demo.com',
-      password: 'user123',
+      nombre: "Roberto",
+      imagenUrl: "assets/imagenes/Login/paciente2.png",
+      mail: "wihob84360@moondyal.com",
+      password: "1234567",
     },
   ];
 
-  @ViewChild('emailInput') emailInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild("emailInput") emailInputRef!: ElementRef<HTMLInputElement>;
 
   ngOnInit(): void {
     this.overlay.show();
     this.loginForm = this.fb.group({
-      mail: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(7)]],
+      mail: ["", [Validators.required, Validators.email]],
+      password: ["", [Validators.required, Validators.minLength(7)]],
     });
     this.overlay.hide();
   }
@@ -121,9 +121,9 @@ export class Login implements OnInit, AfterViewInit {
     const res = await this.auth.login(mail, password);
 
     if (!res.success) {
-      this.snackBar.open(res.errorCode ?? 'Error de login', 'Cerrar', {
+      this.snackBar.open(res.errorCode ?? "Error de login", "Cerrar", {
         duration: 4000,
-        panelClass: ['bg-red-600', 'text-white'],
+        panelClass: ["bg-red-600", "text-white"],
       });
       this.overlay.hide();
       return;
@@ -136,7 +136,7 @@ export class Login implements OnInit, AfterViewInit {
       await this.auth.registrarIngreso(user.id); // esto guarda en Supabase
     }
 
-    this.router.navigate(['/home']);
+    this.router.navigate(["/home"]);
   }
 
   toggleAutoLog() {

@@ -1,17 +1,17 @@
-import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, signal } from "@angular/core";
 
-import { Turnos } from '../../../services/turnos';
-import { EspecialistaTurnos } from '../../../models/Turnos/EspecialistaTurnos';
-import { EspecialidadTurnos } from '../../../models/Turnos/EspecialidadTurnos';
-import { LoadingOverlayService } from '../../../services/loading-overlay-service';
-import { CitaTurnos } from '../../../models/Turnos/CitaTurnos';
-import { TrackImage } from '../../../directivas/track-image';
-import { LoadingWrapper } from '../../loading-wrapper/loading-wrapper';
-import { Usuario } from '../../../models/Auth/Usuario';
-import { Observable, Subject, firstValueFrom } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { AuthSupabase } from '../../../services/auth-supabase';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Turnos } from "../../../services/turnos";
+import { EspecialistaTurnos } from "../../../models/Turnos/EspecialistaTurnos";
+import { EspecialidadTurnos } from "../../../models/Turnos/EspecialidadTurnos";
+import { LoadingOverlayService } from "../../../services/loading-overlay-service";
+import { CitaTurnos } from "../../../models/Turnos/CitaTurnos";
+import { TrackImage } from "../../../directivas/track-image";
+import { LoadingWrapper } from "../../loading-wrapper/loading-wrapper";
+import { Usuario } from "../../../models/Auth/Usuario";
+import { Observable, Subject, firstValueFrom } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { AuthSupabase } from "../../../services/auth-supabase";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import {
   trigger,
   transition,
@@ -22,28 +22,28 @@ import {
   animateChild,
   state,
   keyframes,
-} from '@angular/animations';
+} from "@angular/animations";
 
 @Component({
-  selector: 'app-solicitar-turno',
+  selector: "app-solicitar-turno",
   standalone: true,
   imports: [TrackImage, LoadingWrapper],
-  templateUrl: './solicitar-turno.html',
-  styleUrl: './solicitar-turno.css',
+  templateUrl: "./solicitar-turno.html",
+  styleUrl: "./solicitar-turno.css",
   animations: [
-    trigger('especialidadAnimacion', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'scale(0.5)' }),
+    trigger("especialidadAnimacion", [
+      transition(":enter", [
+        style({ opacity: 0, transform: "scale(0.5)" }),
         animate(
-          '400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-          style({ opacity: 1, transform: 'scale(1)' }),
+          "400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+          style({ opacity: 1, transform: "scale(1)" }),
         ),
       ]),
     ]),
 
-    trigger('listaAnimacion', [
-      transition(':enter', [
-        query('@especialidadAnimacion', stagger(150, animateChild()), {
+    trigger("listaAnimacion", [
+      transition(":enter", [
+        query("@especialidadAnimacion", stagger(150, animateChild()), {
           optional: true,
         }),
       ]),
@@ -69,6 +69,7 @@ export class SolicitarTurno implements OnInit, OnDestroy {
   especialidadesBuscadas = signal(false);
   diasBuscados = signal(false);
   horasBuscadas = signal(false);
+  especialistasBuscados = signal(false);
 
   cargando = signal(false);
 
@@ -86,6 +87,12 @@ export class SolicitarTurno implements OnInit, OnDestroy {
   );
 
   // 🟡 Nuevas señales computadas
+  noHayEspecialistas = computed(
+    () =>
+      this.especialistasBuscados() === true &&
+      this.especialistas().length === 0,
+  );
+
   noHayEspecialidades = computed(
     () =>
       this.especialistaSeleccionado() !== null &&
@@ -115,12 +122,17 @@ export class SolicitarTurno implements OnInit, OnDestroy {
       }
       // Asegurar que id sea número
       usuario.id =
-        typeof usuario.id === 'string' ? Number(usuario.id) : usuario.id;
+        typeof usuario.id === "string" ? Number(usuario.id) : usuario.id;
 
       this.usuarioActual = usuario;
     });
 
-    this.especialistas.set(await this.turnosService.obtenerEspecialistas());
+    // Usamos el método centralizado del servicio
+    const especialistasConDisponibilidad =
+      await this.turnosService.obtenerEspecialistasConDisponibilidad();
+
+    this.especialistas.set(especialistasConDisponibilidad);
+    this.especialistasBuscados.set(true);
 
     this.loadin.hide();
   }
@@ -157,8 +169,9 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     this.horariosDisponibles.set([]);
     this.cargando.set(true);
 
-    const fechas = await this.turnosService.calcularFechasDisponibles(
+    const fechas = await this.turnosService.obtenerFechasConHorariosDisponibles(
       this.especialistaSeleccionado()!.id,
+      es.duracion,
     );
     this.fechasDisponibles.set(fechas);
     this.diasBuscados.set(true);
@@ -192,7 +205,7 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     const paciente = this.usuarioActual;
 
     if (!fecha || !hora || !especialista || !especialidad || !paciente) {
-      console.error('Datos incompletos para agendar la cita');
+      console.error("Datos incompletos para agendar la cita");
       return;
     }
 
@@ -204,30 +217,30 @@ export class SolicitarTurno implements OnInit, OnDestroy {
       pacienteId: paciente.id,
       especialistaId: especialista.id,
       especialidadId: especialidad.id,
-      estado: 'solicitado',
-      comentarioPaciente: ' ',
-      comentarioEspecialista: ' ',
-      resenia: ' ',
+      estado: "solicitado",
+      comentarioPaciente: " ",
+      comentarioEspecialista: " ",
+      resenia: " ",
     };
 
     try {
       const resultado = await this.turnosService.darAltaCita(cita);
-      console.log('Cita creada exitosamente', resultado);
+      console.log("Cita creada exitosamente", resultado);
 
-      this.snackBar.open('Cita agendada', 'exito', {
+      this.snackBar.open("Cita agendada", "exito", {
         duration: 4000,
-        panelClass: ['bg-blue-600', 'text-white'],
+        panelClass: ["bg-blue-600", "text-white"],
       });
       this.especialistaSeleccionado.set(null);
       this.especialidadSeleccionada.set(null);
       this.fechaSeleccionada.set(null);
       this.horaSelecionada.set(null);
     } catch (error) {
-      console.error('Error al cargar la cita:', error);
+      console.error("Error al cargar la cita:", error);
 
-      this.snackBar.open('Ups algo salio mal', 'error', {
+      this.snackBar.open("Ups algo salio mal", "error", {
         duration: 4000,
-        panelClass: ['bg-red-600', 'text-white'],
+        panelClass: ["bg-red-600", "text-white"],
       });
       this.especialistaSeleccionado.set(null);
       this.especialidadSeleccionada.set(null);

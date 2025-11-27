@@ -30,12 +30,12 @@ export class WelcomeNavbar {
   }
 
   get currentLangDisplay() {
-    const flags: { [key: string]: string } = {
-      es: "🇪🇸 ES",
+    const flags: Record<string, string> = {
+      es: "🇦🇷 ES",
       en: "🇬🇧 EN",
       pt: "🇧🇷 PT",
     };
-    return flags[this.currentLang] || "🇪🇸 ES";
+    return flags[this.currentLang] || "🇦🇷 ES";
   }
 
   toggleLanguageMenu() {

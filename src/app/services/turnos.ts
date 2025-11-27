@@ -102,6 +102,36 @@ export class Turnos {
     });
   }
 
+  /**
+   * Obtiene solo los especialistas que tienen turnos disponibles
+   * Filtra automáticamente por validados y con disponibilidad real
+   */
+  async obtenerEspecialistasConDisponibilidad(
+    diasARevisar = 15,
+  ): Promise<EspecialistaTurnos[]> {
+    // Obtenemos todos los especialistas
+    const todosEspecialistas = await this.obtenerEspecialistas();
+
+    // Filtramos solo los que tienen turnos disponibles
+    const especialistasConDisponibilidad: EspecialistaTurnos[] = [];
+
+    for (const especialista of todosEspecialistas) {
+      // Solo verificamos los que ya están validados
+      if (especialista.validadoAdmin === true) {
+        const tieneDisponibilidad = await this.especialistaTieneDisponibilidad(
+          especialista.id,
+          diasARevisar,
+        );
+
+        if (tieneDisponibilidad) {
+          especialistasConDisponibilidad.push(especialista);
+        }
+      }
+    }
+
+    return especialistasConDisponibilidad;
+  }
+
   async obtenerEspecialidadesDeEspecialista(
     idEspecialista: number,
   ): Promise<EspecialidadTurnos[]> {
@@ -203,6 +233,74 @@ export class Turnos {
     }
 
     return fechasDisponibles;
+  }
+
+  /**
+   * Obtiene solo las fechas que tienen al menos un horario disponible
+   * Filtra las fechas para mostrar únicamente aquellas con turnos libres
+   */
+  async obtenerFechasConHorariosDisponibles(
+    idEspecialista: number,
+    duracionMin: number,
+    diasARevisar = 15,
+    desdeFecha = new Date(),
+  ): Promise<string[]> {
+    // Primero obtenemos todas las fechas potenciales
+    const fechasPotenciales = await this.calcularFechasDisponibles(
+      idEspecialista,
+      diasARevisar,
+      desdeFecha,
+    );
+
+    // Ahora filtramos solo las que tienen al menos un horario disponible
+    const fechasConHorarios: string[] = [];
+
+    for (const fecha of fechasPotenciales) {
+      const horarios = await this.obtenerHorariosDisponibles(
+        fecha,
+        idEspecialista,
+        duracionMin,
+      );
+
+      if (horarios.length > 0) {
+        fechasConHorarios.push(fecha);
+      }
+    }
+
+    return fechasConHorarios;
+  }
+
+  /**
+   * Verifica si un especialista tiene al menos un turno disponible
+   * para alguna de sus especialidades en los próximos días
+   */
+  async especialistaTieneDisponibilidad(
+    idEspecialista: number,
+    diasARevisar = 15,
+  ): Promise<boolean> {
+    // Obtenemos las especialidades del especialista
+    const especialidades =
+      await this.obtenerEspecialidadesDeEspecialista(idEspecialista);
+
+    if (especialidades.length === 0) {
+      return false;
+    }
+
+    // Verificamos si tiene al menos una fecha con horarios disponibles
+    // para cualquiera de sus especialidades
+    for (const especialidad of especialidades) {
+      const fechasConHorarios = await this.obtenerFechasConHorariosDisponibles(
+        idEspecialista,
+        especialidad.duracion,
+        diasARevisar,
+      );
+
+      if (fechasConHorarios.length > 0) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   async obtenerHorariosDisponibles(
