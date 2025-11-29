@@ -6,7 +6,6 @@ import {
   AfterViewInit,
 } from "@angular/core";
 import { Estadisticas } from "../../../services/estadisticas";
-import { Chart, registerables } from "chart.js";
 
 @Component({
   selector: "app-turnos-por-dia-chart",
@@ -20,7 +19,24 @@ export class TurnosPorDiaChart implements AfterViewInit {
   canvasRef!: ElementRef<HTMLCanvasElement>;
 
   async ngAfterViewInit() {
-    Chart.register(...registerables);
+    // Lazy loading: cargar Chart.js y componentes solo cuando se necesiten
+    const {
+      Chart,
+      BarElement,
+      BarController,
+      CategoryScale,
+      LinearScale,
+      Tooltip,
+      Legend,
+    } = await import("chart.js");
+    Chart.register(
+      BarElement,
+      BarController,
+      CategoryScale,
+      LinearScale,
+      Tooltip,
+      Legend,
+    );
     const canvas = this.canvasRef.nativeElement;
 
     const datos = await this.estadisticas.obtenerTurnosPorDia();

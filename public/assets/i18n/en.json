@@ -1,0 +1,240 @@
+{
+  "welcomePage": {
+    "banner": {
+      "campana": "2025 Flu Vaccination Campaign",
+      "titulo": "Want to join us?",
+      "subtitulo": "Get the best medical coverage<br />for you and your family.",
+      "botonCotizar": "Get a quote online"
+    },
+    "opciones": {
+      "consultas": "Consultations",
+      "farmacia": "Pharmacy",
+      "turnos": "Appointments",
+      "ayuda": "Help"
+    },
+    "seccionSalud": {
+      "titulo": "Your health in good hands",
+      "subtitulo": "Discover the benefits of joining our clinic."
+    },
+    "carrusel": {
+      "guardias": {
+        "titulo": "24/7 Emergency Care",
+        "descripcion": "Urgent medical attention all day long."
+      },
+      "cobertura": {
+        "titulo": "National Coverage",
+        "descripcion": "Network of centers across the country."
+      },
+      "turnos": {
+        "titulo": "Online Appointments",
+        "descripcion": "Book from home."
+      },
+      "descuentos": {
+        "titulo": "Discounts",
+        "descripcion": "Benefits at pharmacies and opticians."
+      },
+      "pediatria": {
+        "titulo": "Pediatric Care",
+        "descripcion": "We take care of the little ones."
+      },
+      "estudios": {
+        "titulo": "Medical Tests",
+        "descripcion": "Cutting-edge technology at your fingertips."
+      }
+    },
+    "comunidad": {
+      "titulo": "Our community",
+      "subtitulo": "A place where everyone matters."
+    }
+  },
+  "navbar": {
+    "planes": "Plans",
+    "preguntas": "FAQ",
+    "ubicaciones": "Locations",
+    "comentarios": "Reviews",
+    "login": "Login",
+    "registrarse": "Sign Up",
+    "footer": {
+      "privacidad": "Privacy Policy",
+      "terminos": "Terms and Conditions",
+      "accesibilidad": "Accessibility",
+      "seguridad": "Security",
+      "ayuda": "Help"
+    }
+  },
+  "planes": {
+    "titulo": "Plans",
+    "subtitulo": "Choose the plan that best suits you and your family. We offer comprehensive coverage, personalized care, and unique benefits to take care of your health.",
+    "plata": {
+      "nombre": "Silver Plan",
+      "beneficio1": "Unlimited medical consultations",
+      "beneficio2": "Basic outpatient care",
+      "beneficio3": "Access to lab and simple tests",
+      "beneficio4": "General dentistry",
+      "beneficio5": "Scheduled appointments"
+    },
+    "oro": {
+      "nombre": "Gold Plan",
+      "beneficio1": "Everything in the Silver Plan",
+      "beneficio2": "24-hour medical care",
+      "beneficio3": "Free ambulance service",
+      "beneficio4": "High-complexity tests",
+      "beneficio5": "Hospitalization in shared room",
+      "beneficio6": "Ophthalmology and audiology"
+    },
+    "platino": {
+      "nombre": "Platinum Plan",
+      "beneficio1": "Everything in the Gold Plan",
+      "beneficio2": "Optional cosmetic surgeries",
+      "beneficio3": "Hospitalization in private room",
+      "beneficio4": "International coverage",
+      "beneficio5": "Personalized annual check-up",
+      "beneficio6": "Unlimited kinesiology and physiotherapy",
+      "beneficio7": "Discounts at pharmacies and opticians"
+    },
+    "botonElegir": "Choose this plan"
+  },
+  "preguntas": {
+    "titulo": "Frequently Asked Questions",
+    "items": {
+      "horarios": {
+        "pregunta": "What are the office hours?",
+        "respuesta": "We are open Monday to Friday from 8:00 AM to 8:00 PM, and Saturdays from 9:00 AM to 1:00 PM."
+      },
+      "turno": {
+        "pregunta": "How do I schedule an appointment?",
+        "respuesta": "You can schedule an appointment through our website, by phone, or in person at reception."
+      },
+      "obrasSociales": {
+        "pregunta": "Do you accept health insurance?",
+        "respuesta": "Yes, we work with major health insurance providers and prepaid plans."
+      },
+      "estudios": {
+        "pregunta": "Can I get tests done without an appointment?",
+        "respuesta": "Some simple tests can be done without an appointment. Please consult beforehand."
+      },
+      "reintegros": {
+        "pregunta": "Do you offer reimbursements?",
+        "respuesta": "Yes, depending on your medical coverage, you can request reimbursements with the corresponding invoice."
+      },
+      "especialidades": {
+        "pregunta": "What medical specialties do you have?",
+        "respuesta": "We have over 20 specialties including general medicine, pediatrics, gynecology, cardiology, among others."
+      },
+      "urgencias": {
+        "pregunta": "Do you have emergency services?",
+        "respuesta": "Yes, we have 24/7 emergency care at our main facility."
+      },
+      "resultados": {
+        "pregunta": "How do I get my test results?",
+        "respuesta": "You can view them on our web portal or pick them up in person with your ID."
+      },
+      "pago": {
+        "pregunta": "Can I pay by card?",
+        "respuesta": "Yes, we accept all payment methods: debit, credit, cash, and digital wallets."
+      },
+      "reclamos": {
+        "pregunta": "Where can I file complaints or suggestions?",
+        "respuesta": "On our website in the 'Contact' section, or at reception at any location."
+      }
+    }
+  },
+  "ubicaciones": {
+    "titulo": "Our Locations"
+  },
+  "comentarios": {
+    "titulo": "What our patients say",
+    "items": {
+      "comentario1": {
+        "nombre": "Maria L.",
+        "texto": "Excellent care, very humane and professional."
+      },
+      "comentario2": {
+        "nombre": "Juan P.",
+        "texto": "They always help me quickly and with a smile."
+      },
+      "comentario3": {
+        "nombre": "Laura G.",
+        "texto": "They helped me with the entire reimbursement process, very grateful."
+      },
+      "comentario4": {
+        "nombre": "Sergio T.",
+        "texto": "The pediatrician was super kind to my daughter. 10 points."
+      },
+      "comentario5": {
+        "nombre": "Rocio D.",
+        "texto": "Clean and modern facilities, I felt very comfortable."
+      },
+      "comentario6": {
+        "nombre": "Carlos M.",
+        "texto": "I would come back without hesitation, very professional care."
+      },
+      "comentario7": {
+        "nombre": "Paula V.",
+        "texto": "They saw me on a Saturday without an appointment, excellent willingness."
+      },
+      "comentario8": {
+        "nombre": "Ignacio C.",
+        "texto": "Impeccable service, everything very well organized."
+      },
+      "comentario9": {
+        "nombre": "Estela B.",
+        "texto": "Thank you for your care and dedication!"
+      },
+      "comentario10": {
+        "nombre": "Nicolas F.",
+        "texto": "Great human quality in all the staff."
+      },
+      "comentario11": {
+        "nombre": "Florencia S.",
+        "texto": "The gynecologist was very clear and empathetic."
+      },
+      "comentario12": {
+        "nombre": "Hernan R.",
+        "texto": "Very good clinic, everything excellent."
+      },
+      "comentario13": {
+        "nombre": "Lucia A.",
+        "texto": "I would come back without a doubt. I felt cared for."
+      },
+      "comentario14": {
+        "nombre": "Matias K.",
+        "texto": "They solved a problem I had been dealing with for months."
+      },
+      "comentario15": {
+        "nombre": "Gabriela J.",
+        "texto": "The entire team was very attentive and professional."
+      },
+      "comentario16": {
+        "nombre": "Martin Q.",
+        "texto": "The online results made everything easier."
+      },
+      "comentario17": {
+        "nombre": "Sabrina M.",
+        "texto": "Excellent treatment from reception to doctors."
+      },
+      "comentario18": {
+        "nombre": "Jorge L.",
+        "texto": "Grateful for the care I received."
+      },
+      "comentario19": {
+        "nombre": "Cecilia N.",
+        "texto": "I felt at home, very good energy."
+      },
+      "comentario20": {
+        "nombre": "Ramiro E.",
+        "texto": "Fast, friendly and efficient. Everything you expect."
+      }
+    }
+  },
+  "homeNavbar": {
+    "cerrarSesion": "Log Out",
+    "home": "Home",
+    "misTurnos": "My Appointments",
+    "turnos": "Appointments",
+    "pacientes": "Patients",
+    "solicitarTurno": "Request Appointment",
+    "miPerfil": "My Profile",
+    "usuarios": "Users"
+  }
+}

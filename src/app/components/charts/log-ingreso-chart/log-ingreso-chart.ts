@@ -5,7 +5,6 @@ import {
   inject,
   AfterViewInit,
 } from "@angular/core";
-import { Chart, registerables } from "chart.js";
 import { Estadisticas } from "../../../services/estadisticas";
 
 @Component({
@@ -23,7 +22,24 @@ export class LogIngresoChart implements AfterViewInit {
   }
 
   private async render() {
-    Chart.register(...registerables);
+    // Lazy loading: cargar Chart.js y componentes solo cuando se necesiten
+    const {
+      Chart,
+      BarElement,
+      BarController,
+      CategoryScale,
+      LinearScale,
+      Tooltip,
+      Legend,
+    } = await import("chart.js");
+    Chart.register(
+      BarElement,
+      BarController,
+      CategoryScale,
+      LinearScale,
+      Tooltip,
+      Legend,
+    );
 
     const datos = await this.estadisticas.obtenerLogIngresos();
     // datos: Array<{ fecha: string, ... }>, sin 'cantidad'

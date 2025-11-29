@@ -6,7 +6,6 @@ import {
   AfterViewInit,
 } from "@angular/core";
 import { Estadisticas } from "../../../services/estadisticas";
-import { Chart, registerables } from "chart.js";
 
 @Component({
   selector: "app-turnos-por-especialidad-chart",
@@ -19,7 +18,7 @@ import { Chart, registerables } from "chart.js";
 })
 export class TurnosPorEspecialidadChart implements AfterViewInit {
   private estadisticas = inject(Estadisticas);
-  private chart?: Chart;
+  private chart?: any;
 
   @ViewChild("canvas", { static: true })
   canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -29,7 +28,11 @@ export class TurnosPorEspecialidadChart implements AfterViewInit {
   }
 
   private async render(): Promise<void> {
-    Chart.register(...registerables);
+    // Lazy loading: cargar Chart.js y componentes solo cuando se necesiten
+    const { Chart, ArcElement, PieController, Tooltip, Legend } = await import(
+      "chart.js"
+    );
+    Chart.register(ArcElement, PieController, Tooltip, Legend);
 
     const datos = await this.estadisticas.obtenerTurnosPorEspecialidad();
     const labels = datos.map((d) => d.especialidad);

@@ -1,6 +1,5 @@
 import { Component, ElementRef, ViewChild, inject } from "@angular/core";
 import { Estadisticas } from "../../../services/estadisticas";
-import { Chart, registerables } from "chart.js";
 
 @Component({
   selector: "app-turnos-finalizados-por-medico-chart",
@@ -13,13 +12,30 @@ import { Chart, registerables } from "chart.js";
 })
 export class TurnosFinalizadosPorMedicoChart {
   private estadisticas = inject(Estadisticas);
-  private chart?: Chart;
+  private chart?: any;
 
   @ViewChild("canvas", { static: true })
   canvasRef!: ElementRef<HTMLCanvasElement>;
 
   async render(desde: string, hasta: string): Promise<void> {
-    Chart.register(...registerables);
+    // Lazy loading: cargar Chart.js y componentes solo cuando se necesiten
+    const {
+      Chart,
+      BarElement,
+      BarController,
+      CategoryScale,
+      LinearScale,
+      Tooltip,
+      Legend,
+    } = await import("chart.js");
+    Chart.register(
+      BarElement,
+      BarController,
+      CategoryScale,
+      LinearScale,
+      Tooltip,
+      Legend,
+    );
 
     const datos = await this.estadisticas.obtenerTurnosFinalizadosPorMedico(
       desde,
