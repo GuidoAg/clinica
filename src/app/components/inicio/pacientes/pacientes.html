@@ -63,7 +63,7 @@
   <!-- Panel historia clínica -->
   @if (pacienteSeleccionado()) {
   <div
-    class="w-full translate-x-0 rounded-2xl bg-white p-10 transition-all duration-700 ease-in-out md:w-[35%]"
+    class="flex h-full w-full flex-col overflow-hidden rounded-2xl bg-white p-6 transition-all duration-700 ease-in-out md:w-[35%]"
     [@slideInRight]
   >
     <button
@@ -76,24 +76,25 @@
       Historia clínica de {{ pacienteSeleccionado()?.paciente?.nombre }} {{
       pacienteSeleccionado()?.paciente?.apellido }}
     </h2>
-    <!-- Mostrar detalles de historia clínica aquí -->
-    @for (cita of pacienteSeleccionado()?.citas; track cita) {
-    <div>
-      <p><strong>Fecha:</strong> {{ cita.fechaHora | date:'short' }}</p>
-      <p><strong>Especialidad:</strong> {{ cita.especialidadNombre }}</p>
-      <p><strong>Altura:</strong> {{ cita.alturaCm }} cm</p>
-      <p><strong>Peso:</strong> {{ cita.pesoKg }} kg</p>
-      <p><strong>Temperatura:</strong> {{ cita.temperaturaC }} °C</p>
-      <p><strong>Presión arterial:</strong> {{ cita.presionArterial }}</p>
-      <p><strong>Datos dinámicos:</strong></p>
-      <ul class="list-inside list-disc text-sm">
-        @for (d of cita.datosDinamicos; track d) {
-        <li>{{ d.clave }}: {{ d.valor }}</li>
-        }
-      </ul>
-      <br />
+    <!-- Contenedor con scroll para los registros -->
+    <div class="overflow-y-auto pr-2">
+      @for (cita of pacienteSeleccionado()?.citas; track cita) {
+      <div class="mb-4 rounded border border-gray-200 bg-gray-50 p-4">
+        <p><strong>Fecha:</strong> {{ cita.fechaHora | date:'short' }}</p>
+        <p><strong>Especialidad:</strong> {{ cita.especialidadNombre }}</p>
+        <p><strong>Altura:</strong> {{ cita.alturaCm }} cm</p>
+        <p><strong>Peso:</strong> {{ cita.pesoKg }} kg</p>
+        <p><strong>Temperatura:</strong> {{ cita.temperaturaC }} °C</p>
+        <p><strong>Presión arterial:</strong> {{ cita.presionArterial }}</p>
+        <p><strong>Datos dinámicos:</strong></p>
+        <ul class="list-inside list-disc text-sm">
+          @for (d of cita.datosDinamicos; track d) {
+          <li>{{ d.clave }}: {{ d.valor }}</li>
+          }
+        </ul>
+      </div>
+      }
     </div>
-    }
   </div>
   }
 </div>

@@ -8,10 +8,11 @@ import { Usuario } from "../../../models/Auth/Usuario";
 import { Observable, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { AccionesPaciente } from "../acciones-paciente/acciones-paciente";
+import { ColorEstado } from "../../../directivas/color-estado";
 
 @Component({
   selector: "app-mis-turnos-paciente",
-  imports: [CommonModule, FormsModule, AccionesPaciente],
+  imports: [CommonModule, FormsModule, AccionesPaciente, ColorEstado],
   templateUrl: "./mis-turnos-paciente.html",
   styleUrl: "./mis-turnos-paciente.css",
 })
@@ -26,14 +27,6 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
   citaSeleccionada = signal<CitaCompletaTurnos | null>(null);
 
   mostrarPopupAcciones = false;
-
-  estadoClaseMap: Record<string, string | undefined> = {
-    solicitado: "bg-yellow-200 text-yellow-800",
-    aceptado: "bg-green-200 text-green-800",
-    rechazado: "bg-red-200 text-red-800",
-    cancelado: "bg-gray-300 text-gray-800",
-    completado: "bg-blue-200 text-blue-800",
-  };
 
   readonly columnas = [
     { key: "citaId", label: "ID" },
@@ -82,7 +75,7 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
       usuario.id =
         typeof usuario.id === "string" ? Number(usuario.id) : usuario.id;
       this.usuarioActual = usuario;
-      this.cargarCitas(); // ✅ llamada aquí
+      this.cargarCitas(); //llamada aquí
     });
   }
 
@@ -119,22 +112,22 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
 
   // Computed para devolver la lista filtrada según columna y valor
   get citasFiltradas(): CitaCompletaTurnos[] {
-    const filtroCol = this.filtroColumna();
+    // const filtroCol = this.filtroColumna();
     const filtroVal = this._filtroValor().toLowerCase();
 
-    if (!filtroCol || filtroVal.trim() === "") {
+    if (filtroVal.trim() === "") {
       return this.citas();
     }
 
     return this.citas().filter((cita) => {
-      const valorCampo = cita[filtroCol as keyof CitaCompletaTurnos];
+      const valorCampo = JSON.stringify(cita); //cita[filtroCol as keyof CitaCompletaTurnos];
 
-      if (valorCampo == null) return false;
+      //   if (valorCampo == null) return false;
 
-      if (valorCampo instanceof Date) {
-        // Filtrar fecha con formato corto
-        return valorCampo.toLocaleString().toLowerCase().includes(filtroVal);
-      }
+      //   if (valorCampo instanceof Date) {
+      //     // Filtrar fecha con formato corto
+      //     return valorCampo.toLocaleString().toLowerCase().includes(filtroVal);
+      //   }
 
       return valorCampo.toString().toLowerCase().includes(filtroVal);
     });

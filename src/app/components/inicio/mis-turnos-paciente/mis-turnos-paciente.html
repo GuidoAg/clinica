@@ -75,7 +75,7 @@
           </td>
           <td
             class="rounded border border-gray-300 px-3 py-1 text-center font-semibold"
-            [ngClass]="estadoClaseMap[cita.estado] ?? 'bg-gray-100 text-gray-700'"
+            [appColorEstado]="cita.estado"
           >
             {{ cita.estado | titlecase }}
           </td>

@@ -8,11 +8,12 @@ import { Usuario } from "../../../models/Auth/Usuario";
 import { Observable, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { AccionesAdmin } from "../acciones-admin/acciones-admin";
+import { ColorEstado } from "../../../directivas/color-estado";
 
 @Component({
   selector: "app-tabla-turnos",
   standalone: true,
-  imports: [CommonModule, FormsModule, AccionesAdmin],
+  imports: [CommonModule, FormsModule, AccionesAdmin, ColorEstado],
   templateUrl: "./tabla-turnos.html",
   styleUrl: "./tabla-turnos.css",
 })
@@ -27,14 +28,6 @@ export class TablaTurnos implements OnInit, OnDestroy {
   citaSeleccionada = signal<CitaCompletaTurnos | null>(null);
 
   mostrarPopupAcciones = false;
-
-  estadoClaseMap: Record<string, string | undefined> = {
-    solicitado: "bg-yellow-200 text-yellow-800",
-    aceptado: "bg-green-200 text-green-800",
-    rechazado: "bg-red-200 text-red-800",
-    cancelado: "bg-gray-300 text-gray-800",
-    completado: "bg-blue-200 text-blue-800",
-  };
 
   readonly columnas = [
     { key: "citaId", label: "ID" },
