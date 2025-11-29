@@ -82,10 +82,18 @@
       <div class="mb-4 rounded border border-gray-200 bg-gray-50 p-4">
         <p><strong>Fecha:</strong> {{ cita.fechaHora | date:'short' }}</p>
         <p><strong>Especialidad:</strong> {{ cita.especialidadNombre }}</p>
-        <p><strong>Altura:</strong> {{ cita.alturaCm }} cm</p>
-        <p><strong>Peso:</strong> {{ cita.pesoKg }} kg</p>
-        <p><strong>Temperatura:</strong> {{ cita.temperaturaC }} °C</p>
-        <p><strong>Presión arterial:</strong> {{ cita.presionArterial }}</p>
+        <p>
+          <strong>Altura:</strong> {{ cita.alturaCm | unidadMedida:'altura' }}
+        </p>
+        <p><strong>Peso:</strong> {{ cita.pesoKg | unidadMedida:'peso' }}</p>
+        <p>
+          <strong>Temperatura:</strong> {{ cita.temperaturaC |
+          unidadMedida:'temperatura' }}
+        </p>
+        <p>
+          <strong>Presión arterial:</strong> {{ cita.presionArterial |
+          unidadMedida:'presion' }}
+        </p>
         <p><strong>Datos dinámicos:</strong></p>
         <ul class="list-inside list-disc text-sm">
           @for (d of cita.datosDinamicos; track d) {

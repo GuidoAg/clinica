@@ -10,10 +10,17 @@ import { takeUntil } from "rxjs/operators";
 import { AccionesPaciente } from "../acciones-paciente/acciones-paciente";
 import { ColorEstado } from "../../../directivas/color-estado";
 import { filtrarCitas } from "../../../helpers/filtrar-citas";
+import { UnidadMedidaPipe } from "../../../pipes/unidad-medida.pipe";
 
 @Component({
   selector: "app-mis-turnos-paciente",
-  imports: [CommonModule, FormsModule, AccionesPaciente, ColorEstado],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AccionesPaciente,
+    ColorEstado,
+    UnidadMedidaPipe,
+  ],
   templateUrl: "./mis-turnos-paciente.html",
   styleUrl: "./mis-turnos-paciente.css",
 })
@@ -33,10 +40,10 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
     { key: "citaId", label: "ID" },
     { key: "fechaHora", label: "Fecha/Hora" },
     { key: "estado", label: "Estado" },
-    { key: "alturaCm", label: "Altura (cm)" },
-    { key: "pesoKg", label: "Peso (kg)" },
-    { key: "temperaturaC", label: "Temp (°C)" },
-    { key: "presionArterial", label: "Presión" },
+    { key: "alturaCm", label: "Altura" },
+    { key: "pesoKg", label: "Peso" },
+    { key: "temperaturaC", label: "Temperatura" },
+    { key: "presionArterial", label: "Presión arterial" },
     { key: "pacienteNombreCompleto", label: "Paciente" },
     { key: "especialistaNombreCompleto", label: "Especialista" },
     { key: "especialidadNombre", label: "Especialidad" },

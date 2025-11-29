@@ -10,11 +10,18 @@ import { takeUntil } from "rxjs/operators";
 import { AccionesAdmin } from "../acciones-admin/acciones-admin";
 import { ColorEstado } from "../../../directivas/color-estado";
 import { filtrarCitas } from "../../../helpers/filtrar-citas";
+import { UnidadMedidaPipe } from "../../../pipes/unidad-medida.pipe";
 
 @Component({
   selector: "app-tabla-turnos",
   standalone: true,
-  imports: [CommonModule, FormsModule, AccionesAdmin, ColorEstado],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AccionesAdmin,
+    ColorEstado,
+    UnidadMedidaPipe,
+  ],
   templateUrl: "./tabla-turnos.html",
   styleUrl: "./tabla-turnos.css",
 })
@@ -34,10 +41,10 @@ export class TablaTurnos implements OnInit, OnDestroy {
     { key: "citaId", label: "ID" },
     { key: "fechaHora", label: "Fecha/Hora" },
     { key: "estado", label: "Estado" },
-    { key: "alturaCm", label: "Altura (cm)" },
-    { key: "pesoKg", label: "Peso (kg)" },
-    { key: "temperaturaC", label: "Temp (°C)" },
-    { key: "presionArterial", label: "Presión" },
+    { key: "alturaCm", label: "Altura" },
+    { key: "pesoKg", label: "Peso" },
+    { key: "temperaturaC", label: "Temperatura" },
+    { key: "presionArterial", label: "Presión arterial" },
     { key: "pacienteNombreCompleto", label: "Paciente" },
     { key: "especialistaNombreCompleto", label: "Especialista" },
     { key: "especialidadNombre", label: "Especialidad" },

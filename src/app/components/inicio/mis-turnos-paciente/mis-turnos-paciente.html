@@ -70,13 +70,17 @@
           >
             {{ cita.estado | titlecase }}
           </td>
-          <td class="border border-gray-300 px-3 py-1">{{ cita.alturaCm }}</td>
-          <td class="border border-gray-300 px-3 py-1">{{ cita.pesoKg }}</td>
           <td class="border border-gray-300 px-3 py-1">
-            {{ cita.temperaturaC }}
+            {{ cita.alturaCm | unidadMedida:'altura' }}
           </td>
           <td class="border border-gray-300 px-3 py-1">
-            {{ cita.presionArterial }}
+            {{ cita.pesoKg | unidadMedida:'peso' }}
+          </td>
+          <td class="border border-gray-300 px-3 py-1">
+            {{ cita.temperaturaC | unidadMedida:'temperatura' }}
+          </td>
+          <td class="border border-gray-300 px-3 py-1">
+            {{ cita.presionArterial | unidadMedida:'presion' }}
           </td>
           <td class="border border-gray-300 px-3 py-1">
             {{ cita.pacienteNombreCompleto }}
