@@ -9,6 +9,7 @@ import { Observable, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { AccionesEspecialista } from "../acciones-especialista/acciones-especialista";
 import { ColorEstado } from "../../../directivas/color-estado";
+import { filtrarCitas } from "../../../helpers/filtrar-citas";
 
 @Component({
   selector: "app-mis-turnos-especialista",
@@ -53,8 +54,7 @@ export class MisTurnosEspecialista implements OnInit, OnDestroy {
     this.usuario$ = this.authSupabase.user$;
   }
 
-  // Filtro seleccionado y valor del filtro
-  filtroColumna = signal<string | null>(null);
+  // Filtro
   private _filtroValor = signal("");
 
   // getter y setter para bindear con ngModel
@@ -105,46 +105,12 @@ export class MisTurnosEspecialista implements OnInit, OnDestroy {
     this.filaExpandida.set(this.filaExpandida() === citaId ? null : citaId);
   }
 
-  activarFiltro(columna: string) {
-    this.filtroColumna.set(columna);
-    this._filtroValor.set("");
-  }
-
-  // Computed para devolver la lista filtrada según columna y valor
+  // Computed para devolver la lista filtrada
   get citasFiltradas(): CitaCompletaTurnos[] {
-    // const filtroCol = this.filtroColumna();
-    const filtroVal = this._filtroValor().toLowerCase();
-
-    if (filtroVal.trim() === "") {
-      return this.citas();
-    }
-
-    return this.citas().filter((cita) => {
-      const valorCampo = JSON.stringify(cita); //cita[filtroCol as keyof CitaCompletaTurnos];
-
-      //   if (valorCampo == null) return false;
-
-      //   if (valorCampo instanceof Date) {
-      //     // Filtrar fecha con formato corto
-      //     return valorCampo.toLocaleString().toLowerCase().includes(filtroVal);
-      //   }
-
-      return valorCampo.toString().toLowerCase().includes(filtroVal);
-    });
-  }
-
-  get filtroColumnaLabel(): string {
-    const col = this.columnas.find((c) => c.key === this.filtroColumna());
-    return col?.label ?? "";
+    return filtrarCitas(this.citas(), this._filtroValor());
   }
 
   limpiarFiltro() {
-    this.filtroColumna.set("");
-    this._filtroValor.set("");
-  }
-
-  mostrarAcciones() {
-    this.filtroColumna.set("");
     this._filtroValor.set("");
   }
 

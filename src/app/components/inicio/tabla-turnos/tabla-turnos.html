@@ -8,7 +8,7 @@
         for="filtro"
         class="text-sm font-semibold text-[color:var(--color-azul-oscuro)]"
       >
-        Filtrar por {{ filtroColumnaLabel | titlecase }}:
+        Filtrar:
       </label>
 
       <input
@@ -46,16 +46,7 @@
           class="bg-[color:var(--color-azul-claro)] text-[color:var(--color-azul-oscuro)]"
         >
           @for (col of columnasConDatosDinamicos; track col) {
-          <th
-            (click)="filtroColumna.set(col.key)"
-            class="cursor-pointer border border-gray-300 px-3 py-2 transition-colors duration-200 select-none hover:bg-[color:var(--color-azul-oscuro)] hover:text-white"
-            [ngClass]="{
-    'cursor-pointer select-none hover:bg-[color:var(--color-azul-oscuro)] hover:text-white': col.key !== 'datosDinamicos' && col.key !== 'acciones' ,
-    'bg-[color:var(--color-azul-oscuro)]/80 text-white': filtroColumna() === col.key && col.key !== 'datosDinamicos' && col.key !== 'acciones'
-  }"
-          >
-            {{ col.label }}
-          </th>
+          <th class="border border-gray-300 px-3 py-2">{{ col.label }}</th>
           }
         </tr>
       </thead>
