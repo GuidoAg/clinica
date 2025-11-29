@@ -224,8 +224,7 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     };
 
     try {
-      const resultado = await this.turnosService.darAltaCita(cita);
-      console.log("Cita creada exitosamente", resultado);
+      await this.turnosService.darAltaCita(cita);
 
       this.snackBar.open("Cita agendada", "exito", {
         duration: 4000,

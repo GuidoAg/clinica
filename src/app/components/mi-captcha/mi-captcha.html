@@ -33,6 +33,7 @@
   >
     <!-- Switch para activar/desactivar captcha -->
     <button
+      type="button"
       (click)="toggleCaptcha()"
       [ngClass]="{
         'bg-green-500': captchaActivo,
@@ -74,6 +75,7 @@
 
       <div class="flex w-full justify-between gap-2">
         <button
+          type="button"
           (click)="verificarRespuesta()"
           [disabled]="verificando || !captchaActivo"
           class="flex-1 rounded bg-verde-claro px-3 py-1.5 text-lg text-white hover:bg-verde-claro/80 disabled:cursor-not-allowed disabled:opacity-50"
@@ -81,6 +83,7 @@
           Verificar
         </button>
         <button
+          type="button"
           (click)="cambiarCaptcha()"
           [disabled]="verificando || !captchaActivo"
           class="flex-1 rounded bg-azul-claro px-3 py-1.5 text-lg text-white hover:bg-azul-claro/80 disabled:cursor-not-allowed disabled:opacity-50"

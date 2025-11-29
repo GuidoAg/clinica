@@ -1,15 +1,15 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AuthSupabase } from '../../../../services/auth-supabase';
-import { Usuario } from '../../../../models/Auth/Usuario';
-import { Observable, firstValueFrom } from 'rxjs';
-import { LoadingOverlayService } from '../../../../services/loading-overlay-service';
+import { Component, OnInit, AfterViewInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { AuthSupabase } from "../../../../services/auth-supabase";
+import { Usuario } from "../../../../models/Auth/Usuario";
+import { Observable, firstValueFrom } from "rxjs";
+import { LoadingOverlayService } from "../../../../services/loading-overlay-service";
 
 @Component({
-  selector: 'app-perfil-paciente',
+  selector: "app-perfil-paciente",
   imports: [CommonModule],
-  templateUrl: './perfil-paciente.html',
-  styleUrl: './perfil-paciente.css',
+  templateUrl: "./perfil-paciente.html",
+  styleUrl: "./perfil-paciente.css",
 })
 export class PerfilPaciente implements OnInit, AfterViewInit {
   usuario$: Observable<Usuario | null>;
@@ -28,10 +28,8 @@ export class PerfilPaciente implements OnInit, AfterViewInit {
     const usuario = await firstValueFrom(this.usuario$);
 
     if (usuario) {
-      console.log('Usuario cargado en ngOnInit:', usuario.urlImagenFondo);
-      // Podés hacer lógica adicional aquí si querés
+      console.log("Usuario cargado en ngOnInit:", usuario.urlImagenFondo);
     }
-    // No ocultamos el spinner aún porque Angular no terminó de renderizar
   }
 
   ngAfterViewInit(): void {

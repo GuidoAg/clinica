@@ -6,17 +6,17 @@ import {
   EventEmitter,
   Input,
   OnInit,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Disponibilidad } from '../../../services/disponibilidad';
-import { DisponibilidadVisual } from '../../../models/disponibilidadVisual';
+} from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Disponibilidad } from "../../../services/disponibilidad";
+import { DisponibilidadVisual } from "../../../models/disponibilidadVisual";
 
 @Component({
-  selector: 'app-horarios',
+  selector: "app-horarios",
   imports: [CommonModule, FormsModule],
-  templateUrl: './horarios.html',
-  styleUrl: './horarios.css',
+  templateUrl: "./horarios.html",
+  styleUrl: "./horarios.css",
 })
 export class Horarios implements OnInit {
   @Input() perfilId!: number; // Recibimos el id desde el padre
@@ -24,21 +24,21 @@ export class Horarios implements OnInit {
   @Output() cerrar = new EventEmitter<void>();
 
   dias = [
-    'Lunes',
-    'Martes',
-    'Miércoles',
-    'Jueves',
-    'Viernes',
-    'Sábado',
-    'Domingo',
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+    "Domingo",
   ];
 
   disponibilidades: WritableSignal<DisponibilidadVisual[]> = signal(
     Array.from({ length: 7 }, (_, i) => ({
       dia: i + 1,
       habilitado: false,
-      horaDesde: '',
-      horaHasta: '',
+      horaDesde: "",
+      horaHasta: "",
     })),
   );
 
@@ -46,7 +46,7 @@ export class Horarios implements OnInit {
 
   async ngOnInit() {
     if (!this.perfilId) {
-      console.error('No se recibió perfilId en Horarios');
+      console.error("No se recibió perfilId en Horarios");
       return;
     }
     const cargas = await this.disponibilidad.obtenerDisponibilidades(
@@ -61,7 +61,7 @@ export class Horarios implements OnInit {
 
   async guardar() {
     if (!this.perfilId) {
-      console.error('No se recibió perfilId en Horarios');
+      console.error("No se recibió perfilId en Horarios");
       return;
     }
     const exito = await this.disponibilidad.upsertDisponibilidades(
@@ -70,10 +70,9 @@ export class Horarios implements OnInit {
     );
 
     if (exito) {
-      console.log('Disponibilidades guardadas correctamente');
       this.cerrarPopup();
     } else {
-      console.error('Error al guardar disponibilidades');
+      console.error("Error al guardar disponibilidades");
       // Podés mostrar una notificación al usuario aquí
     }
   }

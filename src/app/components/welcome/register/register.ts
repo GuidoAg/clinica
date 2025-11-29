@@ -304,8 +304,6 @@ export class Register implements OnInit, OnDestroy {
 
       const errorNormal = res.errorCode?.toLowerCase();
 
-      console.log(res.errorCode);
-
       if (errorNormal?.includes("error desconocido")) {
         this.mostrarResultado(res.success, res.message);
       } else {

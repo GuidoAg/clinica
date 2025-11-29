@@ -532,8 +532,6 @@ export class AuthSupabase {
         { merge: false }
       >();
 
-    console.log(data);
-
     if (error || !data) {
       console.error("Error al obtener captchas:", error);
       return [];

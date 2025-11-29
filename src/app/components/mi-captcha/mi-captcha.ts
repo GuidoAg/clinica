@@ -106,5 +106,15 @@ export class MiCaptcha implements OnInit {
     this.captchaActivo = !this.captchaActivo;
     this.userInput = "";
     this.mensajeVerificacion = "";
+
+    // Cuando se desactiva, automáticamente se considera válido
+    // Cuando se activa, se resetea a false hasta que se verifique
+    if (!this.captchaActivo) {
+      this.captchaValido = true;
+      this.captchaResuelto.emit(true);
+    } else {
+      this.captchaValido = false;
+      this.captchaResuelto.emit(false);
+    }
   }
 }

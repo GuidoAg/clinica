@@ -47,8 +47,8 @@ import { RegistroAdmin } from "../../../models/Auth/RegistroAdmin";
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatCheckboxModule
-],
+    MatCheckboxModule,
+  ],
   templateUrl: "./altas-admin.html",
   styleUrl: "./altas-admin.css",
 })
@@ -308,8 +308,6 @@ export class AltasAdmin implements OnInit, OnDestroy {
 
       const errorNormal = res.errorCode?.toLowerCase();
 
-      console.log(res.errorCode);
-
       if (errorNormal?.includes("error desconocido")) {
         this.mostrarResultado(res.success, res.message);
       } else {
@@ -341,8 +339,6 @@ export class AltasAdmin implements OnInit, OnDestroy {
       const res: RespuestaApi<void> = await this.auth.registerPaciente(payload);
 
       const errorNormal = res.errorCode?.toLowerCase();
-
-      console.log(res.errorCode);
 
       if (errorNormal?.includes("error desconocido")) {
         this.mostrarResultado(res.success, res.message);

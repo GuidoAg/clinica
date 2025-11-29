@@ -326,7 +326,6 @@ export class Turnos {
       .eq("habilitado", true)
       .maybeSingle();
 
-    console.log(disponibilidad, fecha, especialistaId, duracion, diaSemana);
     if (errorDisp || !disponibilidad) {
       console.error("Sin disponibilidad:", errorDisp);
       return [];
