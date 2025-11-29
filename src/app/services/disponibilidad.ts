@@ -1,9 +1,16 @@
-import { Injectable } from '@angular/core';
-import { Supabase } from '../supabase';
-import { DisponibilidadVisual } from '../models/disponibilidadVisual';
+import { Injectable } from "@angular/core";
+import { Supabase } from "../supabase";
+import { DisponibilidadVisual } from "../models/disponibilidadVisual";
+
+interface DisponibilidadDB {
+  dia_semana: number;
+  habilitado: boolean;
+  hora_inicio: string;
+  hora_fin: string;
+}
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class Disponibilidad {
   private diasTotales = 7;
@@ -14,13 +21,13 @@ export class Disponibilidad {
   async obtenerDisponibilidades(
     perfilId: number,
   ): Promise<DisponibilidadVisual[]> {
-    const { data, error } = await Supabase.from('disponibilidades')
-      .select('dia_semana, hora_inicio, hora_fin, habilitado')
-      .eq('perfil_id', perfilId);
+    const { data, error } = await Supabase.from("disponibilidades")
+      .select("dia_semana, hora_inicio, hora_fin, habilitado")
+      .eq("perfil_id", perfilId);
 
     if (error) {
       console.error(
-        '[Supabase] Error al obtener disponibilidades:',
+        "[Supabase] Error al obtener disponibilidades:",
         error.message,
       );
       return [];
@@ -29,7 +36,7 @@ export class Disponibilidad {
     const dias: DisponibilidadVisual[] = [];
 
     for (let i = 1; i <= this.diasTotales; i++) {
-      const match = data.find((d: any) => d.dia_semana === i);
+      const match = data.find((d: DisponibilidadDB) => d.dia_semana === i);
       if (match) {
         dias.push({
           dia: i,
@@ -41,8 +48,8 @@ export class Disponibilidad {
         dias.push({
           dia: i,
           habilitado: false,
-          horaDesde: '00:00',
-          horaHasta: '00:00',
+          horaDesde: "00:00",
+          horaHasta: "00:00",
         });
       }
     }
@@ -65,13 +72,13 @@ export class Disponibilidad {
       habilitado: d.habilitado, // incluir habilitado explícitamente
     }));
 
-    const { error } = await Supabase.from('disponibilidades').upsert(rows, {
-      onConflict: 'perfil_id,dia_semana',
+    const { error } = await Supabase.from("disponibilidades").upsert(rows, {
+      onConflict: "perfil_id,dia_semana",
     });
 
     if (error) {
       console.error(
-        '[Supabase] Error al guardar disponibilidades:',
+        "[Supabase] Error al guardar disponibilidades:",
         error.message,
       );
       return false;

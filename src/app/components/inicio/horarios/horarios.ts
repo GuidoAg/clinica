@@ -73,7 +73,6 @@ export class Horarios implements OnInit {
       this.cerrarPopup();
     } else {
       console.error("Error al guardar disponibilidades");
-      // Podés mostrar una notificación al usuario aquí
     }
   }
 }

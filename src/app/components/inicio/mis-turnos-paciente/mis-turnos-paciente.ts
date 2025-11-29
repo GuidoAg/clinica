@@ -1,26 +1,19 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  signal,
-  WritableSignal,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Turnos } from '../../../services/turnos';
-import { CitaCompletaTurnos } from '../../../models/Turnos/CitaCompletaTurnos';
-import { AuthSupabase } from '../../../services/auth-supabase';
-import { Usuario } from '../../../models/Auth/Usuario';
-import { Observable, Subject, firstValueFrom } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { EncuestaTurnos } from '../../../models/Turnos/EncuestaTurnos';
-import { AccionesPaciente } from '../acciones-paciente/acciones-paciente';
+import { Component, OnDestroy, OnInit, signal } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Turnos } from "../../../services/turnos";
+import { CitaCompletaTurnos } from "../../../models/Turnos/CitaCompletaTurnos";
+import { AuthSupabase } from "../../../services/auth-supabase";
+import { Usuario } from "../../../models/Auth/Usuario";
+import { Observable, Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { AccionesPaciente } from "../acciones-paciente/acciones-paciente";
 
 @Component({
-  selector: 'app-mis-turnos-paciente',
+  selector: "app-mis-turnos-paciente",
   imports: [CommonModule, FormsModule, AccionesPaciente],
-  templateUrl: './mis-turnos-paciente.html',
-  styleUrl: './mis-turnos-paciente.css',
+  templateUrl: "./mis-turnos-paciente.html",
+  styleUrl: "./mis-turnos-paciente.css",
 })
 export class MisTurnosPaciente implements OnInit, OnDestroy {
   usuario$: Observable<Usuario | null>;
@@ -34,30 +27,30 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
 
   mostrarPopupAcciones = false;
 
-  estadoClaseMap: { [key: string]: string | undefined } = {
-    solicitado: 'bg-yellow-200 text-yellow-800',
-    aceptado: 'bg-green-200 text-green-800',
-    rechazado: 'bg-red-200 text-red-800',
-    cancelado: 'bg-gray-300 text-gray-800',
-    completado: 'bg-blue-200 text-blue-800',
+  estadoClaseMap: Record<string, string | undefined> = {
+    solicitado: "bg-yellow-200 text-yellow-800",
+    aceptado: "bg-green-200 text-green-800",
+    rechazado: "bg-red-200 text-red-800",
+    cancelado: "bg-gray-300 text-gray-800",
+    completado: "bg-blue-200 text-blue-800",
   };
 
   readonly columnas = [
-    { key: 'citaId', label: 'ID' },
-    { key: 'fechaHora', label: 'Fecha/Hora' },
-    { key: 'estado', label: 'Estado' },
-    { key: 'alturaCm', label: 'Altura (cm)' },
-    { key: 'pesoKg', label: 'Peso (kg)' },
-    { key: 'temperaturaC', label: 'Temp (°C)' },
-    { key: 'presionArterial', label: 'Presión' },
-    { key: 'pacienteNombreCompleto', label: 'Paciente' },
-    { key: 'especialistaNombreCompleto', label: 'Especialista' },
-    { key: 'especialidadNombre', label: 'Especialidad' },
+    { key: "citaId", label: "ID" },
+    { key: "fechaHora", label: "Fecha/Hora" },
+    { key: "estado", label: "Estado" },
+    { key: "alturaCm", label: "Altura (cm)" },
+    { key: "pesoKg", label: "Peso (kg)" },
+    { key: "temperaturaC", label: "Temp (°C)" },
+    { key: "presionArterial", label: "Presión" },
+    { key: "pacienteNombreCompleto", label: "Paciente" },
+    { key: "especialistaNombreCompleto", label: "Especialista" },
+    { key: "especialidadNombre", label: "Especialidad" },
   ];
 
   readonly columnasConDatosDinamicos = [
     ...this.columnas,
-    { key: 'datosDinamicos', label: 'Datos dinámicos' },
+    { key: "datosDinamicos", label: "Datos dinámicos" },
   ];
 
   constructor(
@@ -69,7 +62,7 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
 
   // Filtro seleccionado y valor del filtro
   filtroColumna = signal<string | null>(null);
-  private _filtroValor = signal('');
+  private _filtroValor = signal("");
 
   // getter y setter para bindear con ngModel
   get filtroValorModel(): string {
@@ -87,7 +80,7 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
       }
 
       usuario.id =
-        typeof usuario.id === 'string' ? Number(usuario.id) : usuario.id;
+        typeof usuario.id === "string" ? Number(usuario.id) : usuario.id;
       this.usuarioActual = usuario;
       this.cargarCitas(); // ✅ llamada aquí
     });
@@ -109,7 +102,7 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
         this.citas.set(datos);
       }
     } catch (e) {
-      console.error('Error al obtener citas', e);
+      console.error("Error al obtener citas", e);
     } finally {
       this.cargando.set(false);
     }
@@ -121,7 +114,7 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
 
   activarFiltro(columna: string) {
     this.filtroColumna.set(columna);
-    this._filtroValor.set('');
+    this._filtroValor.set("");
   }
 
   // Computed para devolver la lista filtrada según columna y valor
@@ -129,12 +122,12 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
     const filtroCol = this.filtroColumna();
     const filtroVal = this._filtroValor().toLowerCase();
 
-    if (!filtroCol || filtroVal.trim() === '') {
+    if (!filtroCol || filtroVal.trim() === "") {
       return this.citas();
     }
 
     return this.citas().filter((cita) => {
-      const valorCampo = (cita as any)[filtroCol];
+      const valorCampo = cita[filtroCol as keyof CitaCompletaTurnos];
 
       if (valorCampo == null) return false;
 
@@ -149,17 +142,17 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
 
   get filtroColumnaLabel(): string {
     const col = this.columnas.find((c) => c.key === this.filtroColumna());
-    return col?.label ?? '';
+    return col?.label ?? "";
   }
 
   limpiarFiltro() {
-    this.filtroColumna.set('');
-    this._filtroValor.set('');
+    this.filtroColumna.set("");
+    this._filtroValor.set("");
   }
 
   mostrarAcciones() {
-    this.filtroColumna.set('');
-    this._filtroValor.set('');
+    this.filtroColumna.set("");
+    this._filtroValor.set("");
   }
 
   abrirPopupAcciones(cita: CitaCompletaTurnos) {
@@ -172,7 +165,7 @@ export class MisTurnosPaciente implements OnInit, OnDestroy {
     this.citaSeleccionada.set(null);
   }
 
-  accionDesdeModal(tipo: string) {
+  accionDesdeModal() {
     this.cerrarPopupAcciones();
     this.cargarCitas(); // ✅ recarga los turnos
   }

@@ -4,12 +4,12 @@ import {
   ViewChild,
   inject,
   AfterViewInit,
-} from '@angular/core';
-import { Estadisticas } from '../../../services/estadisticas';
-import { Chart, registerables } from 'chart.js';
+} from "@angular/core";
+import { Estadisticas } from "../../../services/estadisticas";
+import { Chart, registerables } from "chart.js";
 
 @Component({
-  selector: 'turnos-por-especialidad-chart',
+  selector: "app-turnos-por-especialidad-chart",
   standalone: true,
   template: `
     <div class="relative h-64 w-full">
@@ -21,7 +21,7 @@ export class TurnosPorEspecialidadChart implements AfterViewInit {
   private estadisticas = inject(Estadisticas);
   private chart?: Chart;
 
-  @ViewChild('canvas', { static: true })
+  @ViewChild("canvas", { static: true })
   canvasRef!: ElementRef<HTMLCanvasElement>;
 
   ngAfterViewInit(): void {
@@ -39,20 +39,20 @@ export class TurnosPorEspecialidadChart implements AfterViewInit {
     this.chart?.destroy();
 
     this.chart = new Chart(canvas, {
-      type: 'pie',
+      type: "pie",
       data: {
         labels,
         datasets: [
           {
-            label: 'Turnos por Especialidad',
+            label: "Turnos por Especialidad",
             data,
             backgroundColor: [
-              'rgba(255, 99, 132, 0.7)',
-              'rgba(54, 162, 235, 0.7)',
-              'rgba(255, 206, 86, 0.7)',
-              'rgba(75, 192, 192, 0.7)',
-              'rgba(153, 102, 255, 0.7)',
-              'rgba(255, 159, 64, 0.7)',
+              "rgba(255, 99, 132, 0.7)",
+              "rgba(54, 162, 235, 0.7)",
+              "rgba(255, 206, 86, 0.7)",
+              "rgba(75, 192, 192, 0.7)",
+              "rgba(153, 102, 255, 0.7)",
+              "rgba(255, 159, 64, 0.7)",
             ],
             borderWidth: 1,
           },

@@ -4,19 +4,19 @@ import {
   inject,
   ViewChild,
   AfterViewInit,
-} from '@angular/core';
-import { Estadisticas } from '../../../services/estadisticas';
-import { Chart, registerables } from 'chart.js';
+} from "@angular/core";
+import { Estadisticas } from "../../../services/estadisticas";
+import { Chart, registerables } from "chart.js";
 
 @Component({
-  selector: 'turnos-por-dia-chart',
+  selector: "app-turnos-por-dia-chart",
   standalone: true,
   template: `<canvas #canvas class="mx-auto h-64 w-full"></canvas>`,
 })
 export class TurnosPorDiaChart implements AfterViewInit {
   private estadisticas = inject(Estadisticas);
 
-  @ViewChild('canvas', { static: true })
+  @ViewChild("canvas", { static: true })
   canvasRef!: ElementRef<HTMLCanvasElement>;
 
   async ngAfterViewInit() {
@@ -28,14 +28,14 @@ export class TurnosPorDiaChart implements AfterViewInit {
     const data = datos.map((d) => d.cantidad);
 
     new Chart(canvas, {
-      type: 'bar',
+      type: "bar",
       data: {
         labels,
         datasets: [
           {
-            label: 'Turnos por Día',
+            label: "Turnos por Día",
             data,
-            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            backgroundColor: "rgba(54, 162, 235, 0.7)",
           },
         ],
       },

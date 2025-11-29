@@ -1,26 +1,29 @@
-// src/app/services/estadisticas.ts
-import { Injectable } from '@angular/core';
-import { Supabase } from '../supabase';
+import { Injectable } from "@angular/core";
+import { Supabase } from "../supabase";
+
+interface CitaFechaDB {
+  fecha_hora: string;
+}
 import {
   TurnosPorDia,
   TurnosPorMedico,
   TurnosPorEspecialidad,
   Ingreso,
-} from '../models/Estadisticas/modeloEstadisticas';
+} from "../models/Estadisticas/modeloEstadisticas";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class Estadisticas {
   /**
    * Log de ingresos al sistema
    */
   async obtenerLogIngresos(): Promise<Ingreso[]> {
-    const { data: ingresos, error } = await Supabase.from('registro_ingresos')
-      .select('fecha_ingreso, perfil_id')
-      .order('fecha_ingreso', { ascending: false });
+    const { data: ingresos, error } = await Supabase.from("registro_ingresos")
+      .select("fecha_ingreso, perfil_id")
+      .order("fecha_ingreso", { ascending: false });
 
     if (error || !ingresos) {
       console.error(
-        '[Supabase] Error al obtener log de ingresos:',
+        "[Supabase] Error al obtener log de ingresos:",
         error?.message,
       );
       return [];
@@ -31,14 +34,14 @@ export class Estadisticas {
     ];
 
     const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      'perfiles',
+      "perfiles",
     )
-      .select('id, nombre, apellido, rol')
-      .in('id', perfilIds);
+      .select("id, nombre, apellido, rol")
+      .in("id", perfilIds);
 
     if (errorPerfiles || !perfiles) {
       console.error(
-        '[Supabase] Error al obtener perfiles:',
+        "[Supabase] Error al obtener perfiles:",
         errorPerfiles?.message,
       );
       return [];
@@ -48,9 +51,9 @@ export class Estadisticas {
       const perfil = perfiles.find((p) => p.id === i.perfil_id);
       return {
         fecha: i.fecha_ingreso,
-        nombre: perfil?.nombre ?? 'Desconocido',
-        apellido: perfil?.apellido ?? '',
-        rol: perfil?.rol ?? 'N/A',
+        nombre: perfil?.nombre ?? "Desconocido",
+        apellido: perfil?.apellido ?? "",
+        rol: perfil?.rol ?? "N/A",
       };
     });
   }
@@ -60,11 +63,11 @@ export class Estadisticas {
    */
   async obtenerTurnosPorEspecialidad(): Promise<TurnosPorEspecialidad[]> {
     const { data: citas, error } =
-      await Supabase.from('citas').select('especialidad_id');
+      await Supabase.from("citas").select("especialidad_id");
 
     if (error || !citas) {
       console.error(
-        '[Supabase] Error al obtener turnos por especialidad:',
+        "[Supabase] Error al obtener turnos por especialidad:",
         error?.message,
       );
       return [];
@@ -74,14 +77,14 @@ export class Estadisticas {
       ...new Set(citas.map((c) => c.especialidad_id).filter(Boolean)),
     ];
     const { data: especialidades, error: errorEsp } = await Supabase.from(
-      'especialidades',
+      "especialidades",
     )
-      .select('id, nombre')
-      .in('id', ids);
+      .select("id, nombre")
+      .in("id", ids);
 
     if (errorEsp || !especialidades) {
       console.error(
-        '[Supabase] Error al obtener especialidades:',
+        "[Supabase] Error al obtener especialidades:",
         errorEsp?.message,
       );
       return [];
@@ -99,7 +102,7 @@ export class Estadisticas {
     return ids.map((id) => {
       const especialidad = especialidades.find((e) => e.id === id);
       return {
-        especialidad: especialidad?.nombre ?? 'Sin especialidad',
+        especialidad: especialidad?.nombre ?? "Sin especialidad",
         cantidad: contador.get(id) ?? 0,
       };
     });
@@ -109,19 +112,19 @@ export class Estadisticas {
    * Cantidad de turnos por día
    */
   async obtenerTurnosPorDia(): Promise<TurnosPorDia[]> {
-    const { data, error } = await Supabase.from('citas').select('fecha_hora');
+    const { data, error } = await Supabase.from("citas").select("fecha_hora");
 
     if (error || !data) {
       console.error(
-        '[Supabase] Error al obtener turnos por día:',
+        "[Supabase] Error al obtener turnos por día:",
         error?.message,
       );
       return [];
     }
 
     const agrupado = new Map<string, number>();
-    for (const cita of data as any[]) {
-      const fecha = new Date(cita.fecha_hora).toISOString().split('T')[0];
+    for (const cita of data as CitaFechaDB[]) {
+      const fecha = new Date(cita.fecha_hora).toISOString().split("T")[0];
       agrupado.set(fecha, (agrupado.get(fecha) ?? 0) + 1);
     }
 
@@ -138,14 +141,14 @@ export class Estadisticas {
     desde: string,
     hasta: string,
   ): Promise<TurnosPorMedico[]> {
-    const { data: citas, error } = await Supabase.from('citas')
-      .select('especialista_id')
-      .gte('fecha_hora', desde)
-      .lte('fecha_hora', hasta);
+    const { data: citas, error } = await Supabase.from("citas")
+      .select("especialista_id")
+      .gte("fecha_hora", desde)
+      .lte("fecha_hora", hasta);
 
     if (error || !citas) {
       console.error(
-        '[Supabase] Error al obtener turnos por médico:',
+        "[Supabase] Error al obtener turnos por médico:",
         error?.message,
       );
       return [];
@@ -155,14 +158,14 @@ export class Estadisticas {
       ...new Set(citas.map((c) => c.especialista_id).filter(Boolean)),
     ];
     const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      'perfiles',
+      "perfiles",
     )
-      .select('id, nombre, apellido')
-      .in('id', ids);
+      .select("id, nombre, apellido")
+      .in("id", ids);
 
     if (errorPerfiles || !perfiles) {
       console.error(
-        '[Supabase] Error al obtener perfiles:',
+        "[Supabase] Error al obtener perfiles:",
         errorPerfiles?.message,
       );
       return [];
@@ -180,7 +183,7 @@ export class Estadisticas {
     return ids.map((id) => {
       const perfil = perfiles.find((p) => p.id === id);
       return {
-        nombre: perfil ? `${perfil.nombre} ${perfil.apellido}` : 'Desconocido',
+        nombre: perfil ? `${perfil.nombre} ${perfil.apellido}` : "Desconocido",
         cantidad: contador.get(id) ?? 0,
       };
     });
@@ -193,15 +196,15 @@ export class Estadisticas {
     desde: string,
     hasta: string,
   ): Promise<TurnosPorMedico[]> {
-    const { data: citas, error } = await Supabase.from('citas')
-      .select('especialista_id, estado')
-      .eq('estado', 'completado')
-      .gte('fecha_hora', desde)
-      .lte('fecha_hora', hasta);
+    const { data: citas, error } = await Supabase.from("citas")
+      .select("especialista_id, estado")
+      .eq("estado", "completado")
+      .gte("fecha_hora", desde)
+      .lte("fecha_hora", hasta);
 
     if (error || !citas) {
       console.error(
-        '[Supabase] Error al obtener turnos finalizados por médico:',
+        "[Supabase] Error al obtener turnos finalizados por médico:",
         error?.message,
       );
       return [];
@@ -211,14 +214,14 @@ export class Estadisticas {
       ...new Set(citas.map((c) => c.especialista_id).filter(Boolean)),
     ];
     const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      'perfiles',
+      "perfiles",
     )
-      .select('id, nombre, apellido')
-      .in('id', ids);
+      .select("id, nombre, apellido")
+      .in("id", ids);
 
     if (errorPerfiles || !perfiles) {
       console.error(
-        '[Supabase] Error al obtener perfiles:',
+        "[Supabase] Error al obtener perfiles:",
         errorPerfiles?.message,
       );
       return [];
@@ -236,7 +239,7 @@ export class Estadisticas {
     return ids.map((id) => {
       const perfil = perfiles.find((p) => p.id === id);
       return {
-        nombre: perfil ? `${perfil.nombre} ${perfil.apellido}` : 'Desconocido',
+        nombre: perfil ? `${perfil.nombre} ${perfil.apellido}` : "Desconocido",
         cantidad: contador.get(id) ?? 0,
       };
     });

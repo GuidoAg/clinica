@@ -3,7 +3,7 @@ import { Estadisticas } from "../../../services/estadisticas";
 import { Chart, registerables } from "chart.js";
 
 @Component({
-  selector: "turnos-finalizados-por-medico-chart",
+  selector: "app-turnos-finalizados-por-medico-chart",
   standalone: true,
   template: `
     <div class="relative h-64 w-full">

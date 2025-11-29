@@ -282,7 +282,6 @@ export class AccionesEspecialista {
 
   cancelarHistoriaClinica() {
     this.mostrarFormularioHistoriaClinica = false;
-    // Opcional: resetear formulario
   }
 
   async guardarHistoriaClinica() {

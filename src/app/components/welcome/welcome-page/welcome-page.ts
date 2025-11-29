@@ -73,8 +73,8 @@ export class WelcomePage implements OnInit, OnDestroy {
   ];
 
   currentStartIndex = 0;
-  visibleItems: any[] = [];
-  intervalId: any;
+  visibleItems: typeof this.carouselItems = [];
+  intervalId: ReturnType<typeof setInterval> | undefined;
 
   ngOnInit() {
     this.loading.show();

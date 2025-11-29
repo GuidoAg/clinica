@@ -48,7 +48,6 @@ export class WelcomeNavbar {
       window.scrollTo({ top: 0, behavior: "smooth" }); // ← esto es lo vistoso
     } else {
       this.router.navigate(["/welcome-page"]).then(() => {
-        // Agregamos un pequeño delay para asegurar que el DOM esté cargado
         setTimeout(() => {
           window.scrollTo({ top: 0, behavior: "smooth" });
         }, 100);
@@ -66,7 +65,6 @@ export class WelcomeNavbar {
 
   clickRegister() {
     this.router.navigate(["/welcome-page/registro"]).then(() => {
-      // Agregamos un pequeño delay para asegurar que el DOM esté cargado
       setTimeout(() => {
         window.location.reload();
       }, 1);

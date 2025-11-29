@@ -16,6 +16,10 @@
       <div
         class="flex cursor-pointer items-center space-x-4"
         (click)="clickLogo()"
+        (keyup.enter)="clickLogo()"
+        tabindex="0"
+        role="button"
+        aria-label="Ir a inicio"
       >
         <img src="assets/imagenes/logo.svg" alt="Logo" class="h-14" />
         <div class="text-xl leading-tight font-bold text-azul-oscuro">

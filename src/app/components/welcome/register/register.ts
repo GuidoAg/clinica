@@ -372,7 +372,6 @@ export class Register implements OnInit, OnDestroy {
       return;
     }
 
-    //this.registroForm.reset();
     this.tipoUsuario = null;
     this.router.navigate(["/welcome-page/confirmacion"]);
   }

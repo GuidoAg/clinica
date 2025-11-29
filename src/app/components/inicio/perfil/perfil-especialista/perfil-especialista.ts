@@ -1,31 +1,30 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from "@angular/core";
 
-import { AuthSupabase } from '../../../../services/auth-supabase';
-import { Usuario } from '../../../../models/Auth/Usuario';
-import { Observable, Subject, firstValueFrom } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { LoadingOverlayService } from '../../../../services/loading-overlay-service';
-import { FormatoDniPipe } from '../../../../pipes/formato-dni-pipe';
-import { FormatoBoolSiNOPipe } from '../../../../pipes/formato-bool-si-no-pipe';
-import { Horarios } from '../../horarios/horarios';
-import { FormsModule } from '@angular/forms';
-import { EspecialistaEspecialidad } from '../../../../services/especialista-especialidad';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { AgregarEspecialidad } from '../../agregar-especialidad/agregar-especialidad';
-import { Supabase } from '../../../../supabase';
+import { AuthSupabase } from "../../../../services/auth-supabase";
+import { Usuario } from "../../../../models/Auth/Usuario";
+import { Observable, Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { LoadingOverlayService } from "../../../../services/loading-overlay-service";
+import { FormatoDniPipe } from "../../../../pipes/formato-dni-pipe";
+import { FormatoBoolSiNOPipe } from "../../../../pipes/formato-bool-si-no-pipe";
+import { Horarios } from "../../horarios/horarios";
+import { FormsModule } from "@angular/forms";
+import { EspecialistaEspecialidad } from "../../../../services/especialista-especialidad";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { AgregarEspecialidad } from "../../agregar-especialidad/agregar-especialidad";
 
 @Component({
-  selector: 'app-perfil-especialista',
+  selector: "app-perfil-especialista",
   standalone: true,
   imports: [
     FormatoDniPipe,
     FormatoBoolSiNOPipe,
     Horarios,
     FormsModule,
-    AgregarEspecialidad
-],
-  templateUrl: './perfil-especialista.html',
-  styleUrl: './perfil-especialista.css',
+    AgregarEspecialidad,
+  ],
+  templateUrl: "./perfil-especialista.html",
+  styleUrl: "./perfil-especialista.css",
 })
 export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
   usuario$: Observable<Usuario | null>;
@@ -52,7 +51,7 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
       }
       // Asegurar que id sea número
       usuario.id =
-        typeof usuario.id === 'string' ? Number(usuario.id) : usuario.id;
+        typeof usuario.id === "string" ? Number(usuario.id) : usuario.id;
 
       this.usuarioActual = usuario;
     });
@@ -69,7 +68,7 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
 
   abrirPopupHorarios() {
     if (!this.usuarioActual) {
-      console.warn('No hay usuario cargado para mostrar horarios');
+      console.warn("No hay usuario cargado para mostrar horarios");
       return;
     }
     this.mostrarPopupHorarios = true;
@@ -86,9 +85,9 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
     urlIcono?: string;
   }) {
     if (!this.usuarioActual?.id) {
-      this.snackBar.open('No hay usuario válido para guardar.', 'Cerrar', {
+      this.snackBar.open("No hay usuario válido para guardar.", "Cerrar", {
         duration: 4000,
-        panelClass: ['bg-red-600', 'text-white'],
+        panelClass: ["bg-red-600", "text-white"],
       });
       return;
     }
@@ -98,10 +97,10 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
     if (!duracion || duracion < 30 || duracion > 60) {
       this.snackBar.open(
         `Duración inválida para ${especialidad.nombre}. Debe estar entre 30 y 60 minutos.`,
-        'Cerrar',
+        "Cerrar",
         {
           duration: 4000,
-          panelClass: ['bg-red-600', 'text-white'],
+          panelClass: ["bg-red-600", "text-white"],
         },
       );
       return;
@@ -116,10 +115,10 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
     if (ok) {
       this.snackBar.open(
         `Duración actualizada para ${especialidad.nombre}`,
-        'Cerrar',
+        "Cerrar",
         {
           duration: 3000,
-          panelClass: ['bg-green-600', 'text-white'],
+          panelClass: ["bg-green-600", "text-white"],
         },
       );
       // Actualizar usuario completo para sincronizar datos
@@ -127,10 +126,10 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.snackBar.open(
         `Error al actualizar duración de ${especialidad.nombre}`,
-        'Cerrar',
+        "Cerrar",
         {
           duration: 4000,
-          panelClass: ['bg-red-600', 'text-white'],
+          panelClass: ["bg-red-600", "text-white"],
         },
       );
     }
@@ -139,11 +138,11 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
   abrirPopupAgregarEspecialidad() {
     if (!this.usuarioActual) {
       this.snackBar.open(
-        'No hay usuario cargado para agregar especialidad',
-        'Cerrar',
+        "No hay usuario cargado para agregar especialidad",
+        "Cerrar",
         {
           duration: 3000,
-          panelClass: ['bg-red-600', 'text-white'],
+          panelClass: ["bg-red-600", "text-white"],
         },
       );
       return;
@@ -158,7 +157,7 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
   async onEspecialidadAgregada(nombreEspecialidad: string) {
     if (!this.usuarioActual?.id) return;
 
-    this.snackBar.open('Agregando especialidad...', undefined, {
+    this.snackBar.open("Agregando especialidad...", undefined, {
       duration: 1000,
     });
 
@@ -166,8 +165,8 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
       await this.authSupabase.agregarEspecialidadSiNoExiste(nombreEspecialidad);
 
     if (!respuesta.success || !respuesta.data) {
-      this.snackBar.open('Error al agregar especialidad', 'Cerrar', {
-        panelClass: ['bg-red-600', 'text-white'],
+      this.snackBar.open("Error al agregar especialidad", "Cerrar", {
+        panelClass: ["bg-red-600", "text-white"],
         duration: 4000,
       });
       return;
@@ -181,8 +180,8 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
     );
 
     if (!ok) {
-      this.snackBar.open('Error al asignar la especialidad', 'Cerrar', {
-        panelClass: ['bg-red-600', 'text-white'],
+      this.snackBar.open("Error al asignar la especialidad", "Cerrar", {
+        panelClass: ["bg-red-600", "text-white"],
         duration: 4000,
       });
       return;
@@ -194,8 +193,8 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
     // Actualizar localmente (opcional, ya que el subscribe actualizará también)
     this.usuarioActual = this.authSupabase.getCurrentUser();
 
-    this.snackBar.open('Especialidad agregada con éxito', 'Cerrar', {
-      panelClass: ['bg-green-600', 'text-white'],
+    this.snackBar.open("Especialidad agregada con éxito", "Cerrar", {
+      panelClass: ["bg-green-600", "text-white"],
       duration: 3000,
     });
 

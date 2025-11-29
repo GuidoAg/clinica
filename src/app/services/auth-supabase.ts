@@ -141,7 +141,7 @@ export class AuthSupabase {
         };
       }
 
-      // Refrescás el usuario para tener la versión actualizada
+      // Refrescar el usuario
       usuario.emailVerificado = true;
     }
 
@@ -551,7 +551,6 @@ export class AuthSupabase {
 
     if (error) {
       console.error("Error al registrar el ingreso:", error.message);
-      // Podés manejarlo con tu sistema de errores si querés
     }
   }
 }

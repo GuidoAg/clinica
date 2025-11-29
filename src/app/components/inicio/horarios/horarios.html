@@ -1,70 +1,66 @@
-<!-- src/app/components/popup-disponibilidad/popup-disponibilidad.component.html -->
-<!-- (click)="cerrarPopup()" -->
 <div
   class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-  >
+>
   <div
     class="w-full max-w-xl items-center justify-center rounded-2xl bg-white px-1 py-10 shadow-lg"
-    >
+  >
     <h2 class="mb-6 text-center text-2xl font-bold text-azul-oscuro">
       Disponibilidad semanal
     </h2>
 
     <form (ngSubmit)="guardar()">
       @for (disp of disponibilidades(); track disp; let i = $index) {
-        <div
-          class="mb-4 flex items-center justify-center gap-4"
-          >
-          <label class="flex min-w-[130px] items-center gap-2">
-            <input
-              type="checkbox"
-              [(ngModel)]="disp.habilitado"
-              name="habilitado{{ i }}"
-              class="h-5 w-5 accent-azul-oscuro"
-              />
-              <span class="text-gray-700">{{ dias[i] }}</span>
-            </label>
-            <input
-              type="time"
-              [(ngModel)]="disp.horaDesde"
-              name="desde{{ i }}"
-              class="w-28 rounded-md border border-gray-300 px-2 py-1 text-sm"
-              [disabled]="!disp.habilitado"
+      <div class="mb-4 flex items-center justify-center gap-4">
+        <label class="flex min-w-[130px] items-center gap-2">
+          <input
+            type="checkbox"
+            [(ngModel)]="disp.habilitado"
+            name="habilitado{{ i }}"
+            class="h-5 w-5 accent-azul-oscuro"
+          />
+          <span class="text-gray-700">{{ dias[i] }}</span>
+        </label>
+        <input
+          type="time"
+          [(ngModel)]="disp.horaDesde"
+          name="desde{{ i }}"
+          class="w-28 rounded-md border border-gray-300 px-2 py-1 text-sm"
+          [disabled]="!disp.habilitado"
           [ngClass]="{
     'bg-gray-100 text-gray-400': !disp.habilitado,
     'bg-white text-gray-700': disp.habilitado
   }"
-              />
-              <span class="text-gray-500">a</span>
-              <input
-                type="time"
-                [(ngModel)]="disp.horaHasta"
-                name="hasta{{ i }}"
-                class="w-28 rounded-md border border-gray-300 px-2 py-1 text-sm"
-                [disabled]="!disp.habilitado"
+        />
+        <span class="text-gray-500">a</span>
+        <input
+          type="time"
+          [(ngModel)]="disp.horaHasta"
+          name="hasta{{ i }}"
+          class="w-28 rounded-md border border-gray-300 px-2 py-1 text-sm"
+          [disabled]="!disp.habilitado"
           [ngClass]="{
     'bg-gray-100 text-gray-400': !disp.habilitado,
     'bg-white text-gray-700': disp.habilitado
   }"
-                />
-              </div>
-            }
-
-            <div class="mt-8 flex justify-center gap-4">
-              <button
-                type="button"
-                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-100"
-                (click)="cerrarPopup()"
-                >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                class="rounded-lg bg-azul-oscuro px-6 py-2 text-sm font-semibold text-white shadow hover:bg-azul-oscuro/90"
-                >
-                Guardar cambios
-              </button>
-            </div>
-          </form>
-        </div>
+        />
       </div>
+      }
+
+      <div class="mt-8 flex justify-center gap-4">
+        <button
+          type="button"
+          class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-100"
+          (click)="cerrarPopup()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="rounded-lg bg-azul-oscuro px-6 py-2 text-sm font-semibold text-white shadow hover:bg-azul-oscuro/90"
+        >
+          Guardar cambios
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

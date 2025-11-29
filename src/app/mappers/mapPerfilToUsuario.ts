@@ -1,6 +1,6 @@
-// mappers/mapPerfilToUsuario.ts
-import { Usuario } from '../models/Auth/Usuario';
+import { Usuario } from "../models/Auth/Usuario";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mapPerfilToUsuario(perfil: any, email: string): Usuario {
   return {
     id: Number(perfil.id),
@@ -22,6 +22,7 @@ export function mapPerfilToUsuario(perfil: any, email: string): Usuario {
     validadoAdmin: perfil.detalles_especialista?.validado_admin,
     activo: perfil.detalles_especialista?.activo,
     especialidades:
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       perfil.especialista_especialidades?.map((rel: any) => ({
         id: rel.especialidades.id,
         nombre: rel.especialidades.nombre,

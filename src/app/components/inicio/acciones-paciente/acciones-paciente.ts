@@ -5,9 +5,7 @@ import {
   Input,
   OnInit,
   signal,
-  WritableSignal,
-  inject,
-} from '@angular/core';
+} from "@angular/core";
 
 import {
   FormsModule,
@@ -15,17 +13,17 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-} from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Turnos } from '../../../services/turnos';
-import { CitaCompletaTurnos } from '../../../models/Turnos/CitaCompletaTurnos';
-import { EncuestaTurnos } from '../../../models/Turnos/EncuestaTurnos';
+} from "@angular/forms";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Turnos } from "../../../services/turnos";
+import { CitaCompletaTurnos } from "../../../models/Turnos/CitaCompletaTurnos";
+import { EncuestaTurnos } from "../../../models/Turnos/EncuestaTurnos";
 
 @Component({
-  selector: 'app-acciones-paciente',
+  selector: "app-acciones-paciente",
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule],
-  templateUrl: './acciones-paciente.html',
+  templateUrl: "./acciones-paciente.html",
 })
 export class AccionesPaciente implements OnInit {
   @Input() cita!: CitaCompletaTurnos;
@@ -39,8 +37,8 @@ export class AccionesPaciente implements OnInit {
   mostrarFormularioCalificar = false;
   mostrarFormularioResenia = false;
 
-  comentarioCancelar = '';
-  comentarioCalificar = '';
+  comentarioCancelar = "";
+  comentarioCalificar = "";
 
   encuestaForm!: FormGroup;
 
@@ -52,18 +50,18 @@ export class AccionesPaciente implements OnInit {
 
   ngOnInit() {
     this.encuestaForm = this.fb.group({
-      nombre: ['', Validators.required],
-      telefono: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
-      pregunta1: ['', Validators.required],
-      pregunta2: ['', Validators.required],
-      pregunta3: ['', Validators.required],
+      nombre: ["", Validators.required],
+      telefono: ["", [Validators.required, Validators.pattern(/^\d+$/)]],
+      pregunta1: ["", Validators.required],
+      pregunta2: ["", Validators.required],
+      pregunta3: ["", Validators.required],
     });
   }
 
   get puedeCancelar() {
     return (
-      this.cita.estado !== 'completado' &&
-      this.cita.estado !== 'cancelado' &&
+      this.cita.estado !== "completado" &&
+      this.cita.estado !== "cancelado" &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioEncuesta &&
       !this.mostrarFormularioCalificar
@@ -76,8 +74,8 @@ export class AccionesPaciente implements OnInit {
 
   get puedeCompletarEncuesta() {
     return (
-      this.cita.estado === 'completado' &&
-      (!this.cita.resenia || this.cita.resenia.trim() === '') &&
+      this.cita.estado === "completado" &&
+      (!this.cita.resenia || this.cita.resenia.trim() === "") &&
       this.puedeVerResenia &&
       !this.mostrarFormularioEncuesta &&
       !this.mostrarFormularioCancelar &&
@@ -87,7 +85,7 @@ export class AccionesPaciente implements OnInit {
 
   get puedeCalificar() {
     return (
-      this.cita.estado === 'completado' &&
+      this.cita.estado === "completado" &&
       !this.mostrarFormularioCalificar &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioEncuesta
@@ -96,7 +94,7 @@ export class AccionesPaciente implements OnInit {
 
   cancelarAccionCancelar() {
     this.mostrarFormularioCancelar = false;
-    this.comentarioCancelar = '';
+    this.comentarioCancelar = "";
   }
 
   confirmarCancelarTurno() {
@@ -108,20 +106,20 @@ export class AccionesPaciente implements OnInit {
       .then((res) => {
         this.cargando.set(false);
         if (res.success) {
-          this.snackBar.open('Turno cancelado exitosamente.', 'Cerrar', {
+          this.snackBar.open("Turno cancelado exitosamente.", "Cerrar", {
             duration: 3000,
           });
-          this.accionRealizada.emit('cancelado');
+          this.accionRealizada.emit("cancelado");
           this.cerrar.emit();
         } else {
-          this.snackBar.open(res.message ?? 'Ocurrió un error', 'Cerrar', {
+          this.snackBar.open(res.message ?? "Ocurrió un error", "Cerrar", {
             duration: 4000,
           });
         }
       })
       .finally(() => {
         this.mostrarFormularioCancelar = false;
-        this.comentarioCancelar = '';
+        this.comentarioCancelar = "";
       });
   }
 
@@ -145,13 +143,13 @@ export class AccionesPaciente implements OnInit {
       .then((res) => {
         this.cargando.set(false);
         if (res.success) {
-          this.snackBar.open('Encuesta registrada exitosamente.', 'Cerrar', {
+          this.snackBar.open("Encuesta registrada exitosamente.", "Cerrar", {
             duration: 3000,
           });
-          this.accionRealizada.emit('encuesta');
+          this.accionRealizada.emit("encuesta");
           this.cerrar.emit();
         } else {
-          this.snackBar.open(res.message ?? 'Ocurrió un error', 'Cerrar', {
+          this.snackBar.open(res.message ?? "Ocurrió un error", "Cerrar", {
             duration: 4000,
           });
         }
@@ -164,7 +162,7 @@ export class AccionesPaciente implements OnInit {
 
   cancelarAccionCalificar() {
     this.mostrarFormularioCalificar = false;
-    this.comentarioCalificar = '';
+    this.comentarioCalificar = "";
   }
 
   confirmarCalificarAtencion() {
@@ -176,20 +174,20 @@ export class AccionesPaciente implements OnInit {
       .then((res) => {
         this.cargando.set(false);
         if (res.success) {
-          this.snackBar.open('Atención calificada exitosamente.', 'Cerrar', {
+          this.snackBar.open("Atención calificada exitosamente.", "Cerrar", {
             duration: 3000,
           });
-          this.accionRealizada.emit('calificacion');
+          this.accionRealizada.emit("calificacion");
           this.cerrar.emit();
         } else {
-          this.snackBar.open(res.message ?? 'Ocurrió un error', 'Cerrar', {
+          this.snackBar.open(res.message ?? "Ocurrió un error", "Cerrar", {
             duration: 4000,
           });
         }
       })
       .finally(() => {
         this.mostrarFormularioCalificar = false;
-        this.comentarioCalificar = '';
+        this.comentarioCalificar = "";
       });
   }
 

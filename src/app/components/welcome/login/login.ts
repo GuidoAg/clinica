@@ -129,7 +129,7 @@ export class Login implements OnInit, AfterViewInit {
       return;
     }
 
-    // ✅ Obtener perfil logueado
+    // Obtener perfil logueado
     const user = await this.auth.getCurrentUser();
 
     if (user) {

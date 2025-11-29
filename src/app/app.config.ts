@@ -27,7 +27,6 @@ export const appConfig: ApplicationConfig = {
           typeof window !== "undefined"
             ? localStorage.getItem("selectedLang") || "es"
             : "es",
-        // Remove this option if your application doesn't support changing language in runtime.
         reRenderOnLangChange: true,
         prodMode: !isDevMode(),
       },

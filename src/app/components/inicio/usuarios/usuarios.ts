@@ -1,22 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Usuario } from '../../../models/Auth/Usuario';
-import { UsuariosService } from '../../../services/usuarios';
-import { Subject } from 'rxjs';
-import { AltasAdmin } from '../altas-admin/altas-admin';
-import { LoadingOverlayService } from '../../../services/loading-overlay-service';
-import { TrackImage } from '../../../directivas/track-image';
-import { LoadingWrapper } from '../../loading-wrapper/loading-wrapper';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { Usuario } from "../../../models/Auth/Usuario";
+import { UsuariosService } from "../../../services/usuarios";
+import { Subject } from "rxjs";
+import { AltasAdmin } from "../altas-admin/altas-admin";
+import { LoadingOverlayService } from "../../../services/loading-overlay-service";
+import { TrackImage } from "../../../directivas/track-image";
+import { LoadingWrapper } from "../../loading-wrapper/loading-wrapper";
 
 @Component({
-  selector: 'app-usuarios',
+  selector: "app-usuarios",
   standalone: true,
   imports: [CommonModule, AltasAdmin, TrackImage, LoadingWrapper],
-  templateUrl: './usuarios.html',
-  styleUrls: ['./usuarios.css'],
+  templateUrl: "./usuarios.html",
+  styleUrls: ["./usuarios.css"],
 })
 export class Usuarios implements OnInit, OnDestroy {
-  solapaActiva: 'pacientes' | 'especialistas' | 'administradores' = 'pacientes';
+  solapaActiva: "pacientes" | "especialistas" | "administradores" = "pacientes";
 
   pacientes: Usuario[] = [];
   especialistas: Usuario[] = [];
@@ -46,9 +46,9 @@ export class Usuarios implements OnInit, OnDestroy {
   async recargarUsuarios(): Promise<void> {
     const todos = await this.usuariosService.obtenerTodosUsuarios();
 
-    this.pacientes = todos.filter((u) => u.rol === 'paciente');
-    this.especialistas = todos.filter((u) => u.rol === 'especialista');
-    this.administradores = todos.filter((u) => u.rol === 'admin');
+    this.pacientes = todos.filter((u) => u.rol === "paciente");
+    this.especialistas = todos.filter((u) => u.rol === "especialista");
+    this.administradores = todos.filter((u) => u.rol === "admin");
   }
 
   seleccionarUsuario(usuario: Usuario): void {
@@ -56,7 +56,7 @@ export class Usuarios implements OnInit, OnDestroy {
   }
 
   async toggleValidadoAdmin(usuario: Usuario): Promise<void> {
-    if (usuario.rol !== 'especialista') return;
+    if (usuario.rol !== "especialista") return;
 
     const nuevoEstado = !usuario.validadoAdmin;
     const ok = await this.usuariosService.actualizarEstadoEspecialista(
@@ -71,10 +71,6 @@ export class Usuarios implements OnInit, OnDestroy {
   }
 
   abrirPopupAltas() {
-    // if (!this.usuarioSeleccionado) {
-    //   console.warn('No hay usuario cargado para mostrar horarios');
-    //   return;
-    // }
     this.mostrarPopupAltas = true;
   }
 

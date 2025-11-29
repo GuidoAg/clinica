@@ -1,6 +1,13 @@
 <nav class="fixed top-0 left-0 z-50 flex w-full bg-crema px-6 py-3 shadow">
   <!-- Logo a la izquierda -->
-  <div class="flex cursor-pointer items-center space-x-4" (click)="clickLogo()">
+  <div
+    class="flex cursor-pointer items-center space-x-4"
+    (click)="clickLogo()"
+    (keyup.enter)="clickLogo()"
+    tabindex="0"
+    role="button"
+    aria-label="Ir a inicio"
+  >
     <img src="assets/imagenes/logo.svg" alt="Logo" class="h-18" />
     <div class="text-2xl font-bold text-azul-oscuro">
       <p>

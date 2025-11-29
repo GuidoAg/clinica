@@ -3,104 +3,97 @@
   <div
     class="h-full min-w-0 overflow-auto rounded-2xl border border-white bg-crema p-6 pb-6 shadow-inner transition-all duration-700 ease-in-out"
     [style.width]="pacienteSeleccionado() ? '65%' : '100%'"
-    >
+  >
     @if (cargando()) {
-      <div>
-        <p class="text-center text-gray-500">Cargando pacientes...</p>
-      </div>
-    }
-
-    @if (!cargando() && pacientesConCitas.length > 0) {
+    <div>
+      <p class="text-center text-gray-500">Cargando pacientes...</p>
+    </div>
+    } @if (!cargando() && pacientesConCitas.length > 0) {
+    <div class="flex flex-wrap justify-start gap-6">
+      @for (item of pacientesConCitas; track item) {
       <div
-        class="flex flex-wrap justify-start gap-6"
-        >
-        @for (item of pacientesConCitas; track item) {
-          <div
-            class="h-auto w-[300px] cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm transition hover:shadow-md"
-            (click)="seleccionarPaciente(item)"
-            >
-            @if (item.paciente.urlImagenPerfil) {
-              <img
-                [src]="item.paciente.urlImagenPerfil"
-                alt="Avatar"
-                class="mb-2 h-14 w-14 rounded-full object-cover"
-                appTrackImage
-                />
-            }
-            <div class="text-sm">
-              <p class="font-semibold text-azul-oscuro">
-                {{ item.paciente.nombre }} {{ item.paciente.apellido }}
-              </p>
-              <p class="text-gray-600">{{ item.paciente.email }}</p>
-              <p>DNI: {{ item.paciente.dni }}</p>
-              <p>Edad: {{ item.paciente.edad }}</p>
-              <p class="mt-2 font-semibold text-gray-700">Últimos 3 turnos:</p>
-              <ul class="list-inside list-disc text-sm text-gray-600">
-                @for (cita of item.citas; track cita) {
-                  <li>
-                    • {{ cita.fechaHora | date: 'short' }} – {{
-                    cita.especialidadNombre }}
-                  </li>
-                }
-              </ul>
-              <button
-                type="button"
-                class="mt-3 rounded bg-indigo-600 px-3 py-1 text-sm font-semibold text-white transition hover:bg-indigo-700"
-                >
-                Ver historia clínica
-              </button>
-            </div>
-          </div>
+        class="h-auto w-[300px] cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm transition hover:shadow-md"
+        (click)="seleccionarPaciente(item)"
+        (keyup.enter)="seleccionarPaciente(item)"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'Ver detalles de ' + item.paciente.nombre"
+      >
+        @if (item.paciente.urlImagenPerfil) {
+        <img
+          [src]="item.paciente.urlImagenPerfil"
+          alt="Avatar"
+          class="mb-2 h-14 w-14 rounded-full object-cover"
+          appTrackImage
+        />
         }
+        <div class="text-sm">
+          <p class="font-semibold text-azul-oscuro">
+            {{ item.paciente.nombre }} {{ item.paciente.apellido }}
+          </p>
+          <p class="text-gray-600">{{ item.paciente.email }}</p>
+          <p>DNI: {{ item.paciente.dni }}</p>
+          <p>Edad: {{ item.paciente.edad }}</p>
+          <p class="mt-2 font-semibold text-gray-700">Últimos 3 turnos:</p>
+          <ul class="list-inside list-disc text-sm text-gray-600">
+            @for (cita of item.citas; track cita) {
+            <li>
+              • {{ cita.fechaHora | date: 'short' }} – {{
+              cita.especialidadNombre }}
+            </li>
+            }
+          </ul>
+          <button
+            type="button"
+            class="mt-3 rounded bg-indigo-600 px-3 py-1 text-sm font-semibold text-white transition hover:bg-indigo-700"
+          >
+            Ver historia clínica
+          </button>
+        </div>
       </div>
-    }
-
-    @if (!cargando() && pacientesConCitas.length === 0) {
-      <div
-        class="text-center text-gray-500"
-        >
-        No se encontraron pacientes atendidos.
-      </div>
+      }
+    </div>
+    } @if (!cargando() && pacientesConCitas.length === 0) {
+    <div class="text-center text-gray-500">
+      No se encontraron pacientes atendidos.
+    </div>
     }
   </div>
 
   <!-- Panel historia clínica -->
   @if (pacienteSeleccionado()) {
-    <div
-      class="w-full translate-x-0 rounded-2xl bg-white p-10 transition-all duration-700 ease-in-out md:w-[35%]"
-      [@slideInRight]
-      >
-      <button
-        class="mb-4 self-start rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-100"
-        (click)="cerrarHistoriaClinica()"
-        >
-        ← Volver a pacientes
-      </button>
-      <h2 class="mb-4 text-xl font-semibold text-azul-oscuro">
-        Historia clínica de {{ pacienteSeleccionado()?.paciente?.nombre }} {{
-        pacienteSeleccionado()?.paciente?.apellido }}
-      </h2>
-      <!-- Mostrar detalles de historia clínica aquí -->
-      @for (cita of pacienteSeleccionado()?.citas; track cita) {
-        <div>
-          <p><strong>Fecha:</strong> {{ cita.fechaHora | date:'short' }}</p>
-          <p><strong>Especialidad:</strong> {{ cita.especialidadNombre }}</p>
-          <p><strong>Altura:</strong> {{ cita.alturaCm }} cm</p>
-          <p><strong>Peso:</strong> {{ cita.pesoKg }} kg</p>
-          <p><strong>Temperatura:</strong> {{ cita.temperaturaC }} °C</p>
-          <p><strong>Presión arterial:</strong> {{ cita.presionArterial }}</p>
-          <p><strong>Datos dinámicos:</strong></p>
-          <ul class="list-inside list-disc text-sm">
-            @for (d of cita.datosDinamicos; track d) {
-              <li>
-                {{ d.clave }}: {{ d.valor }}
-              </li>
-            }
-          </ul>
-          <br />
-        </div>
-      }
+  <div
+    class="w-full translate-x-0 rounded-2xl bg-white p-10 transition-all duration-700 ease-in-out md:w-[35%]"
+    [@slideInRight]
+  >
+    <button
+      class="mb-4 self-start rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-100"
+      (click)="cerrarHistoriaClinica()"
+    >
+      ← Volver a pacientes
+    </button>
+    <h2 class="mb-4 text-xl font-semibold text-azul-oscuro">
+      Historia clínica de {{ pacienteSeleccionado()?.paciente?.nombre }} {{
+      pacienteSeleccionado()?.paciente?.apellido }}
+    </h2>
+    <!-- Mostrar detalles de historia clínica aquí -->
+    @for (cita of pacienteSeleccionado()?.citas; track cita) {
+    <div>
+      <p><strong>Fecha:</strong> {{ cita.fechaHora | date:'short' }}</p>
+      <p><strong>Especialidad:</strong> {{ cita.especialidadNombre }}</p>
+      <p><strong>Altura:</strong> {{ cita.alturaCm }} cm</p>
+      <p><strong>Peso:</strong> {{ cita.pesoKg }} kg</p>
+      <p><strong>Temperatura:</strong> {{ cita.temperaturaC }} °C</p>
+      <p><strong>Presión arterial:</strong> {{ cita.presionArterial }}</p>
+      <p><strong>Datos dinámicos:</strong></p>
+      <ul class="list-inside list-disc text-sm">
+        @for (d of cita.datosDinamicos; track d) {
+        <li>{{ d.clave }}: {{ d.valor }}</li>
+        }
+      </ul>
+      <br />
     </div>
+    }
+  </div>
   }
 </div>
-

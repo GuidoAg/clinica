@@ -71,7 +71,7 @@ export class HomeNavbar implements OnInit {
       return;
     }
 
-    // ✅ Solo si la ruta es distinta
+    // Solo si la ruta es distinta
     this.router.navigate(["/home/solicitar-turnos"]);
   }
 
@@ -84,7 +84,7 @@ export class HomeNavbar implements OnInit {
       return;
     }
 
-    // ✅ Solo si la ruta es distinta
+    // Solo si la ruta es distinta
     this.router.navigate(["/home/solicitar-turnos-admin"]);
   }
 
@@ -97,7 +97,7 @@ export class HomeNavbar implements OnInit {
       return;
     }
 
-    // ✅ Solo si la ruta es distinta
+    // Solo si la ruta es distinta
     this.router.navigate(["/home/usuarios"]);
   }
 
@@ -126,7 +126,7 @@ export class HomeNavbar implements OnInit {
       return;
     }
 
-    // ✅ Solo si la ruta es distinta
+    // Solo si la ruta es distinta
     this.router.navigate([rutaDestino]);
   }
 

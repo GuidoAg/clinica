@@ -8,7 +8,7 @@ import { CitaTurnos } from "../../../models/Turnos/CitaTurnos";
 import { TrackImage } from "../../../directivas/track-image";
 import { LoadingWrapper } from "../../loading-wrapper/loading-wrapper";
 import { Usuario } from "../../../models/Auth/Usuario";
-import { Observable, Subject, firstValueFrom } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { AuthSupabase } from "../../../services/auth-supabase";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -20,8 +20,6 @@ import {
   query,
   stagger,
   animateChild,
-  state,
-  keyframes,
 } from "@angular/animations";
 
 @Component({
@@ -86,7 +84,6 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     this.especialistas().filter((e) => e.validadoAdmin === true),
   );
 
-  // 🟡 Nuevas señales computadas
   noHayEspecialistas = computed(
     () =>
       this.especialistasBuscados() === true &&

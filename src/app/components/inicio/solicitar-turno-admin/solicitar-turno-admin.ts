@@ -8,7 +8,7 @@ import { CitaTurnos } from "../../../models/Turnos/CitaTurnos";
 import { TrackImage } from "../../../directivas/track-image";
 import { LoadingWrapper } from "../../loading-wrapper/loading-wrapper";
 import { Usuario } from "../../../models/Auth/Usuario";
-import { Observable, Subject, firstValueFrom } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { AuthSupabase } from "../../../services/auth-supabase";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -21,8 +21,6 @@ import {
   query,
   stagger,
   animateChild,
-  state,
-  keyframes,
 } from "@angular/animations";
 
 @Component({
@@ -90,7 +88,6 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     this.especialistas().filter((e) => e.validadoAdmin === true),
   );
 
-  // 🟡 Nuevas señales computadas
   noHayEspecialistas = computed(
     () =>
       this.especialistasBuscados() === true &&
@@ -133,7 +130,7 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     this.especialistas.set(especialistasConDisponibilidad);
     this.especialistasBuscados.set(true);
 
-    // 🆕 cargar pacientes
+    // cargar pacientes
     const todosUsuarios = await this.usuariosService.obtenerTodosUsuarios();
     this.pacientes.set(
       todosUsuarios.filter(
@@ -235,19 +232,19 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     };
 
     try {
-      const resultado = await this.turnosService.darAltaCita(cita);
+      await this.turnosService.darAltaCita(cita);
       this.snackBar.open("Cita agendada", "exito", {
         duration: 4000,
         panelClass: ["bg-blue-600", "text-white"],
       });
 
-      // 🆕 Resetear flujo
+      // Resetear flujo
       this.pacienteSeleccionado.set(null);
       this.especialistaSeleccionado.set(null);
       this.especialidadSeleccionada.set(null);
       this.fechaSeleccionada.set(null);
       this.horaSelecionada.set(null);
-    } catch (error) {
+    } catch {
       this.snackBar.open("Ups algo salio mal", "error", {
         duration: 4000,
         panelClass: ["bg-red-600", "text-white"],
@@ -257,6 +254,6 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
 
   async btenerPacientes() {
     const todosUsuarios = await this.usuariosService.obtenerTodosUsuarios();
-    const pacientes = todosUsuarios.filter((u) => u.rol === "paciente");
+    todosUsuarios.filter((u) => u.rol === "paciente");
   }
 }

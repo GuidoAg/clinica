@@ -1,9 +1,9 @@
-import { Component, ElementRef, ViewChild, inject } from '@angular/core';
-import { Estadisticas } from '../../../services/estadisticas';
-import { Chart, registerables } from 'chart.js';
+import { Component, ElementRef, ViewChild, inject } from "@angular/core";
+import { Estadisticas } from "../../../services/estadisticas";
+import { Chart, registerables } from "chart.js";
 
 @Component({
-  selector: 'turnos-por-medico-chart',
+  selector: "app-turnos-por-medico-chart",
   standalone: true,
   template: `
     <div class="relative h-64 w-full">
@@ -15,7 +15,7 @@ export class TurnosPorMedicoChart {
   private estadisticas = inject(Estadisticas);
   private chart?: Chart;
 
-  @ViewChild('canvas', { static: true })
+  @ViewChild("canvas", { static: true })
   canvasRef!: ElementRef<HTMLCanvasElement>;
 
   async render(desde: string, hasta: string): Promise<void> {
@@ -29,15 +29,15 @@ export class TurnosPorMedicoChart {
     this.chart?.destroy();
 
     this.chart = new Chart(canvas, {
-      type: 'bar',
+      type: "bar",
       data: {
         labels,
         datasets: [
           {
-            label: 'Turnos por Médico',
+            label: "Turnos por Médico",
             data,
-            backgroundColor: 'rgba(75, 192, 192, 0.7)',
-            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: "rgba(75, 192, 192, 0.7)",
+            borderColor: "rgba(75, 192, 192, 1)",
             borderWidth: 1,
           },
         ],
