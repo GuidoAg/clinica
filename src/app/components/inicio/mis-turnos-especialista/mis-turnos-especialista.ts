@@ -167,6 +167,6 @@ export class MisTurnosEspecialista implements OnInit, OnDestroy {
 
   accionDesdeModal() {
     this.cerrarPopupAcciones();
-    this.cargarCitas(); // ✅ recarga los turnos
+    this.cargarCitas();
   }
 }

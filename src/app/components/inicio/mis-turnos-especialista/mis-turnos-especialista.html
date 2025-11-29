@@ -1,13 +1,13 @@
 <div class="h-full w-full p-1">
   <div
     class="h-full w-full overflow-auto rounded-2xl border border-white bg-[color:var(--color-crema)] p-6 shadow-inner"
-    >
+  >
     <!-- Filtro -->
     <div class="mb-4 flex flex-wrap items-center gap-3">
       <label
         for="filtro"
         class="text-sm font-semibold text-[color:var(--color-azul-oscuro)]"
-        >
+      >
         Filtrar por {{ filtroColumnaLabel | titlecase }}:
       </label>
 
@@ -17,142 +17,130 @@
         [(ngModel)]="filtroValorModel"
         placeholder="Ingresá filtro"
         class="w-64 rounded border border-gray-300 px-3 py-1 text-sm focus:ring-2 focus:ring-[color:var(--color-azul-oscuro)] focus:outline-none"
-        />
+      />
 
-        <button
-          type="button"
-          (click)="limpiarFiltro()"
-          class="rounded bg-[color:var(--color-azul-oscuro)] px-3 py-1 text-sm font-semibold text-white shadow transition-transform hover:scale-105 hover:bg-[color:var(--color-azul-claro)]"
-          >
-          Limpiar
-        </button>
+      <button
+        type="button"
+        (click)="limpiarFiltro()"
+        class="rounded bg-[color:var(--color-azul-oscuro)] px-3 py-1 text-sm font-semibold text-white shadow transition-transform hover:scale-105 hover:bg-[color:var(--color-azul-claro)]"
+      >
+        Limpiar
+      </button>
 
-        <!-- Botón Acciones alineado a la derecha -->
-        <div class="ml-auto">
-          @if (mostrarPopupAcciones && citaSeleccionada()) {
-            <app-acciones-especialista
-              [cita]="citaSeleccionada()!"
-              (cerrar)="cerrarPopupAcciones()"
-              (accionRealizada)="accionDesdeModal($event)"
-            ></app-acciones-especialista>
-          }
-        </div>
+      <!-- Botón Acciones alineado a la derecha -->
+      <div class="ml-auto">
+        @if (mostrarPopupAcciones && citaSeleccionada()) {
+        <app-acciones-especialista
+          [cita]="citaSeleccionada()!"
+          (cerrar)="cerrarPopupAcciones()"
+          (accionRealizada)="accionDesdeModal()"
+        ></app-acciones-especialista>
+        }
       </div>
+    </div>
 
-      <!-- Tabla -->
-      <table class="min-w-full border-collapse border border-gray-300 text-sm">
-        <thead>
-          <tr
-            class="bg-[color:var(--color-azul-claro)] text-[color:var(--color-azul-oscuro)]"
-            >
-            @for (col of columnasConDatosDinamicos; track col) {
-              <th
-                (click)="filtroColumna.set(col.key)"
-                class="cursor-pointer border border-gray-300 px-3 py-2 transition-colors duration-200 select-none hover:bg-[color:var(--color-azul-oscuro)] hover:text-white"
+    <!-- Tabla -->
+    <table class="min-w-full border-collapse border border-gray-300 text-sm">
+      <thead>
+        <tr
+          class="bg-[color:var(--color-azul-claro)] text-[color:var(--color-azul-oscuro)]"
+        >
+          @for (col of columnasConDatosDinamicos; track col) {
+          <th
+            (click)="filtroColumna.set(col.key)"
+            class="cursor-pointer border border-gray-300 px-3 py-2 transition-colors duration-200 select-none hover:bg-[color:var(--color-azul-oscuro)] hover:text-white"
             [ngClass]="{
     'cursor-pointer select-none hover:bg-[color:var(--color-azul-oscuro)] hover:text-white': col.key !== 'datosDinamicos' && col.key !== 'acciones' ,
     'bg-[color:var(--color-azul-oscuro)]/80 text-white': filtroColumna() === col.key && col.key !== 'datosDinamicos' && col.key !== 'acciones'
   }"
-                >
-                {{ col.label }}
-              </th>
-            }
-          </tr>
-        </thead>
+          >
+            {{ col.label }}
+          </th>
+          }
+        </tr>
+      </thead>
 
-        <tbody>
-          @if (!cargando()) {
-            @for (cita of citasFiltradas; track cita) {
-              <tr
-                class="cursor-pointer border border-gray-300 transition-colors duration-150 hover:bg-[color:var(--color-verde-claro)]"
-                (click)="toggleFilaExpandida(cita.citaId)"
-              [style.background-color]="
+      <tbody>
+        @if (!cargando()) { @for (cita of citasFiltradas; track cita) {
+        <tr
+          class="cursor-pointer border border-gray-300 transition-colors duration-150 hover:bg-[color:var(--color-verde-claro)]"
+          (click)="toggleFilaExpandida(cita.citaId)"
+          [style.background-color]="
                 filaExpandida() === cita.citaId ? 'rgba(46, 64, 45, 0.2)' : null
               "
-                >
-                <td class="border border-gray-300 px-3 py-1">
-                  {{ cita.citaId }}
-                </td>
-                <td class="border border-gray-300 px-3 py-1">
-                  {{ cita.fechaHora | date : 'short' }}
-                </td>
-                <td
-                  class="rounded border border-gray-300 px-3 py-1 text-center font-semibold"
-                  [ngClass]="estadoClaseMap[cita.estado] ?? 'bg-gray-100 text-gray-700'"
-                  >
-                  {{ cita.estado | titlecase }}
-                </td>
-                <td class="border border-gray-300 px-3 py-1">
-                  {{ cita.alturaCm }}
-                </td>
-                <td class="border border-gray-300 px-3 py-1">
-                  {{ cita.pesoKg }}
-                </td>
-                <td class="border border-gray-300 px-3 py-1">
-                  {{ cita.temperaturaC }}
-                </td>
-                <td class="border border-gray-300 px-3 py-1">
-                  {{ cita.presionArterial }}
-                </td>
-                <td class="border border-gray-300 px-3 py-1">
-                  {{ cita.pacienteNombreCompleto }}
-                </td>
-                <td class="border border-gray-300 px-3 py-1">
-                  {{ cita.especialistaNombreCompleto }}
-                </td>
-                <td class="border border-gray-300 px-3 py-1">
-                  {{ cita.especialidadNombre }}
-                </td>
-                <td class="border border-gray-300 px-3 py-1 text-center">
-                  <button
-                    class="text-[color:var(--color-azul-oscuro)] underline hover:text-[color:var(--color-azul-claro)]"
-                    type="button"
-                    >
-                    {{ filaExpandida() === cita.citaId ? 'Ocultar' : 'Mostrar' }}
-                  </button>
-                </td>
-                <td
-                  class="border border-gray-300 bg-green-200 px-3 py-1 text-center hover:bg-green-500"
-                  >
-                  <button
-                    class="font-bold text-[color:var(--color-azul-oscuro)] hover:text-[color:var(--color-white)]"
-                    type="button"
-                    (click)="abrirPopupAcciones(cita)"
-                    >
-                    Acciones
-                  </button>
-                </td>
-              </tr>
-              <!-- Fila expandida con datos dinámicos -->
-              @if (filaExpandida() === cita.citaId) {
-                <tr>
-                  <td
-                    colspan="11"
-                    class="border border-gray-300 bg-[color:var(--color-crema)] px-3 py-2 text-[color:var(--color-azul-oscuro)]"
-                    >
-                    <div class="grid grid-cols-2 gap-4">
-                      @for (dato of cita.datosDinamicos; track dato) {
-                        <div>
-                          <strong>{{ dato.clave }}:</strong> {{ dato.valor }}
-                        </div>
-                      }
-                    </div>
-                  </td>
-                </tr>
+        >
+          <td class="border border-gray-300 px-3 py-1">{{ cita.citaId }}</td>
+          <td class="border border-gray-300 px-3 py-1">
+            {{ cita.fechaHora | date : 'short' }}
+          </td>
+          <td
+            class="rounded border border-gray-300 px-3 py-1 text-center font-semibold"
+            [ngClass]="estadoClaseMap[cita.estado] ?? 'bg-gray-100 text-gray-700'"
+          >
+            {{ cita.estado | titlecase }}
+          </td>
+          <td class="border border-gray-300 px-3 py-1">{{ cita.alturaCm }}</td>
+          <td class="border border-gray-300 px-3 py-1">{{ cita.pesoKg }}</td>
+          <td class="border border-gray-300 px-3 py-1">
+            {{ cita.temperaturaC }}
+          </td>
+          <td class="border border-gray-300 px-3 py-1">
+            {{ cita.presionArterial }}
+          </td>
+          <td class="border border-gray-300 px-3 py-1">
+            {{ cita.pacienteNombreCompleto }}
+          </td>
+          <td class="border border-gray-300 px-3 py-1">
+            {{ cita.especialistaNombreCompleto }}
+          </td>
+          <td class="border border-gray-300 px-3 py-1">
+            {{ cita.especialidadNombre }}
+          </td>
+          <td class="border border-gray-300 px-3 py-1 text-center">
+            <button
+              class="text-[color:var(--color-azul-oscuro)] underline hover:text-[color:var(--color-azul-claro)]"
+              type="button"
+            >
+              {{ filaExpandida() === cita.citaId ? 'Ocultar' : 'Mostrar' }}
+            </button>
+          </td>
+          <td
+            class="border border-gray-300 bg-green-200 px-3 py-1 text-center hover:bg-green-500"
+          >
+            <button
+              class="font-bold text-[color:var(--color-azul-oscuro)] hover:text-[color:var(--color-white)]"
+              type="button"
+              (click)="abrirPopupAcciones(cita)"
+            >
+              Acciones
+            </button>
+          </td>
+        </tr>
+        <!-- Fila expandida con datos dinámicos -->
+        @if (filaExpandida() === cita.citaId) {
+        <tr>
+          <td
+            colspan="11"
+            class="border border-gray-300 bg-[color:var(--color-crema)] px-3 py-2 text-[color:var(--color-azul-oscuro)]"
+          >
+            <div class="grid grid-cols-2 gap-4">
+              @for (dato of cita.datosDinamicos; track dato) {
+              <div><strong>{{ dato.clave }}:</strong> {{ dato.valor }}</div>
               }
-            }
-          } @else {
-            <tr>
-              <td
-                colspan="11"
-                class="border border-gray-300 px-3 py-6 text-center font-semibold text-[color:var(--color-azul-oscuro)]"
-                >
-                Cargando datos...
-              </td>
-            </tr>
-          }
-
-        </tbody>
-      </table>
-    </div>
+            </div>
+          </td>
+        </tr>
+        } } } @else {
+        <tr>
+          <td
+            colspan="11"
+            class="border border-gray-300 px-3 py-6 text-center font-semibold text-[color:var(--color-azul-oscuro)]"
+          >
+            Cargando datos...
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
   </div>
+</div>

@@ -27,7 +27,7 @@ interface FechaRango {
     TurnosPorEspecialidadChart,
     TurnosPorMedicoChart,
     TurnosFinalizadosPorMedicoChart,
-    LogIngresoChart, // ✅ Agregado
+    LogIngresoChart,
   ],
   templateUrl: "./home.html",
 })
