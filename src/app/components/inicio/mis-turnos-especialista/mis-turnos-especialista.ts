@@ -75,7 +75,7 @@ export class MisTurnosEspecialista implements OnInit, OnDestroy {
       usuario.id =
         typeof usuario.id === "string" ? Number(usuario.id) : usuario.id;
       this.usuarioActual = usuario;
-      this.cargarCitas(); // ✅ llamada aquí
+      this.cargarCitas(); // llamada aquí
     });
   }
 
