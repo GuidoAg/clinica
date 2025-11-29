@@ -58,37 +58,37 @@ export class Login implements OnInit, AfterViewInit {
   usuariosAutoLog: UsuarioAutoLog[] = [
     {
       nombre: "Admin",
-      imagenUrl: "assets/imagenes/Login/admin.png",
+      imagenUrl: "assets/imagenes/Login/admin.webp",
       mail: "admin.embezzle816@passmail.net",
       password: "1234567",
     },
     {
       nombre: "Agustin",
-      imagenUrl: "assets/imagenes/Login/especialista2.png",
+      imagenUrl: "assets/imagenes/Login/especialista2.webp",
       mail: "banova2860@okcdeals.com",
       password: "1234567",
     },
     {
       nombre: "Ana",
-      imagenUrl: "assets/imagenes/Login/especialista1.png",
+      imagenUrl: "assets/imagenes/Login/especialista1.webp",
       mail: "hogowa4011@okcdeals.com",
       password: "1234567",
     },
     {
       nombre: "Guido",
-      imagenUrl: "assets/imagenes/Login/paciente1.png",
+      imagenUrl: "assets/imagenes/Login/paciente1.webp",
       mail: "resoc47612@okcdeals.com",
       password: "1234567",
     },
     {
       nombre: "Maria",
-      imagenUrl: "assets/imagenes/Login/paciente3.png",
+      imagenUrl: "assets/imagenes/Login/paciente3.webp",
       mail: "wavate3116@moondyal.com",
       password: "1234567",
     },
     {
       nombre: "Roberto",
-      imagenUrl: "assets/imagenes/Login/paciente2.png",
+      imagenUrl: "assets/imagenes/Login/paciente2.webp",
       mail: "wihob84360@moondyal.com",
       password: "1234567",
     },

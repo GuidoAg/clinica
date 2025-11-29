@@ -41,32 +41,32 @@ export class WelcomePage implements OnInit, OnDestroy {
 
   carouselItems = [
     {
-      img: "tarjeta1.jpg",
+      img: "tarjeta1.webp",
       tituloKey: "welcomePage.carrusel.guardias.titulo",
       descripcionKey: "welcomePage.carrusel.guardias.descripcion",
     },
     {
-      img: "tarjeta2.jpg",
+      img: "tarjeta2.webp",
       tituloKey: "welcomePage.carrusel.cobertura.titulo",
       descripcionKey: "welcomePage.carrusel.cobertura.descripcion",
     },
     {
-      img: "tarjeta3.jpg",
+      img: "tarjeta3.webp",
       tituloKey: "welcomePage.carrusel.turnos.titulo",
       descripcionKey: "welcomePage.carrusel.turnos.descripcion",
     },
     {
-      img: "tarjeta4.jpg",
+      img: "tarjeta4.webp",
       tituloKey: "welcomePage.carrusel.descuentos.titulo",
       descripcionKey: "welcomePage.carrusel.descuentos.descripcion",
     },
     {
-      img: "tarjeta5.jpg",
+      img: "tarjeta5.webp",
       tituloKey: "welcomePage.carrusel.pediatria.titulo",
       descripcionKey: "welcomePage.carrusel.pediatria.descripcion",
     },
     {
-      img: "tarjeta6.jpg",
+      img: "tarjeta6.webp",
       tituloKey: "welcomePage.carrusel.estudios.titulo",
       descripcionKey: "welcomePage.carrusel.estudios.descripcion",
     },

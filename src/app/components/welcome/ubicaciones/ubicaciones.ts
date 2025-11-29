@@ -18,32 +18,32 @@ export class Ubicaciones {
     {
       nombre: "Centro Palermo",
       direccion: "Av. Santa Fe 3200, CABA",
-      imagen: "assets/imagenes/ubicaciones/palermo.jpg",
+      imagen: "assets/imagenes/ubicaciones/palermo.webp",
     },
     {
       nombre: "Centro Caballito",
       direccion: "Rivadavia 4800, CABA",
-      imagen: "assets/imagenes/ubicaciones/caballito.jpg",
+      imagen: "assets/imagenes/ubicaciones/caballito.webp",
     },
     {
       nombre: "Centro Belgrano",
       direccion: "Juramento 2100, CABA",
-      imagen: "assets/imagenes/ubicaciones/belgrano.jpeg",
+      imagen: "assets/imagenes/ubicaciones/belgrano.webp",
     },
     {
       nombre: "Centro Recoleta",
       direccion: "Av. Callao 1100, CABA",
-      imagen: "assets/imagenes/ubicaciones/recoleta.jpg",
+      imagen: "assets/imagenes/ubicaciones/recoleta.webp",
     },
     {
       nombre: "Centro Villa Urquiza",
       direccion: "Av. Triunvirato 3900, CABA",
-      imagen: "assets/imagenes/ubicaciones/urquiza.jpg",
+      imagen: "assets/imagenes/ubicaciones/urquiza.webp",
     },
     {
       nombre: "Centro Flores",
       direccion: "Av. Carabobo 200, CABA",
-      imagen: "assets/imagenes/ubicaciones/flores.jpg",
+      imagen: "assets/imagenes/ubicaciones/flores.webp",
     },
   ];
 }

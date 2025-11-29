@@ -6,7 +6,7 @@
 
     <div class="flex items-center">
       <img
-        src="assets/imagenes/banerWelcomePage.png"
+        src="assets/imagenes/banerWelcomePage.webp"
         alt="Portada"
         class="h-130 w-full object-cover"
         appTrackImage
@@ -69,6 +69,7 @@
       <div class="mx-auto flex max-w-5xl items-center justify-between">
         <!-- Botón Izquierdo -->
         <button
+          type="button"
           (click)="manualPrevSlide()"
           class="z-10 rounded-full bg-white p-2 hover:bg-gray-100"
         >
@@ -86,7 +87,7 @@
               <div class="rounded-2xl bg-white shadow">
                 <img
                   [src]="'assets/imagenes/carrusel/' + item.img"
-                  [alt]="item.tituloKey"
+                  [alt]="item.tituloKey | transloco"
                   class="h-40 w-full rounded-t-2xl object-cover"
                 />
                 <div class="p-4">
@@ -105,6 +106,7 @@
 
         <!-- Botón Derecho -->
         <button
+          type="button"
           (click)="manualNextSlide()"
           class="z-10 rounded-full bg-white p-2 hover:bg-gray-100"
         >
@@ -126,28 +128,28 @@
         <div class="grid auto-rows-fr grid-cols-9 grid-rows-2 gap-2">
           <!-- Fila 1 -->
           <img
-            src="assets/imagenes/sanatorios/col1.jpg"
+            src="assets/imagenes/sanatorios/col1.webp"
             alt="Instalaciones del sanatorio"
             class="col-span-2 row-span-1 h-full rounded-lg object-cover"
           />
           <img
-            src="assets/imagenes/sanatorios/col4.jpg"
+            src="assets/imagenes/sanatorios/col4.webp"
             alt="Instalaciones del sanatorio"
             class="col-span-2 row-span-2 h-full rounded-lg object-cover"
           />
           <img
-            src="assets/imagenes/sanatorios/col3.jpg"
+            src="assets/imagenes/sanatorios/col3.webp"
             alt="Instalaciones del sanatorio"
             class="col-span-3 row-span-1 h-full rounded-lg object-cover"
           />
           <!-- Fila 2 (suben a ocupar espacios vacíos) -->
           <img
-            src="assets/imagenes/sanatorios/col2.jpg"
+            src="assets/imagenes/sanatorios/col2.webp"
             alt="Instalaciones del sanatorio"
             class="col-span-2 row-span-1 h-full rounded-lg object-cover"
           />
           <img
-            src="assets/imagenes/sanatorios/col5.jpg"
+            src="assets/imagenes/sanatorios/col5.webp"
             alt="Instalaciones del sanatorio"
             class="col-span-3 row-span-1 h-full rounded-lg object-cover"
           />
