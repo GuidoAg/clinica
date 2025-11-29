@@ -23,6 +23,7 @@ export class MiCaptcha implements OnInit {
   mensajeVerificacion = "";
   verificando = false;
   cargado = false;
+  captchaActivo = true; // Switch para activar/desactivar el captcha
 
   async ngOnInit() {
     await this.cargarCaptchasDesdeSupabase();
@@ -60,6 +61,14 @@ export class MiCaptcha implements OnInit {
   async verificarRespuesta() {
     if (!this.captchaActual) return;
 
+    // Si el captcha está desactivado, siempre emite true
+    if (!this.captchaActivo) {
+      this.captchaValido = true;
+      this.mensajeVerificacion = "Captcha desactivado - Verificación omitida";
+      this.captchaResuelto.emit(true);
+      return;
+    }
+
     this.mensajeVerificacion = "";
     this.verificando = true;
 
@@ -70,8 +79,8 @@ export class MiCaptcha implements OnInit {
     this.captchaValido = inputHash === this.captchaActual.answerHash;
 
     this.mensajeVerificacion = this.captchaValido
-      ? "✅ Respuesta correcta"
-      : "❌ Respuesta incorrecta";
+      ? "Respuesta correcta"
+      : "Respuesta incorrecta";
 
     this.verificando = false;
     this.captchaResuelto.emit(this.captchaValido);
@@ -89,6 +98,12 @@ export class MiCaptcha implements OnInit {
 
   cambiarCaptcha() {
     this.captchaActual = this.obtenerCaptchaAleatorio();
+    this.userInput = "";
+    this.mensajeVerificacion = "";
+  }
+
+  toggleCaptcha() {
+    this.captchaActivo = !this.captchaActivo;
     this.userInput = "";
     this.mensajeVerificacion = "";
   }

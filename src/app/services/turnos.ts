@@ -351,6 +351,7 @@ export class Turnos {
       .select("fecha_hora, duracion_min")
       .eq("especialista_id", especialistaId)
       .neq("estado", "cancelado")
+      .neq("estado", "rechazado")
       .gte("fecha_hora", inicioDia.toISOString())
       .lte("fecha_hora", finDia.toISOString());
 

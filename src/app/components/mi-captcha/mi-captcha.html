@@ -28,10 +28,34 @@
   </div>
   }
 
-  <div class="rounded-lg border border-gray-300 bg-crema p-4 shadow-sm">
+  <div
+    class="relative rounded-lg border border-gray-300 bg-crema p-4 shadow-sm"
+  >
+    <!-- Switch para activar/desactivar captcha -->
+    <button
+      (click)="toggleCaptcha()"
+      [ngClass]="{
+        'bg-green-500': captchaActivo,
+        'bg-red-500': !captchaActivo
+      }"
+      class="absolute top-1 right-1 z-20 flex h-3 w-6 items-center rounded-full p-0.5 shadow-md transition-colors duration-300 hover:shadow-lg focus:ring-1 focus:ring-offset-1 focus:outline-none"
+      [class.focus:ring-green-500]="captchaActivo"
+      [class.focus:ring-red-500]="!captchaActivo"
+      title="{{ captchaActivo ? 'Captcha activado - Click para desactivar' : 'Captcha desactivado - Click para activar' }}"
+    >
+      <div
+        [ngClass]="{
+          'translate-x-2.5': captchaActivo,
+          'translate-x-0': !captchaActivo
+        }"
+        class="h-2 w-2 transform rounded-full bg-white shadow-sm transition-transform duration-300"
+      ></div>
+    </button>
     <div
-      class="flex flex-col items-center gap-2"
+      class="flex flex-col items-center gap-2 pt-1 transition-all duration-300"
       [class.opacity-50]="verificando"
+      [class.opacity-40]="!captchaActivo"
+      [style.filter]="!captchaActivo ? 'blur(1px) brightness(1.1)' : 'none'"
     >
       @if (captchaActual) {
       <img
@@ -43,23 +67,23 @@
 
       <input
         [(ngModel)]="userInput"
-        [disabled]="verificando"
-        class="w-full rounded border border-gray-300 bg-white px-3 py-1.5 focus:ring-2 focus:ring-azul-oscuro focus:outline-none"
+        [disabled]="verificando || !captchaActivo"
+        class="w-full rounded border border-gray-300 bg-white px-3 py-1.5 focus:ring-2 focus:ring-azul-oscuro focus:outline-none disabled:cursor-not-allowed"
         placeholder="Escribí lo que ves"
       />
 
       <div class="flex w-full justify-between gap-2">
         <button
           (click)="verificarRespuesta()"
-          [disabled]="verificando"
-          class="flex-1 rounded bg-verde-claro px-3 py-1.5 text-lg text-white hover:bg-verde-claro/80 disabled:opacity-50"
+          [disabled]="verificando || !captchaActivo"
+          class="flex-1 rounded bg-verde-claro px-3 py-1.5 text-lg text-white hover:bg-verde-claro/80 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Verificar
         </button>
         <button
           (click)="cambiarCaptcha()"
-          [disabled]="verificando"
-          class="flex-1 rounded bg-azul-claro px-3 py-1.5 text-lg text-white hover:bg-azul-claro/80 disabled:opacity-50"
+          [disabled]="verificando || !captchaActivo"
+          class="flex-1 rounded bg-azul-claro px-3 py-1.5 text-lg text-white hover:bg-azul-claro/80 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Cambiar
         </button>
@@ -69,7 +93,8 @@
       <p
         [ngClass]="{
           'text-green-600': captchaValido,
-          'text-red-600': !captchaValido
+          'text-red-600': !captchaValido,
+          'text-orange-600': !captchaActivo
         }"
         class="mt-1"
       >
