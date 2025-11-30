@@ -31,6 +31,7 @@ import { OBRAS_SOCIALES } from "../../../constants/obras-sociales";
 import { Especialidad } from "../../../models/SupaBase/Especialidad";
 import { Router } from "@angular/router";
 import { LoadingOverlayService } from "../../../services/loading-overlay-service";
+import { RegisterStateService } from "../../../services/register-state";
 
 import { MiCaptcha } from "../../mi-captcha/mi-captcha";
 
@@ -68,6 +69,7 @@ export class Register implements OnInit, OnDestroy {
   };
 
   private subEspecialidad!: Subscription;
+  private subReset!: Subscription;
 
   private fb = inject(FormBuilder);
   private auth = inject(AuthSupabase);
@@ -75,6 +77,7 @@ export class Register implements OnInit, OnDestroy {
   private router = inject(Router);
   private loading = inject(LoadingOverlayService);
   private elementRef = inject(ElementRef);
+  private registerState = inject(RegisterStateService);
 
   ngOnInit(): void {
     // Construcción del form
@@ -119,11 +122,19 @@ export class Register implements OnInit, OnDestroy {
         validators: this.captchaValidoValidator(),
       },
     );
+
+    // Suscribirse al reset desde el navbar
+    this.subReset = this.registerState.reset$.subscribe(() => {
+      this.resetearFormulario();
+    });
   }
 
   ngOnDestroy(): void {
     if (this.subEspecialidad) {
       this.subEspecialidad.unsubscribe();
+    }
+    if (this.subReset) {
+      this.subReset.unsubscribe();
     }
   }
 
@@ -379,5 +390,18 @@ export class Register implements OnInit, OnDestroy {
   onCaptchaResuelto(valido: boolean) {
     this.captchaEsValido = valido;
     this.registroForm.updateValueAndValidity();
+  }
+
+  private resetearFormulario(): void {
+    // Resetear a la selección de tipo de usuario
+    this.tipoUsuario = null;
+    this.especialidadesSeleccionadas.clear();
+    this.captchaEsValido = false;
+    this.mostrarCampoOtraEspecialidad = false;
+    this.desplegableEspecialidadesAbierto = false;
+    this.registroForm.reset();
+
+    // Scroll suave al inicio
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 }

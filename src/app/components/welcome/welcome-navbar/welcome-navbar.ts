@@ -1,9 +1,10 @@
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { RouterOutlet } from "@angular/router";
 import { TranslocoModule, TranslocoService } from "@jsverse/transloco";
 import { MatIconModule } from "@angular/material/icon";
 import { CommonModule } from "@angular/common";
+import { RegisterStateService } from "../../../services/register-state";
 
 @Component({
   selector: "app-welcome-navbar",
@@ -14,10 +15,9 @@ import { CommonModule } from "@angular/common";
 export class WelcomeNavbar {
   showLanguageMenu = false;
 
-  constructor(
-    private router: Router,
-    private translocoService: TranslocoService,
-  ) {}
+  private router = inject(Router);
+  private translocoService = inject(TranslocoService);
+  private registerState = inject(RegisterStateService);
 
   changeLanguage(lang: string) {
     this.translocoService.setActiveLang(lang);
@@ -64,10 +64,14 @@ export class WelcomeNavbar {
   }
 
   clickRegister() {
-    this.router.navigate(["/welcome-page/registro"]).then(() => {
-      setTimeout(() => {
-        window.location.reload();
-      }, 1);
-    });
+    const currentUrl = this.router.url;
+
+    if (currentUrl === "/welcome-page/registro") {
+      // Si ya estamos en registro, trigger reset
+      this.registerState.triggerReset();
+    } else {
+      // Si no estamos en registro, navegar
+      this.router.navigate(["/welcome-page/registro"]);
+    }
   }
 }
