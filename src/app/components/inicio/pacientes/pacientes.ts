@@ -9,7 +9,7 @@ import { Observable, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { UsuariosService } from "../../../services/usuarios";
 import { trigger, transition, style, animate } from "@angular/animations";
-import { UnidadMedidaPipe } from "../../../pipes/unidad-medida.pipe";
+import { UnidadMedidaPipe } from "../../../pipes/unidad-medida-pipe";
 
 interface PacienteConCitas {
   paciente: Usuario;

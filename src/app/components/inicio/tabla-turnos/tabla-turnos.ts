@@ -10,7 +10,7 @@ import { takeUntil } from "rxjs/operators";
 import { AccionesAdmin } from "../acciones-admin/acciones-admin";
 import { ColorEstado } from "../../../directivas/color-estado";
 import { filtrarCitas } from "../../../helpers/filtrar-citas";
-import { UnidadMedidaPipe } from "../../../pipes/unidad-medida.pipe";
+import { UnidadMedidaPipe } from "../../../pipes/unidad-medida-pipe";
 
 @Component({
   selector: "app-tabla-turnos",

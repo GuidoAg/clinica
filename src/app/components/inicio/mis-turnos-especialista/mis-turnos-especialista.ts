@@ -10,7 +10,7 @@ import { takeUntil } from "rxjs/operators";
 import { AccionesEspecialista } from "../acciones-especialista/acciones-especialista";
 import { ColorEstado } from "../../../directivas/color-estado";
 import { filtrarCitas } from "../../../helpers/filtrar-citas";
-import { UnidadMedidaPipe } from "../../../pipes/unidad-medida.pipe";
+import { UnidadMedidaPipe } from "../../../pipes/unidad-medida-pipe";
 
 @Component({
   selector: "app-mis-turnos-especialista",

@@ -12,7 +12,7 @@ import {
   standalone: true,
 })
 export class ColorEstado implements OnChanges {
-  @Input() appColorEstado: string = "";
+  @Input() appColorEstado = "";
 
   private readonly estadoClaseMap: Record<string, string> = {
     solicitado: "bg-yellow-200 text-yellow-800",
