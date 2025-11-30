@@ -207,59 +207,101 @@
     <div class="grid grid-cols-2 gap-4">
       <div>
         <label for="altura" class="mb-1 block text-sm font-medium text-gray-700"
-          >Altura (cm)</label
+          >Altura (cm)
+          <span class="text-xs text-gray-500"
+            >({{ RANGOS_MEDICOS.altura.min }}-{{ RANGOS_MEDICOS.altura.max
+            }})</span
+          ></label
         >
         <input
           id="altura"
           [(ngModel)]="registro.alturaCm"
+          (blur)="validarAltura()"
+          (input)="validarAltura()"
           required
           type="number"
+          [min]="RANGOS_MEDICOS.altura.min"
+          [max]="RANGOS_MEDICOS.altura.max"
+          step="0.1"
           class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-          [ngClass]="{ 'border-red-500 ring-red-300': !registro.alturaCm }"
+          [ngClass]="{ 'border-red-500 ring-red-300': errorAltura }"
         />
+        @if (errorAltura) {
+        <p class="mt-1 text-xs text-red-600">{{ errorAltura }}</p>
+        }
       </div>
       <div>
         <label for="peso" class="mb-1 block text-sm font-medium text-gray-700"
-          >Peso (kg)</label
+          >Peso (kg)
+          <span class="text-xs text-gray-500"
+            >({{ RANGOS_MEDICOS.peso.min }}-{{ RANGOS_MEDICOS.peso.max }})</span
+          ></label
         >
         <input
           id="peso"
           [(ngModel)]="registro.pesoKg"
+          (blur)="validarPeso()"
+          (input)="validarPeso()"
           required
           type="number"
+          [min]="RANGOS_MEDICOS.peso.min"
+          [max]="RANGOS_MEDICOS.peso.max"
+          step="0.1"
           class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-          [ngClass]="{ 'border-red-500 ring-red-300': !registro.pesoKg }"
+          [ngClass]="{ 'border-red-500 ring-red-300': errorPeso }"
         />
+        @if (errorPeso) {
+        <p class="mt-1 text-xs text-red-600">{{ errorPeso }}</p>
+        }
       </div>
       <div>
         <label
           for="temperatura"
           class="mb-1 block text-sm font-medium text-gray-700"
-          >Temperatura (°C)</label
+          >Temperatura (°C)
+          <span class="text-xs text-gray-500"
+            >({{ RANGOS_MEDICOS.temperatura.min }}-{{
+            RANGOS_MEDICOS.temperatura.max }})</span
+          ></label
         >
         <input
           id="temperatura"
           [(ngModel)]="registro.temperaturaC"
+          (blur)="validarTemperatura()"
+          (input)="validarTemperatura()"
           required
           type="number"
+          [min]="RANGOS_MEDICOS.temperatura.min"
+          [max]="RANGOS_MEDICOS.temperatura.max"
+          step="0.1"
           class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-          [ngClass]="{ 'border-red-500 ring-red-300': !registro.temperaturaC }"
+          [ngClass]="{ 'border-red-500 ring-red-300': errorTemperatura }"
         />
+        @if (errorTemperatura) {
+        <p class="mt-1 text-xs text-red-600">{{ errorTemperatura }}</p>
+        }
       </div>
       <div>
         <label
           for="presion"
           class="mb-1 block text-sm font-medium text-gray-700"
-          >Presión arterial</label
+          >Presión arterial
+          <span class="text-xs text-gray-500">(ej: 120/80)</span></label
         >
         <input
           id="presion"
           [(ngModel)]="registro.presionArterial"
+          (blur)="validarPresion()"
+          (input)="validarPresion()"
           required
           type="text"
+          placeholder="120/80"
           class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
-          [ngClass]="{ 'border-red-500 ring-red-300': !registro.presionArterial.trim() }"
+          [ngClass]="{ 'border-red-500 ring-red-300': errorPresion }"
         />
+        @if (errorPresion) {
+        <p class="mt-1 text-xs text-red-600">{{ errorPresion }}</p>
+        }
       </div>
     </div>
     <!-- Datos dinámicos -->

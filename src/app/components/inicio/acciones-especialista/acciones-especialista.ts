@@ -13,6 +13,12 @@ import { Turnos } from "../../../services/turnos";
 import { CitaCompletaTurnos } from "../../../models/Turnos/CitaCompletaTurnos";
 import { RegistroMedicoTurnos } from "../../../models/Turnos/RegistroMedicoTurnos";
 import { DatoDinamicoTurnos } from "../../../models/Turnos/DatoDinamicoTurnos";
+import {
+  RANGOS_MEDICOS,
+  validarRango,
+  validarPresionArterial,
+  validarRegistroMedico,
+} from "../../../helpers/validaciones-medicas";
 
 @Component({
   selector: "app-acciones-especialista",
@@ -30,6 +36,15 @@ export class AccionesEspecialista {
   private snackBar = inject(MatSnackBar);
 
   cargando = signal(false);
+
+  // Exponer rangos médicos para el template
+  readonly RANGOS_MEDICOS = RANGOS_MEDICOS;
+
+  // Mensajes de error de validación
+  errorAltura = "";
+  errorPeso = "";
+  errorTemperatura = "";
+  errorPresion = "";
 
   mostrarFormularioCancelar = false;
   mostrarFormularioRechazar = false;
@@ -285,6 +300,15 @@ export class AccionesEspecialista {
   }
 
   async guardarHistoriaClinica() {
+    // Validar campos médicos primero
+    const validacion = validarRegistroMedico(this.registro);
+    if (!validacion.valido) {
+      this.snackBar.open(validacion.errores.join(". "), "Cerrar", {
+        duration: 5000,
+      });
+      return;
+    }
+
     this.cargando.set(true);
 
     const datosDinamicos: DatoDinamicoTurnos[] = [
@@ -327,6 +351,7 @@ export class AccionesEspecialista {
       this.snackBar.open("Completá todos los campos obligatorios", "Cerrar", {
         duration: 3000,
       });
+      this.cargando.set(false);
       return;
     }
 
@@ -380,5 +405,32 @@ export class AccionesEspecialista {
 
   cerrarModal() {
     this.cerrar.emit();
+  }
+
+  // Métodos de validación en tiempo real para el template
+  validarAltura() {
+    const resultado = validarRango(
+      this.registro.alturaCm,
+      RANGOS_MEDICOS.altura,
+    );
+    this.errorAltura = resultado.valido ? "" : resultado.mensaje;
+  }
+
+  validarPeso() {
+    const resultado = validarRango(this.registro.pesoKg, RANGOS_MEDICOS.peso);
+    this.errorPeso = resultado.valido ? "" : resultado.mensaje;
+  }
+
+  validarTemperatura() {
+    const resultado = validarRango(
+      this.registro.temperaturaC,
+      RANGOS_MEDICOS.temperatura,
+    );
+    this.errorTemperatura = resultado.valido ? "" : resultado.mensaje;
+  }
+
+  validarPresion() {
+    const resultado = validarPresionArterial(this.registro.presionArterial);
+    this.errorPresion = resultado.valido ? "" : resultado.mensaje;
   }
 }
