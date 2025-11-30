@@ -11,10 +11,11 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Disponibilidad } from "../../../services/disponibilidad";
 import { DisponibilidadVisual } from "../../../models/disponibilidadVisual";
+import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
 
 @Component({
   selector: "app-horarios",
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ClickFueraPopup],
   templateUrl: "./horarios.html",
   styleUrl: "./horarios.css",
 })

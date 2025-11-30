@@ -36,6 +36,7 @@ import { LoadingOverlayService } from "../../../services/loading-overlay-service
 
 import { FormsModule } from "@angular/forms";
 import { RegistroAdmin } from "../../../models/Auth/RegistroAdmin";
+import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
 
 @Component({
   selector: "app-altas-admin",
@@ -48,6 +49,7 @@ import { RegistroAdmin } from "../../../models/Auth/RegistroAdmin";
     MatButtonModule,
     MatIconModule,
     MatCheckboxModule,
+    ClickFueraPopup,
   ],
   templateUrl: "./altas-admin.html",
   styleUrl: "./altas-admin.css",

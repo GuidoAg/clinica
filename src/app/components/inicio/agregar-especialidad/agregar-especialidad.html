@@ -1,8 +1,6 @@
 <!-- Fondo difuminado y clic para cerrar -->
 <div
   class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-  (click)="cerrarModal()"
-  (keyup.enter)="cerrarModal()"
   tabindex="0"
   role="button"
   aria-label="Cerrar modal"
@@ -10,9 +8,9 @@
 
 <!-- Card modal centrado -->
 <div
+  appClickFueraPopup
+  (clickFuera)="cerrarModal()"
   class="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-2xl bg-white p-11 shadow-lg"
-  (click)="$event.stopPropagation()"
-  (keyup)="$event.stopPropagation()"
   tabindex="0"
   role="dialog"
   aria-modal="true"

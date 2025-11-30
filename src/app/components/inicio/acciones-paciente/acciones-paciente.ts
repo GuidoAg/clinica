@@ -18,11 +18,12 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { Turnos } from "../../../services/turnos";
 import { CitaCompletaTurnos } from "../../../models/Turnos/CitaCompletaTurnos";
 import { EncuestaTurnos } from "../../../models/Turnos/EncuestaTurnos";
+import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
 
 @Component({
   selector: "app-acciones-paciente",
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, ClickFueraPopup],
   templateUrl: "./acciones-paciente.html",
 })
 export class AccionesPaciente implements OnInit {

@@ -6,19 +6,20 @@ import {
   OnInit,
   signal,
   WritableSignal,
-} from '@angular/core';
+} from "@angular/core";
 
-import { FormsModule } from '@angular/forms';
-import { Especialidad } from '../../../models/SupaBase/Especialidad';
-import { AuthSupabase } from '../../../services/auth-supabase';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Supabase } from '../../../supabase';
+import { FormsModule } from "@angular/forms";
+import { Especialidad } from "../../../models/SupaBase/Especialidad";
+import { AuthSupabase } from "../../../services/auth-supabase";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Supabase } from "../../../supabase";
+import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
 
 @Component({
-  selector: 'app-agregar-especialidad',
-  imports: [FormsModule],
-  templateUrl: './agregar-especialidad.html',
-  styleUrl: './agregar-especialidad.css',
+  selector: "app-agregar-especialidad",
+  imports: [FormsModule, ClickFueraPopup],
+  templateUrl: "./agregar-especialidad.html",
+  styleUrl: "./agregar-especialidad.css",
 })
 export class AgregarEspecialidad implements OnInit {
   @Input() perfilId!: number;
@@ -26,8 +27,8 @@ export class AgregarEspecialidad implements OnInit {
   @Output() especialidadAgregada = new EventEmitter<string>();
 
   especialidades: WritableSignal<Especialidad[]> = signal([]);
-  seleccionada: WritableSignal<string> = signal('');
-  nuevaEspecialidad: WritableSignal<string> = signal('');
+  seleccionada: WritableSignal<string> = signal("");
+  nuevaEspecialidad: WritableSignal<string> = signal("");
   cargando = signal(false);
 
   constructor(
@@ -42,16 +43,16 @@ export class AgregarEspecialidad implements OnInit {
 
   async agregar() {
     const seleccion = this.seleccionada();
-    const esNueva = seleccion === 'otra';
+    const esNueva = seleccion === "otra";
     const nombre = esNueva ? this.nuevaEspecialidad().trim() : seleccion;
 
     if (!nombre) {
       this.snackBar.open(
-        'Debes seleccionar o ingresar una especialidad.',
-        'Cerrar',
+        "Debes seleccionar o ingresar una especialidad.",
+        "Cerrar",
         {
           duration: 3000,
-          panelClass: ['bg-red-600', 'text-white'],
+          panelClass: ["bg-red-600", "text-white"],
         },
       );
       return;
@@ -65,11 +66,11 @@ export class AgregarEspecialidad implements OnInit {
 
       if (!resultado.success || !resultado.data) {
         this.snackBar.open(
-          resultado.message || 'No se pudo agregar la especialidad',
-          'Cerrar',
+          resultado.message || "No se pudo agregar la especialidad",
+          "Cerrar",
           {
             duration: 3000,
-            panelClass: ['bg-red-600', 'text-white'],
+            panelClass: ["bg-red-600", "text-white"],
           },
         );
         this.cargando.set(false);
@@ -79,7 +80,7 @@ export class AgregarEspecialidad implements OnInit {
       const especialidadId = resultado.data;
 
       const { error } = await Supabase.from(
-        'especialista_especialidades',
+        "especialista_especialidades",
       ).insert({
         perfil_id: this.perfilId,
         especialidad_id: especialidadId,
@@ -87,17 +88,17 @@ export class AgregarEspecialidad implements OnInit {
       });
 
       if (error) {
-        this.snackBar.open('Error al asignar la especialidad.', 'Cerrar', {
+        this.snackBar.open("Error al asignar la especialidad.", "Cerrar", {
           duration: 3000,
-          panelClass: ['bg-red-600', 'text-white'],
+          panelClass: ["bg-red-600", "text-white"],
         });
         this.cargando.set(false);
         return;
       }
 
-      this.snackBar.open('Especialidad agregada con éxito.', 'Cerrar', {
+      this.snackBar.open("Especialidad agregada con éxito.", "Cerrar", {
         duration: 3000,
-        panelClass: ['bg-green-600', 'text-white'],
+        panelClass: ["bg-green-600", "text-white"],
       });
 
       this.especialidadAgregada.emit(nombre);

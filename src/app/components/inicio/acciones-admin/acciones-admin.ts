@@ -1,15 +1,16 @@
-import { Component, EventEmitter, Output, Input, signal } from '@angular/core';
+import { Component, EventEmitter, Output, Input, signal } from "@angular/core";
 
-import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Turnos } from '../../../services/turnos';
-import { CitaCompletaTurnos } from '../../../models/Turnos/CitaCompletaTurnos';
+import { FormsModule, ReactiveFormsModule, FormBuilder } from "@angular/forms";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Turnos } from "../../../services/turnos";
+import { CitaCompletaTurnos } from "../../../models/Turnos/CitaCompletaTurnos";
+import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
 
 @Component({
-  selector: 'app-acciones-admin',
-  imports: [FormsModule, ReactiveFormsModule],
-  templateUrl: './acciones-admin.html',
-  styleUrl: './acciones-admin.css',
+  selector: "app-acciones-admin",
+  imports: [FormsModule, ReactiveFormsModule, ClickFueraPopup],
+  templateUrl: "./acciones-admin.html",
+  styleUrl: "./acciones-admin.css",
 })
 export class AccionesAdmin {
   @Input() cita!: CitaCompletaTurnos;
@@ -21,7 +22,7 @@ export class AccionesAdmin {
   mostrarFormularioCancelar = false;
   mostrarFormularioResenia = false;
 
-  comentarioCancelar = '';
+  comentarioCancelar = "";
 
   constructor(
     private turnos: Turnos,
@@ -31,10 +32,10 @@ export class AccionesAdmin {
 
   get puedeCancelar() {
     return (
-      this.cita.estado !== 'completado' &&
-      this.cita.estado !== 'cancelado' &&
-      this.cita.estado !== 'aceptado' &&
-      this.cita.estado !== 'rechazado' &&
+      this.cita.estado !== "completado" &&
+      this.cita.estado !== "cancelado" &&
+      this.cita.estado !== "aceptado" &&
+      this.cita.estado !== "rechazado" &&
       !this.mostrarFormularioCancelar
     );
   }
@@ -45,7 +46,7 @@ export class AccionesAdmin {
 
   cancelarAccionCancelar() {
     this.mostrarFormularioCancelar = false;
-    this.comentarioCancelar = '';
+    this.comentarioCancelar = "";
   }
 
   confirmarCancelarTurno() {
@@ -57,20 +58,20 @@ export class AccionesAdmin {
       .then((res) => {
         this.cargando.set(false);
         if (res.success) {
-          this.snackBar.open('Turno cancelado exitosamente.', 'Cerrar', {
+          this.snackBar.open("Turno cancelado exitosamente.", "Cerrar", {
             duration: 3000,
           });
-          this.accionRealizada.emit('cancelado');
+          this.accionRealizada.emit("cancelado");
           this.cerrar.emit();
         } else {
-          this.snackBar.open(res.message ?? 'Ocurrió un error', 'Cerrar', {
+          this.snackBar.open(res.message ?? "Ocurrió un error", "Cerrar", {
             duration: 4000,
           });
         }
       })
       .finally(() => {
         this.mostrarFormularioCancelar = false;
-        this.comentarioCancelar = '';
+        this.comentarioCancelar = "";
       });
   }
 

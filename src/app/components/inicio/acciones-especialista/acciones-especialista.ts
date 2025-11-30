@@ -19,10 +19,11 @@ import {
   validarPresionArterial,
   validarRegistroMedico,
 } from "../../../helpers/validaciones-medicas";
+import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
 
 @Component({
   selector: "app-acciones-especialista",
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClickFueraPopup],
   templateUrl: "./acciones-especialista.html",
   styleUrl: "./acciones-especialista.css",
 })

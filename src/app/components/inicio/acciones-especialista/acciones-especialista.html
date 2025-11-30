@@ -1,18 +1,16 @@
 <!-- Fondo difuminado y clic para cerrar -->
 <div
   class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-  (click)="cerrarModal()"
-  (keyup.enter)="cerrarModal()"
   tabindex="0"
   role="button"
   aria-label="Cerrar modal"
 ></div>
 
 <div
+  appClickFueraPopup
+  (clickFuera)="cerrarModal()"
   class="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-8 shadow-xl transition-all duration-300 md:max-w-3xl"
   [ngClass]="{ 'max-w-3xl p-10': mostrarFormularioHistoriaClinica }"
-  (click)="$event.stopPropagation()"
-  (keyup)="$event.stopPropagation()"
   tabindex="0"
   role="dialog"
   aria-modal="true"
