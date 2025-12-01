@@ -124,7 +124,7 @@ export class AltasAdmin implements OnInit, OnDestroy {
         nuevaEspecialidad: [
           "",
           [
-            Validators.minLength(2),
+            Validators.minLength(4),
             Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/),
           ],
         ],
@@ -143,6 +143,12 @@ export class AltasAdmin implements OnInit, OnDestroy {
     this.tipoUsuario = tipo;
 
     if (!this.registroForm) return;
+
+    // Limpiar especialidades temporales al cambiar de tipo
+    this.especialidadOptions = this.especialidadOptions.filter(
+      (esp) => esp.id > 0,
+    );
+    this.especialidadesSeleccionadas.clear();
 
     const obraSocialCtrl = this.registroForm.get("obraSocial");
     const especialidadesCtrl = this.registroForm.get(
@@ -204,6 +210,70 @@ export class AltasAdmin implements OnInit, OnDestroy {
     if (!this.mostrarCampoOtraEspecialidad) {
       this.registroForm.get("nuevaEspecialidad")?.setValue("");
     }
+  }
+
+  normalizarNombre(texto: string): string {
+    texto = texto.trim();
+    if (!texto) return texto;
+    return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
+  }
+
+  agregarNuevaEspecialidad(): void {
+    const nuevaEspControl = this.registroForm.get("nuevaEspecialidad");
+    const nombreEspecialidad = nuevaEspControl?.value?.trim();
+
+    if (!nombreEspecialidad || nuevaEspControl?.invalid) {
+      this.snackBar.open(
+        "Por favor, ingrese un nombre válido para la especialidad.",
+        "Cerrar",
+        { duration: 3000 },
+      );
+      return;
+    }
+
+    // Normalizar el nombre
+    const nombreNormalizado = this.normalizarNombre(nombreEspecialidad);
+
+    // Verificar si ya existe una especialidad con ese nombre
+    const existeEspecialidad = this.especialidadOptions.some(
+      (esp) => esp.nombre.toLowerCase() === nombreNormalizado.toLowerCase(),
+    );
+
+    if (existeEspecialidad) {
+      this.snackBar.open(
+        "Esta especialidad ya existe. Por favor, selecciónela de la lista.",
+        "Cerrar",
+        { duration: 3000 },
+      );
+      return;
+    }
+
+    // Crear un ID temporal negativo para distinguir nuevas especialidades
+    const nuevoId = -(this.especialidadOptions.length + 1);
+    const nuevaEspecialidad: Especialidad = {
+      id: nuevoId,
+      nombre: nombreNormalizado,
+    };
+
+    // Agregar al array local
+    this.especialidadOptions.push(nuevaEspecialidad);
+
+    // Auto-seleccionar la nueva especialidad
+    this.especialidadesSeleccionadas.add(nuevoId);
+    this.actualizarEspecialidadesEnForm();
+
+    // Limpiar el campo y ocultar
+    if (nuevaEspControl) {
+      nuevaEspControl.setValue("");
+    }
+    this.mostrarCampoOtraEspecialidad = false;
+
+    // Mostrar confirmación
+    this.snackBar.open(
+      `Especialidad "${nombreNormalizado}" agregada y seleccionada.`,
+      "Cerrar",
+      { duration: 3000, panelClass: ["bg-green-600", "text-white"] },
+    );
   }
 
   toggleDesplegableEspecialidades(event?: Event): void {
@@ -360,19 +430,25 @@ export class AltasAdmin implements OnInit, OnDestroy {
       // Construir array de especialidades
       const especialidades: string[] = [];
 
-      // Agregar especialidades seleccionadas (convertir IDs a string)
+      // Agregar especialidades seleccionadas
       if (
         f.especialidadesSeleccionadas &&
         f.especialidadesSeleccionadas.length > 0
       ) {
-        especialidades.push(
-          ...f.especialidadesSeleccionadas.map((id: number) => String(id)),
-        );
-      }
-
-      // Agregar nueva especialidad si fue ingresada
-      if (f.nuevaEspecialidad && f.nuevaEspecialidad.trim()) {
-        especialidades.push(f.nuevaEspecialidad.trim());
+        f.especialidadesSeleccionadas.forEach((id: number) => {
+          if (id > 0) {
+            // Especialidad existente (ID positivo)
+            especialidades.push(String(id));
+          } else {
+            // Especialidad nueva (ID negativo temporal)
+            const especialidadNueva = this.especialidadOptions.find(
+              (esp) => esp.id === id,
+            );
+            if (especialidadNueva) {
+              especialidades.push(especialidadNueva.nombre);
+            }
+          }
+        });
       }
 
       const payload: RegistroEspecialista = {

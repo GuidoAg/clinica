@@ -215,7 +215,9 @@
           <!-- Desplegable con checkboxes -->
           @if (desplegableEspecialidadesAbierto) {
           <div
-            class="absolute top-full right-0 left-0 z-10 mt-1 max-h-60 overflow-y-auto rounded-lg border border-gray-300 bg-white p-3 shadow-lg"
+            class="absolute top-full right-0 left-0 z-10 mt-1 overflow-y-auto rounded-lg border border-gray-300 bg-white p-3 shadow-lg transition-all duration-300"
+            [class.max-h-60]="!mostrarCampoOtraEspecialidad"
+            [class.max-h-96]="mostrarCampoOtraEspecialidad"
           >
             <div class="space-y-2">
               @for (especialidad of especialidadOptions; track especialidad) {
@@ -241,22 +243,35 @@
               </button>
               <!-- Campo para nueva especialidad dentro del desplegable -->
               @if (mostrarCampoOtraEspecialidad) {
-              <div class="mt-2">
+              <div class="mt-2 space-y-2">
                 <input
                   formControlName="nuevaEspecialidad"
                   placeholder="Nombre de la especialidad"
                   class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-azul-oscuro focus:outline-none"
                   (click)="$event.stopPropagation()"
+                  (keyup.enter)="agregarNuevaEspecialidad(); $event.stopPropagation()"
                 />
                 @if
-                (registroForm.get('nuevaEspecialidad')?.hasError('minlength')) {
-                <div class="mt-1 text-xs text-red-600">Mínimo 2 caracteres</div>
+                (registroForm.get('nuevaEspecialidad')?.hasError('minlength') &&
+                registroForm.get('nuevaEspecialidad')?.touched) {
+                <div class="text-xs text-red-600">Mínimo 4 caracteres</div>
                 } @if
-                (registroForm.get('nuevaEspecialidad')?.hasError('pattern')) {
-                <div class="mt-1 text-xs text-red-600">
-                  Solo letras y espacios
+                (registroForm.get('nuevaEspecialidad')?.hasError('pattern') &&
+                registroForm.get('nuevaEspecialidad')?.touched) {
+                <div class="text-xs text-red-600">
+                  Solo letras y espacios permitidos
                 </div>
                 }
+                <button
+                  type="button"
+                  mat-raised-button
+                  color="primary"
+                  (click)="agregarNuevaEspecialidad(); $event.stopPropagation()"
+                  [disabled]="registroForm.get('nuevaEspecialidad')?.invalid || !registroForm.get('nuevaEspecialidad')?.value?.trim()"
+                  class="w-full text-sm"
+                >
+                  ✓ Confirmar y agregar
+                </button>
               </div>
               }
             </div>
