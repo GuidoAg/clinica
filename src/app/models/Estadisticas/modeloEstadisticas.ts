@@ -19,3 +19,13 @@ export interface TurnosPorMedico {
   nombre: string;
   cantidad: number;
 }
+
+export interface IngresosPorHora {
+  fecha_hora: string;
+  cantidad: number;
+}
+
+export interface TrendLineData {
+  datos: IngresosPorHora[];
+  maxY: number;
+}

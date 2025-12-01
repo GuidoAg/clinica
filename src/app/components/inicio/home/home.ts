@@ -1,18 +1,18 @@
 import {
   Component,
-  OnInit,
   AfterViewInit,
   ViewChild,
+  inject,
   signal,
   WritableSignal,
-  inject,
 } from "@angular/core";
 import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 import { TurnosPorDiaChart } from "../../charts/turnos-por-dia-chart/turnos-por-dia-chart";
 import { TurnosPorEspecialidadChart } from "../../charts/turnos-por-especialidad-chart/turnos-por-especialidad-chart";
 import { TurnosPorMedicoChart } from "../../charts/turnos-por-medico-chart/turnos-por-medico-chart";
 import { TurnosFinalizadosPorMedicoChart } from "../../charts/turnos-finalizados-chart/turnos-finalizados-chart";
-import { LogIngresoChart } from "../../charts/log-ingreso-chart/log-ingreso-chart"; // ✅ Importado
+import { IngresosEspecialistasChart } from "../../charts/ingresos-especialistas-chart/ingresos-especialistas-chart";
+import { IngresosPacientesChart } from "../../charts/ingresos-pacientes-chart/ingresos-pacientes-chart";
 
 interface FechaRango {
   desde: string;
@@ -27,16 +27,23 @@ interface FechaRango {
     TurnosPorEspecialidadChart,
     TurnosPorMedicoChart,
     TurnosFinalizadosPorMedicoChart,
-    LogIngresoChart,
+    IngresosEspecialistasChart,
+    IngresosPacientesChart,
   ],
   templateUrl: "./home.html",
 })
-export class Home implements OnInit, AfterViewInit {
+export class Home implements AfterViewInit {
   private loading = inject(LoadingOverlayService);
 
-  rangoFechas: WritableSignal<FechaRango> = signal({
-    desde: "",
-    hasta: "",
+  // Rangos de fechas para cada gráfico
+  rangoTurnosPorMedico: WritableSignal<FechaRango> = signal({
+    desde: "2024-01-01",
+    hasta: "2027-01-01",
+  });
+
+  rangoTurnosFinalizados: WritableSignal<FechaRango> = signal({
+    desde: "2024-01-01",
+    hasta: "2027-01-01",
   });
 
   @ViewChild(TurnosPorDiaChart) turnosPorDiaChart?: TurnosPorDiaChart;
@@ -45,13 +52,6 @@ export class Home implements OnInit, AfterViewInit {
   @ViewChild(TurnosPorMedicoChart) turnosPorMedicoChart?: TurnosPorMedicoChart;
   @ViewChild(TurnosFinalizadosPorMedicoChart)
   turnosFinalizadosChart?: TurnosFinalizadosPorMedicoChart;
-
-  ngOnInit(): void {
-    this.rangoFechas.set({
-      desde: this.fechaDesdeInicioDeAnio(),
-      hasta: this.fechaHastaFinDeAnio(),
-    });
-  }
 
   ngAfterViewInit(): void {
     this.cargarDatos();
@@ -69,45 +69,65 @@ export class Home implements OnInit, AfterViewInit {
     }
   }
 
-  async onRangoFechasChange() {
+  private async cargarTurnosPorMedico() {
+    const { desde, hasta } = this.rangoTurnosPorMedico();
+    await this.turnosPorMedicoChart?.render(desde, hasta);
+  }
+
+  private async cargarTurnosFinalizados() {
+    const { desde, hasta } = this.rangoTurnosFinalizados();
+    await this.turnosFinalizadosChart?.render(desde, hasta);
+  }
+
+  // Métodos para Turnos por Médico
+  onDesdeTurnosMedicoChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.rangoTurnosPorMedico.set({
+      ...this.rangoTurnosPorMedico(),
+      desde: input.value,
+    });
+  }
+
+  onHastaTurnosMedicoChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.rangoTurnosPorMedico.set({
+      ...this.rangoTurnosPorMedico(),
+      hasta: input.value,
+    });
+  }
+
+  async onAplicarTurnosMedico() {
     this.loading.show();
     try {
-      await Promise.all([
-        this.cargarTurnosPorMedico(),
-        this.cargarTurnosFinalizados(),
-      ]);
+      await this.cargarTurnosPorMedico();
     } finally {
       this.loading.hide();
     }
   }
 
-  private async cargarTurnosPorMedico() {
-    const { desde, hasta } = this.rangoFechas();
-    await this.turnosPorMedicoChart?.render(desde, hasta);
-  }
-
-  private async cargarTurnosFinalizados() {
-    const { desde, hasta } = this.rangoFechas();
-    await this.turnosFinalizadosChart?.render(desde, hasta);
-  }
-
-  onDesdeChange(event: Event) {
+  // Métodos para Turnos Finalizados
+  onDesdeTurnosFinalizadosChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.rangoFechas.set({ ...this.rangoFechas(), desde: input.value });
+    this.rangoTurnosFinalizados.set({
+      ...this.rangoTurnosFinalizados(),
+      desde: input.value,
+    });
   }
 
-  onHastaChange(event: Event) {
+  onHastaTurnosFinalizadosChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.rangoFechas.set({ ...this.rangoFechas(), hasta: input.value });
+    this.rangoTurnosFinalizados.set({
+      ...this.rangoTurnosFinalizados(),
+      hasta: input.value,
+    });
   }
 
-  private fechaDesdeInicioDeAnio(): string {
-    const ahora = new Date();
-    return new Date(ahora.getFullYear(), 0, 1).toISOString().split("T")[0];
-  }
-
-  private fechaHastaFinDeAnio(): string {
-    const ahora = new Date();
-    return new Date(ahora.getFullYear(), 11, 31).toISOString().split("T")[0];
+  async onAplicarTurnosFinalizados() {
+    this.loading.show();
+    try {
+      await this.cargarTurnosFinalizados();
+    } finally {
+      this.loading.hide();
+    }
   }
 }

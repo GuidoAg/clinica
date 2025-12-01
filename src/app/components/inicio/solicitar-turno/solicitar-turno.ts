@@ -12,6 +12,7 @@ import { Observable, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { AuthSupabase } from "../../../services/auth-supabase";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { EstadoCita } from "../../../enums/EstadoCita";
 import {
   trigger,
   transition,
@@ -214,7 +215,7 @@ export class SolicitarTurno implements OnInit, OnDestroy {
       pacienteId: paciente.id,
       especialistaId: especialista.id,
       especialidadId: especialidad.id,
-      estado: "solicitado",
+      estado: EstadoCita.SOLICITADO,
       comentarioPaciente: " ",
       comentarioEspecialista: " ",
       resenia: " ",

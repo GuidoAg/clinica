@@ -13,6 +13,7 @@ import { Turnos } from "../../../services/turnos";
 import { CitaCompletaTurnos } from "../../../models/Turnos/CitaCompletaTurnos";
 import { RegistroMedicoTurnos } from "../../../models/Turnos/RegistroMedicoTurnos";
 import { DatoDinamicoTurnos } from "../../../models/Turnos/DatoDinamicoTurnos";
+import { EstadoCita } from "../../../enums/EstadoCita";
 import {
   RANGOS_MEDICOS,
   validarRango,
@@ -60,10 +61,10 @@ export class AccionesEspecialista {
 
   get puedeCancelar() {
     return (
-      this.cita.estado !== "completado" &&
-      this.cita.estado !== "cancelado" &&
-      this.cita.estado !== "aceptado" &&
-      this.cita.estado !== "rechazado" &&
+      this.cita.estado !== EstadoCita.COMPLETADO &&
+      this.cita.estado !== EstadoCita.CANCELADO &&
+      this.cita.estado !== EstadoCita.ACEPTADO &&
+      this.cita.estado !== EstadoCita.RECHAZADO &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
@@ -75,10 +76,10 @@ export class AccionesEspecialista {
 
   get puedeRechazar() {
     return (
-      this.cita.estado !== "completado" &&
-      this.cita.estado !== "cancelado" &&
-      this.cita.estado !== "aceptado" &&
-      this.cita.estado !== "rechazado" &&
+      this.cita.estado !== EstadoCita.COMPLETADO &&
+      this.cita.estado !== EstadoCita.CANCELADO &&
+      this.cita.estado !== EstadoCita.ACEPTADO &&
+      this.cita.estado !== EstadoCita.RECHAZADO &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
@@ -90,10 +91,10 @@ export class AccionesEspecialista {
 
   get puedeAceptar() {
     return (
-      this.cita.estado !== "completado" &&
-      this.cita.estado !== "cancelado" &&
-      this.cita.estado !== "aceptado" &&
-      this.cita.estado !== "rechazado" &&
+      this.cita.estado !== EstadoCita.COMPLETADO &&
+      this.cita.estado !== EstadoCita.CANCELADO &&
+      this.cita.estado !== EstadoCita.ACEPTADO &&
+      this.cita.estado !== EstadoCita.RECHAZADO &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
@@ -105,7 +106,7 @@ export class AccionesEspecialista {
 
   get puedeFinalizar() {
     return (
-      this.cita.estado === "aceptado" &&
+      this.cita.estado === EstadoCita.ACEPTADO &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioAceptar &&
       !this.mostrarFormularioFinalizar &&
@@ -117,7 +118,7 @@ export class AccionesEspecialista {
 
   get puedeCargarHistoriaClinica() {
     return (
-      this.cita.estado === "completado" &&
+      this.cita.estado === EstadoCita.COMPLETADO &&
       !this.yaTieneHistoriaClinica &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioAceptar &&

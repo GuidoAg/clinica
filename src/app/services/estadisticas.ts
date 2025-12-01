@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Supabase } from "../supabase";
+import { EstadoCita } from "../enums/EstadoCita";
 
 interface CitaFechaDB {
   fecha_hora: string;
@@ -9,6 +10,8 @@ import {
   TurnosPorMedico,
   TurnosPorEspecialidad,
   Ingreso,
+  TrendLineData,
+  IngresosPorHora,
 } from "../models/Estadisticas/modeloEstadisticas";
 
 @Injectable({ providedIn: "root" })
@@ -135,16 +138,20 @@ export class Estadisticas {
   }
 
   /**
-   * Turnos solicitados por médico en un rango
+   * Turnos solicitados por médico en un rango (o historial completo si no hay rango)
    */
   async obtenerTurnosPorMedico(
     desde: string,
     hasta: string,
   ): Promise<TurnosPorMedico[]> {
-    const { data: citas, error } = await Supabase.from("citas")
-      .select("especialista_id")
-      .gte("fecha_hora", desde)
-      .lte("fecha_hora", hasta);
+    let query = Supabase.from("citas").select("especialista_id");
+
+    // Solo aplicar filtros si se proporcionan fechas
+    if (desde && hasta) {
+      query = query.gte("fecha_hora", desde).lte("fecha_hora", hasta);
+    }
+
+    const { data: citas, error } = await query;
 
     if (error || !citas) {
       console.error(
@@ -190,17 +197,22 @@ export class Estadisticas {
   }
 
   /**
-   * Turnos finalizados por médico en un rango
+   * Turnos finalizados por médico en un rango (o historial completo si no hay rango)
    */
   async obtenerTurnosFinalizadosPorMedico(
     desde: string,
     hasta: string,
   ): Promise<TurnosPorMedico[]> {
-    const { data: citas, error } = await Supabase.from("citas")
+    let query = Supabase.from("citas")
       .select("especialista_id, estado")
-      .eq("estado", "completado")
-      .gte("fecha_hora", desde)
-      .lte("fecha_hora", hasta);
+      .eq("estado", EstadoCita.COMPLETADO);
+
+    // Solo aplicar filtros si se proporcionan fechas
+    if (desde && hasta) {
+      query = query.gte("fecha_hora", desde).lte("fecha_hora", hasta);
+    }
+
+    const { data: citas, error } = await query;
 
     if (error || !citas) {
       console.error(
@@ -243,5 +255,99 @@ export class Estadisticas {
         cantidad: contador.get(id) ?? 0,
       };
     });
+  }
+
+  /**
+   * Obtener ingresos de especialistas de los últimos 60 días, agrupados por día
+   */
+  async obtenerIngresosEspecialistas60Dias(): Promise<TrendLineData> {
+    return this.obtenerIngresosPorRol("especialista");
+  }
+
+  /**
+   * Obtener ingresos de pacientes de los últimos 60 días, agrupados por día
+   */
+  async obtenerIngresosPacientes60Dias(): Promise<TrendLineData> {
+    return this.obtenerIngresosPorRol("paciente");
+  }
+
+  /**
+   * Método privado para obtener ingresos por rol
+   */
+  private async obtenerIngresosPorRol(rol: string): Promise<TrendLineData> {
+    // Calcular fecha de hace 60 días
+    const hace60Dias = new Date();
+    hace60Dias.setDate(hace60Dias.getDate() - 60);
+    const fechaInicio = hace60Dias.toISOString();
+
+    // Obtener ingresos de los últimos 60 días
+    const { data: ingresos, error } = await Supabase.from("registro_ingresos")
+      .select("fecha_ingreso, perfil_id")
+      .gte("fecha_ingreso", fechaInicio)
+      .order("fecha_ingreso", { ascending: true });
+
+    if (error || !ingresos) {
+      console.error(
+        `[Supabase] Error al obtener ingresos de ${rol}:`,
+        error?.message,
+      );
+      return { datos: [], maxY: 40 };
+    }
+
+    // Obtener los perfiles para filtrar por rol
+    const perfilIds = [
+      ...new Set(ingresos.map((i) => i.perfil_id).filter(Boolean)),
+    ];
+
+    if (perfilIds.length === 0) {
+      return { datos: [], maxY: 40 };
+    }
+
+    const { data: perfiles, error: errorPerfiles } = await Supabase.from(
+      "perfiles",
+    )
+      .select("id, rol")
+      .in("id", perfilIds)
+      .eq("rol", rol);
+
+    if (errorPerfiles || !perfiles) {
+      console.error(
+        `[Supabase] Error al obtener perfiles de ${rol}:`,
+        errorPerfiles?.message,
+      );
+      return { datos: [], maxY: 40 };
+    }
+
+    const perfilesRol = new Set(perfiles.map((p) => p.id));
+
+    // Filtrar ingresos solo del rol específico
+    const ingresosFiltrados = ingresos.filter((i) =>
+      perfilesRol.has(i.perfil_id),
+    );
+
+    // Agrupar por día
+    const agrupadoPorDia = new Map<string, number>();
+
+    for (const ingreso of ingresosFiltrados) {
+      const fecha = new Date(ingreso.fecha_ingreso);
+      // Formatear como "YYYY-MM-DD"
+      const diaKey = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}-${String(fecha.getDate()).padStart(2, "0")}`;
+
+      agrupadoPorDia.set(diaKey, (agrupadoPorDia.get(diaKey) ?? 0) + 1);
+    }
+
+    // Convertir a array y ordenar
+    const datos: IngresosPorHora[] = Array.from(agrupadoPorDia.entries()).map(
+      ([fecha_hora, cantidad]) => ({
+        fecha_hora,
+        cantidad,
+      }),
+    );
+
+    // Calcular maxY dinámico - redondear hacia arriba al próximo múltiplo de 5
+    const maxCantidad = Math.max(...datos.map((d) => d.cantidad), 0);
+    const maxY = maxCantidad === 0 ? 40 : Math.ceil((maxCantidad + 1) / 5) * 5;
+
+    return { datos, maxY };
   }
 }

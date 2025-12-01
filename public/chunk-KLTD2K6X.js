@@ -1,0 +1,1 @@
+import{ab as r}from"./chunk-7RTQA4J5.js";var t=class n{transform(e,i){if(e==null||e==="")return"";let a={altura:"cm",peso:"kg",temperatura:"\xB0C",presion:"mmHg"}[i];return`${e} ${a}`}static \u0275fac=function(i){return new(i||n)};static \u0275pipe=r({name:"unidadMedida",type:n,pure:!0})};export{t as a};

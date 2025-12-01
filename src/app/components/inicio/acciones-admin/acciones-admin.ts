@@ -5,6 +5,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { Turnos } from "../../../services/turnos";
 import { CitaCompletaTurnos } from "../../../models/Turnos/CitaCompletaTurnos";
 import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
+import { EstadoCita } from "../../../enums/EstadoCita";
 
 @Component({
   selector: "app-acciones-admin",
@@ -32,10 +33,10 @@ export class AccionesAdmin {
 
   get puedeCancelar() {
     return (
-      this.cita.estado !== "completado" &&
-      this.cita.estado !== "cancelado" &&
-      this.cita.estado !== "aceptado" &&
-      this.cita.estado !== "rechazado" &&
+      this.cita.estado !== EstadoCita.COMPLETADO &&
+      this.cita.estado !== EstadoCita.CANCELADO &&
+      this.cita.estado !== EstadoCita.ACEPTADO &&
+      this.cita.estado !== EstadoCita.RECHAZADO &&
       !this.mostrarFormularioCancelar
     );
   }

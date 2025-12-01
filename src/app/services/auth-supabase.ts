@@ -544,6 +544,22 @@ export class AuthSupabase {
   }
 
   async registrarIngreso(perfilId: number): Promise<void> {
+    // Obtener el rol del perfil para verificar si es admin
+    const { data: perfil, error: perfilError } = await Supabase.from("perfiles")
+      .select("rol")
+      .eq("id", perfilId)
+      .single();
+
+    if (perfilError || !perfil) {
+      console.error("Error al obtener perfil:", perfilError?.message);
+      return;
+    }
+
+    // No registrar ingresos de administradores
+    if (perfil.rol === "admin") {
+      return;
+    }
+
     const { error } = await Supabase.from("registro_ingresos").insert({
       perfil_id: perfilId,
       // fecha_ingreso se setea solo si tiene default value `now()` en Supabase

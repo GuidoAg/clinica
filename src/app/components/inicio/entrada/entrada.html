@@ -1,0 +1,288 @@
+@if (usuario$ | async; as usuario) {
+<div class="h-full w-full p-1">
+  <div
+    class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
+  >
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="mb-2 text-3xl font-bold text-azul-oscuro">
+        ¡Bienvenido/a, {{ usuario.nombre }}!
+      </h1>
+      <p class="text-gray-600">{{ getFechaActual() }}</p>
+    </div>
+
+    @if (cargando()) {
+    <div class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <div
+          class="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-azul-oscuro border-t-transparent"
+        ></div>
+        <p class="text-gray-600">Cargando información...</p>
+      </div>
+    </div>
+    } @else {
+
+    <div class="mx-auto max-w-6xl space-y-6">
+      <!-- Resumen de Actividad -->
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          class="rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-4 text-white shadow-md transition-transform hover:scale-105"
+        >
+          <div class="mb-2 flex items-center justify-between">
+            <mat-icon class="text-3xl">event_available</mat-icon>
+            <span class="text-3xl font-bold"
+              >{{ resumen().turnosPendientes }}</span
+            >
+          </div>
+          <p class="text-sm font-medium">
+            {{ usuario.rol === 'paciente' ? 'Turnos Pendientes' : 'Turnos por
+            Atender' }}
+          </p>
+        </div>
+
+        <div
+          class="rounded-lg bg-gradient-to-br from-green-500 to-green-600 p-4 text-white shadow-md transition-transform hover:scale-105"
+        >
+          <div class="mb-2 flex items-center justify-between">
+            <mat-icon class="text-3xl">today</mat-icon>
+            <span class="text-3xl font-bold">{{ resumen().turnosHoy }}</span>
+          </div>
+          <p class="text-sm font-medium">Turnos Hoy</p>
+        </div>
+
+        <div
+          class="rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 p-4 text-white shadow-md transition-transform hover:scale-105"
+        >
+          <div class="mb-2 flex items-center justify-between">
+            <mat-icon class="text-3xl">calendar_month</mat-icon>
+            <span class="text-3xl font-bold">{{ resumen().turnosMes }}</span>
+          </div>
+          <p class="text-sm font-medium">
+            {{ usuario.rol === 'paciente' ? 'Turnos Este Mes' : 'Atendidos Este
+            Mes' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Próximos Turnos -->
+      <div class="rounded-lg bg-white p-6 shadow-md">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-2xl font-semibold text-azul-oscuro">
+            <mat-icon class="mr-2 align-middle">event_note</mat-icon>
+            Próximos Turnos
+          </h2>
+        </div>
+
+        @if (proximosTurnos().length === 0) {
+        <div class="py-8 text-center text-gray-500">
+          <mat-icon class="mb-2 text-5xl text-gray-300">event_busy</mat-icon>
+          <p class="text-lg">
+            {{ usuario.rol === 'paciente' ? 'No tienes turnos programados' : 'No
+            tienes turnos pendientes' }}
+          </p>
+          @if (usuario.rol === 'paciente') {
+          <button
+            (click)="navegarA('solicitar-turnos')"
+            class="mt-4 rounded-lg bg-azul-oscuro px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            Solicitar un turno
+          </button>
+          }
+        </div>
+        } @else {
+        <div class="space-y-3">
+          @for (turno of proximosTurnos(); track turno.citaId) {
+          <div
+            class="rounded-lg border border-gray-200 bg-gray-50 p-4 transition-shadow hover:shadow-md"
+          >
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="mb-2 flex items-center gap-3">
+                  <span
+                    class="rounded-full px-3 py-1 text-xs font-semibold"
+                    [class]="getEstadoClase(turno.estado)"
+                  >
+                    {{ turno.estado.charAt(0).toUpperCase() +
+                    turno.estado.slice(1) }}
+                  </span>
+                  <span class="text-sm font-medium text-gray-700">
+                    {{ turno.especialidadNombre }}
+                  </span>
+                </div>
+                <div class="mb-2 flex items-center gap-2 text-gray-700">
+                  <mat-icon class="text-lg">calendar_today</mat-icon>
+                  <span class="font-medium">
+                    {{ formatearFecha(turno.fechaHora) }}
+                  </span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-600">
+                  <mat-icon class="text-lg">schedule</mat-icon>
+                  <span>{{ formatearHora(turno.fechaHora) }}</span>
+                  <span class="mx-2">•</span>
+                  @if (usuario.rol === 'paciente') {
+                  <mat-icon class="text-lg">person</mat-icon>
+                  <span>{{ turno.especialistaNombreCompleto }}</span>
+                  } @else {
+                  <mat-icon class="text-lg">person</mat-icon>
+                  <span>{{ turno.pacienteNombreCompleto }}</span>
+                  }
+                </div>
+              </div>
+              <button
+                (click)="navegarA(usuario.rol === 'paciente' ? 'mis-turnos-paciente' : 'mis-turnos-especialista')"
+                class="rounded-lg bg-azul-oscuro px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              >
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Acciones Rápidas -->
+      <div class="rounded-lg bg-white p-6 shadow-md">
+        <h2 class="mb-4 text-2xl font-semibold text-azul-oscuro">
+          <mat-icon class="mr-2 align-middle">flash_on</mat-icon>
+          Acciones Rápidas
+        </h2>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          @if (usuario.rol === 'paciente') {
+          <button
+            (click)="navegarA('solicitar-turnos')"
+            class="flex items-center gap-3 rounded-lg border-2 border-azul-oscuro bg-white p-4 transition-all hover:bg-azul-oscuro hover:text-white"
+          >
+            <mat-icon class="text-3xl">add_circle</mat-icon>
+            <div class="text-left">
+              <p class="font-semibold">Solicitar Turno</p>
+              <p class="text-sm opacity-75">Agenda una nueva cita</p>
+            </div>
+          </button>
+
+          <button
+            (click)="navegarA('mis-turnos-paciente')"
+            class="flex items-center gap-3 rounded-lg border-2 border-azul-oscuro bg-white p-4 transition-all hover:bg-azul-oscuro hover:text-white"
+          >
+            <mat-icon class="text-3xl">list_alt</mat-icon>
+            <div class="text-left">
+              <p class="font-semibold">Mis Turnos</p>
+              <p class="text-sm opacity-75">Ver historial completo</p>
+            </div>
+          </button>
+
+          <button
+            (click)="navegarA('perfil-paciente')"
+            class="flex items-center gap-3 rounded-lg border-2 border-azul-oscuro bg-white p-4 transition-all hover:bg-azul-oscuro hover:text-white"
+          >
+            <mat-icon class="text-3xl">account_circle</mat-icon>
+            <div class="text-left">
+              <p class="font-semibold">Mi Perfil</p>
+              <p class="text-sm opacity-75">Editar información</p>
+            </div>
+          </button>
+          } @else if (usuario.rol === 'especialista') {
+          <button
+            (click)="navegarA('mis-turnos-especialista')"
+            class="flex items-center gap-3 rounded-lg border-2 border-azul-oscuro bg-white p-4 transition-all hover:bg-azul-oscuro hover:text-white"
+          >
+            <mat-icon class="text-3xl">event_note</mat-icon>
+            <div class="text-left">
+              <p class="font-semibold">Mis Turnos</p>
+              <p class="text-sm opacity-75">Ver agenda completa</p>
+            </div>
+          </button>
+
+          <button
+            (click)="navegarA('pacientes')"
+            class="flex items-center gap-3 rounded-lg border-2 border-azul-oscuro bg-white p-4 transition-all hover:bg-azul-oscuro hover:text-white"
+          >
+            <mat-icon class="text-3xl">people</mat-icon>
+            <div class="text-left">
+              <p class="font-semibold">Mis Pacientes</p>
+              <p class="text-sm opacity-75">Ver historial clínico</p>
+            </div>
+          </button>
+
+          <button
+            (click)="navegarA('perfil-especialista')"
+            class="flex items-center gap-3 rounded-lg border-2 border-azul-oscuro bg-white p-4 transition-all hover:bg-azul-oscuro hover:text-white"
+          >
+            <mat-icon class="text-3xl">account_circle</mat-icon>
+            <div class="text-left">
+              <p class="font-semibold">Mi Perfil</p>
+              <p class="text-sm opacity-75">Configurar horarios</p>
+            </div>
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Información Útil -->
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="rounded-lg bg-blue-50 p-6 shadow-md">
+          <div class="mb-3 flex items-center gap-2">
+            <mat-icon class="text-2xl text-blue-600">info</mat-icon>
+            <h3 class="text-lg font-semibold text-azul-oscuro">
+              Información Importante
+            </h3>
+          </div>
+          <ul class="space-y-2 text-sm text-gray-700">
+            @if (usuario.rol === 'paciente') {
+            <li class="flex items-start gap-2">
+              <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
+              <span>Recordá confirmar tus turnos con 24hs de anticipación</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
+              <span>Podés cancelar turnos hasta 12hs antes</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
+              <span>No olvides completar las encuestas de satisfacción</span>
+            </li>
+            } @else {
+            <li class="flex items-start gap-2">
+              <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
+              <span>Revisá tu agenda diariamente</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
+              <span>Completá el registro médico de cada consulta</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
+              <span>Mantené actualizada tu disponibilidad horaria</span>
+            </li>
+            }
+          </ul>
+        </div>
+
+        <div class="rounded-lg bg-green-50 p-6 shadow-md">
+          <div class="mb-3 flex items-center gap-2">
+            <mat-icon class="text-2xl text-green-600">contact_support</mat-icon>
+            <h3 class="text-lg font-semibold text-azul-oscuro">
+              ¿Necesitás Ayuda?
+            </h3>
+          </div>
+          <p class="mb-3 text-sm text-gray-700">
+            Nuestro equipo está disponible para asistirte con cualquier consulta
+            o inconveniente.
+          </p>
+          <div class="space-y-2 text-sm text-gray-700">
+            <div class="flex items-center gap-2">
+              <mat-icon class="text-sm text-green-600">email</mat-icon>
+              <span>soporte&#64;clinica.com</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <mat-icon class="text-sm text-green-600">phone</mat-icon>
+              <span>0800-123-4567</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+}

@@ -10,6 +10,7 @@ import { takeUntil } from "rxjs/operators";
 import { UsuariosService } from "../../../services/usuarios";
 import { trigger, transition, style, animate } from "@angular/animations";
 import { UnidadMedidaPipe } from "../../../pipes/unidad-medida-pipe";
+import { EstadoCita } from "../../../enums/EstadoCita";
 
 interface PacienteConCitas {
   paciente: Usuario;
@@ -95,7 +96,7 @@ export class Pacientes implements OnInit, OnDestroy {
         );
 
       const citasCompletadas = citasEspecialista.filter(
-        (c) => c.estado === "completado",
+        (c) => c.estado === EstadoCita.COMPLETADO,
       );
 
       const agrupadas = new Map<number, CitaCompletaTurnos[]>();

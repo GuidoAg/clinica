@@ -13,6 +13,7 @@ import { takeUntil } from "rxjs/operators";
 import { AuthSupabase } from "../../../services/auth-supabase";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UsuariosService } from "../../../services/usuarios";
+import { EstadoCita } from "../../../enums/EstadoCita";
 import {
   trigger,
   transition,
@@ -225,7 +226,7 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
       pacienteId: paciente.id, // 🆕 importante
       especialistaId: especialista.id,
       especialidadId: especialidad.id,
-      estado: "solicitado",
+      estado: EstadoCita.SOLICITADO,
       comentarioPaciente: " ",
       comentarioEspecialista: " ",
       resenia: " ",

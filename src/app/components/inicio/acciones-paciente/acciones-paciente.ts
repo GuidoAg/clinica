@@ -19,6 +19,7 @@ import { Turnos } from "../../../services/turnos";
 import { CitaCompletaTurnos } from "../../../models/Turnos/CitaCompletaTurnos";
 import { EncuestaTurnos } from "../../../models/Turnos/EncuestaTurnos";
 import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
+import { EstadoCita } from "../../../enums/EstadoCita";
 
 @Component({
   selector: "app-acciones-paciente",
@@ -61,8 +62,8 @@ export class AccionesPaciente implements OnInit {
 
   get puedeCancelar() {
     return (
-      this.cita.estado !== "completado" &&
-      this.cita.estado !== "cancelado" &&
+      this.cita.estado !== EstadoCita.COMPLETADO &&
+      this.cita.estado !== EstadoCita.CANCELADO &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioEncuesta &&
       !this.mostrarFormularioCalificar
@@ -75,7 +76,7 @@ export class AccionesPaciente implements OnInit {
 
   get puedeCompletarEncuesta() {
     return (
-      this.cita.estado === "completado" &&
+      this.cita.estado === EstadoCita.COMPLETADO &&
       (!this.cita.resenia || this.cita.resenia.trim() === "") &&
       this.puedeVerResenia &&
       !this.mostrarFormularioEncuesta &&
@@ -86,7 +87,7 @@ export class AccionesPaciente implements OnInit {
 
   get puedeCalificar() {
     return (
-      this.cita.estado === "completado" &&
+      this.cita.estado === EstadoCita.COMPLETADO &&
       !this.mostrarFormularioCalificar &&
       !this.mostrarFormularioCancelar &&
       !this.mostrarFormularioEncuesta

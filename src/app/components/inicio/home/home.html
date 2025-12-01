@@ -1,54 +1,272 @@
-<div class="space-y-8 overflow-auto p-4 text-sm">
-  <h2 class="text-2xl font-bold text-azul-oscuro">Estadísticas del Sistema</h2>
-
-  <section>
-    <h3 class="mb-2 text-lg font-semibold">Turnos por Día</h3>
-    <app-turnos-por-dia-chart></app-turnos-por-dia-chart>
-  </section>
-
-  <section>
-    <h3 class="mb-2 text-lg font-semibold">Turnos por Especialidad</h3>
-    <app-turnos-por-especialidad-chart></app-turnos-por-especialidad-chart>
-  </section>
-
-  <section>
-    <h3 class="mb-2 text-lg font-semibold">Turnos por Médico</h3>
-    <div class="mb-4 flex flex-wrap items-center gap-4">
-      <label>
-        Desde:
-        <input
-          type="date"
-          [value]="rangoFechas().desde"
-          (change)="onDesdeChange($event)"
-          class="rounded border px-2 py-1"
-        />
-      </label>
-      <label>
-        Hasta:
-        <input
-          type="date"
-          [value]="rangoFechas().hasta"
-          (change)="onHastaChange($event)"
-          class="rounded border px-2 py-1"
-        />
-      </label>
-      <button
-        (click)="onRangoFechasChange()"
-        class="hover:bg-azul-700 rounded bg-azul-oscuro px-3 py-1 text-white"
-      >
-        Aplicar
-      </button>
+<div class="h-full w-full p-1">
+  <div
+    class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
+  >
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="mb-2 text-4xl font-bold text-azul-oscuro">
+        Panel de Estadísticas
+      </h1>
+      <p class="text-gray-600">
+        Análisis y métricas del sistema en tiempo real
+      </p>
     </div>
-    <app-turnos-por-medico-chart></app-turnos-por-medico-chart>
-  </section>
 
-  <section>
-    <h3 class="mb-2 text-lg font-semibold">Turnos Finalizados por Médico</h3>
-    <app-turnos-finalizados-por-medico-chart></app-turnos-finalizados-por-medico-chart>
-  </section>
+    <!-- Grid de gráficos -->
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Turnos por Día -->
+      <section
+        class="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl"
+      >
+        <div class="mb-4 flex items-center gap-3">
+          <div class="rounded-lg bg-blue-100 p-2">
+            <svg
+              class="h-6 w-6 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-800">Turnos por Día</h3>
+            <p class="text-sm text-gray-500">Distribución diaria de turnos</p>
+          </div>
+        </div>
+        <div class="rounded-lg bg-gray-50 p-4">
+          <app-turnos-por-dia-chart></app-turnos-por-dia-chart>
+        </div>
+      </section>
 
-  <section>
-    <h3 class="mb-2 text-lg font-semibold">Log de Ingresos</h3>
-    <app-log-ingreso-chart></app-log-ingreso-chart>
-  </section>
+      <!-- Turnos por Especialidad -->
+      <section
+        class="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl"
+      >
+        <div class="mb-4 flex items-center gap-3">
+          <div class="rounded-lg bg-purple-100 p-2">
+            <svg
+              class="h-6 w-6 text-purple-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-800">
+              Turnos por Especialidad
+            </h3>
+            <p class="text-sm text-gray-500">Distribución por área médica</p>
+          </div>
+        </div>
+        <div class="rounded-lg bg-gray-50 p-4">
+          <app-turnos-por-especialidad-chart></app-turnos-por-especialidad-chart>
+        </div>
+      </section>
+
+      <!-- Turnos por Médico -->
+      <section
+        class="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl lg:col-span-2"
+      >
+        <div class="mb-4 flex items-center gap-3">
+          <div class="rounded-lg bg-teal-100 p-2">
+            <svg
+              class="h-6 w-6 text-teal-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-semibold text-gray-800">
+              Turnos por Médico
+            </h3>
+            <p class="text-sm text-gray-500">
+              Carga de trabajo por profesional
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="mb-4 flex flex-wrap items-center gap-4 rounded-lg bg-gray-50 p-4"
+        >
+          <label class="flex items-center gap-2">
+            <span class="text-sm font-medium text-gray-700">Desde:</span>
+            <input
+              type="date"
+              [value]="rangoTurnosPorMedico().desde"
+              (change)="onDesdeTurnosMedicoChange($event)"
+              class="focus:ring-opacity-50 rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-azul-oscuro focus:ring-2 focus:ring-azul-oscuro focus:outline-none"
+            />
+          </label>
+          <label class="flex items-center gap-2">
+            <span class="text-sm font-medium text-gray-700">Hasta:</span>
+            <input
+              type="date"
+              [value]="rangoTurnosPorMedico().hasta"
+              (change)="onHastaTurnosMedicoChange($event)"
+              class="focus:ring-opacity-50 rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-azul-oscuro focus:ring-2 focus:ring-azul-oscuro focus:outline-none"
+            />
+          </label>
+          <button
+            (click)="onAplicarTurnosMedico()"
+            class="ml-auto rounded-lg bg-azul-oscuro px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-azul-claro hover:shadow-lg active:scale-95"
+          >
+            Aplicar Filtro
+          </button>
+        </div>
+
+        <div class="rounded-lg bg-gray-50 p-4">
+          <app-turnos-por-medico-chart></app-turnos-por-medico-chart>
+        </div>
+      </section>
+
+      <!-- Turnos Finalizados por Médico -->
+      <section
+        class="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl lg:col-span-2"
+      >
+        <div class="mb-4 flex items-center gap-3">
+          <div class="rounded-lg bg-green-100 p-2">
+            <svg
+              class="h-6 w-6 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-semibold text-gray-800">
+              Turnos Finalizados por Médico
+            </h3>
+            <p class="text-sm text-gray-500">
+              Consultas completadas exitosamente
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="mb-4 flex flex-wrap items-center gap-4 rounded-lg bg-gray-50 p-4"
+        >
+          <label class="flex items-center gap-2">
+            <span class="text-sm font-medium text-gray-700">Desde:</span>
+            <input
+              type="date"
+              [value]="rangoTurnosFinalizados().desde"
+              (change)="onDesdeTurnosFinalizadosChange($event)"
+              class="focus:ring-opacity-50 rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-azul-oscuro focus:ring-2 focus:ring-azul-oscuro focus:outline-none"
+            />
+          </label>
+          <label class="flex items-center gap-2">
+            <span class="text-sm font-medium text-gray-700">Hasta:</span>
+            <input
+              type="date"
+              [value]="rangoTurnosFinalizados().hasta"
+              (change)="onHastaTurnosFinalizadosChange($event)"
+              class="focus:ring-opacity-50 rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-azul-oscuro focus:ring-2 focus:ring-azul-oscuro focus:outline-none"
+            />
+          </label>
+          <button
+            (click)="onAplicarTurnosFinalizados()"
+            class="ml-auto rounded-lg bg-azul-oscuro px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-azul-claro hover:shadow-lg active:scale-95"
+          >
+            Aplicar Filtro
+          </button>
+        </div>
+
+        <div class="rounded-lg bg-gray-50 p-4">
+          <app-turnos-finalizados-por-medico-chart></app-turnos-finalizados-por-medico-chart>
+        </div>
+      </section>
+
+      <!-- Tendencia de Ingresos - Especialistas -->
+      <section
+        class="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl"
+      >
+        <div class="mb-4 flex items-center gap-3">
+          <div class="rounded-lg bg-indigo-100 p-2">
+            <svg
+              class="h-6 w-6 text-indigo-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+              />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-800">
+              Ingresos - Especialistas
+            </h3>
+            <p class="text-sm text-gray-500">Últimos 60 días (por día)</p>
+          </div>
+        </div>
+        <div class="rounded-lg bg-gray-50 p-4">
+          <app-ingresos-especialistas-chart></app-ingresos-especialistas-chart>
+        </div>
+      </section>
+
+      <!-- Tendencia de Ingresos - Pacientes -->
+      <section
+        class="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl"
+      >
+        <div class="mb-4 flex items-center gap-3">
+          <div class="rounded-lg bg-cyan-100 p-2">
+            <svg
+              class="h-6 w-6 text-cyan-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+              />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-800">
+              Ingresos - Pacientes
+            </h3>
+            <p class="text-sm text-gray-500">Últimos 60 días (por día)</p>
+          </div>
+        </div>
+        <div class="rounded-lg bg-gray-50 p-4">
+          <app-ingresos-pacientes-chart></app-ingresos-pacientes-chart>
+        </div>
+      </section>
+    </div>
+  </div>
 </div>

@@ -8,6 +8,7 @@ import { DatoDinamicoTurnos } from "../models/Turnos/DatoDinamicoTurnos";
 import { CitaCompletaTurnos } from "../models/Turnos/CitaCompletaTurnos";
 import { EncuestaTurnos } from "../models/Turnos/EncuestaTurnos";
 import { RegistroMedicoTurnos } from "../models/Turnos/RegistroMedicoTurnos";
+import { EstadoCita } from "../enums/EstadoCita";
 
 export interface DiasDisponibles {
   lunes: boolean;
@@ -349,8 +350,8 @@ export class Turnos {
     const { data: citas, error: errorCitas } = await Supabase.from("citas")
       .select("fecha_hora, duracion_min")
       .eq("especialista_id", especialistaId)
-      .neq("estado", "cancelado")
-      .neq("estado", "rechazado")
+      .neq("estado", EstadoCita.CANCELADO)
+      .neq("estado", EstadoCita.RECHAZADO)
       .gte("fecha_hora", inicioDia.toISOString())
       .lte("fecha_hora", finDia.toISOString());
 
@@ -586,7 +587,7 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado === "completado") {
+    if (cita.estado === EstadoCita.COMPLETADO) {
       return {
         success: false,
         message: "No se puede cancelar un turno ya realizado.",
@@ -595,7 +596,7 @@ export class Turnos {
 
     const { error } = await Supabase.from("citas")
       .update({
-        estado: "cancelado",
+        estado: EstadoCita.CANCELADO,
         comentario_paciente: comentario,
       })
       .eq("id", cita.citaId);
@@ -618,7 +619,7 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     encuesta: EncuestaTurnos,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado !== "completado") {
+    if (cita.estado !== EstadoCita.COMPLETADO) {
       return {
         success: false,
         message: "El turno debe ser realizado para poder cargar encuesta.",
@@ -664,7 +665,7 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado !== "completado") {
+    if (cita.estado !== EstadoCita.COMPLETADO) {
       return {
         success: false,
         message:
@@ -698,9 +699,9 @@ export class Turnos {
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
     if (
-      cita.estado === "completado" ||
-      cita.estado === "aceptado" ||
-      cita.estado === "rechazado"
+      cita.estado === EstadoCita.COMPLETADO ||
+      cita.estado === EstadoCita.ACEPTADO ||
+      cita.estado === EstadoCita.RECHAZADO
     ) {
       return {
         success: false,
@@ -711,7 +712,7 @@ export class Turnos {
 
     const { error } = await Supabase.from("citas")
       .update({
-        estado: "cancelado",
+        estado: EstadoCita.CANCELADO,
         comentario_especialista: comentario,
       })
       .eq("id", cita.citaId);
@@ -735,9 +736,9 @@ export class Turnos {
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
     if (
-      cita.estado === "completado" ||
-      cita.estado === "aceptado" ||
-      cita.estado === "cancelado"
+      cita.estado === EstadoCita.COMPLETADO ||
+      cita.estado === EstadoCita.ACEPTADO ||
+      cita.estado === EstadoCita.CANCELADO
     ) {
       return {
         success: false,
@@ -748,7 +749,7 @@ export class Turnos {
 
     const { error } = await Supabase.from("citas")
       .update({
-        estado: "rechazado",
+        estado: EstadoCita.RECHAZADO,
         comentario_especialista: comentario,
       })
       .eq("id", cita.citaId);
@@ -771,9 +772,9 @@ export class Turnos {
     cita: CitaCompletaTurnos,
   ): Promise<RespuestaApi<boolean>> {
     if (
-      cita.estado === "completado" ||
-      cita.estado === "rechazado" ||
-      cita.estado === "cancelado"
+      cita.estado === EstadoCita.COMPLETADO ||
+      cita.estado === EstadoCita.RECHAZADO ||
+      cita.estado === EstadoCita.CANCELADO
     ) {
       return {
         success: false,
@@ -784,7 +785,7 @@ export class Turnos {
 
     const { error } = await Supabase.from("citas")
       .update({
-        estado: "aceptado",
+        estado: EstadoCita.ACEPTADO,
       })
       .eq("id", cita.citaId);
 
@@ -806,7 +807,7 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     resenia: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado !== "aceptado") {
+    if (cita.estado !== EstadoCita.ACEPTADO) {
       return {
         success: false,
         message: "No se puede finalizar un turno que no fue aceptado.",
@@ -815,7 +816,7 @@ export class Turnos {
 
     const { error } = await Supabase.from("citas")
       .update({
-        estado: "completado",
+        estado: EstadoCita.COMPLETADO,
         resenia: resenia,
       })
       .eq("id", cita.citaId);
@@ -950,6 +951,104 @@ export class Turnos {
     return {
       success: true,
       message: "Historia clínica guardada correctamente",
+    };
+  }
+
+  /**
+   * Obtiene los próximos N turnos ordenados cronológicamente
+   */
+  obtenerProximosTurnos(
+    citas: CitaCompletaTurnos[],
+    cantidad: number = 3,
+  ): CitaCompletaTurnos[] {
+    const ahora = new Date();
+    return citas
+      .filter((c) => {
+        const fechaCita = new Date(c.fechaHora);
+        return fechaCita >= ahora && c.estado === EstadoCita.ACEPTADO;
+      })
+      .sort(
+        (a, b) =>
+          new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime(),
+      )
+      .slice(0, cantidad);
+  }
+
+  /**
+   * Calcula el resumen de actividad del usuario
+   */
+  calcularResumenActividad(citas: CitaCompletaTurnos[]): {
+    turnosPendientes: number;
+    turnosHoy: number;
+    turnosMes: number;
+    ultimaActividad: Date | null;
+  } {
+    const ahora = new Date();
+    const hoy = new Date(
+      ahora.getFullYear(),
+      ahora.getMonth(),
+      ahora.getDate(),
+    );
+    const finHoy = new Date(hoy.getTime() + 24 * 60 * 60 * 1000);
+    const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+    const finMes = new Date(
+      ahora.getFullYear(),
+      ahora.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+    );
+
+    // Turnos pendientes (solicitados o aceptados, futuros)
+    const turnosPendientes = citas.filter((c) => {
+      const fechaCita = new Date(c.fechaHora);
+      return (
+        fechaCita >= ahora &&
+        (c.estado === EstadoCita.SOLICITADO || c.estado === EstadoCita.ACEPTADO)
+      );
+    }).length;
+
+    // Turnos hoy (no cancelados ni rechazados)
+    const turnosHoy = citas.filter((c) => {
+      const fechaCita = new Date(c.fechaHora);
+      return (
+        fechaCita >= hoy &&
+        fechaCita < finHoy &&
+        c.estado !== EstadoCita.CANCELADO &&
+        c.estado !== EstadoCita.RECHAZADO
+      );
+    }).length;
+
+    // Turnos este mes (no cancelados ni rechazados)
+    const turnosMes = citas.filter((c) => {
+      const fechaCita = new Date(c.fechaHora);
+      return (
+        fechaCita >= inicioMes &&
+        fechaCita <= finMes &&
+        c.estado !== EstadoCita.CANCELADO &&
+        c.estado !== EstadoCita.RECHAZADO
+      );
+    }).length;
+
+    // Última actividad (último turno realizado)
+    const citasRealizadas = citas
+      .filter((c) => c.estado === EstadoCita.REALIZADO)
+      .sort(
+        (a, b) =>
+          new Date(b.fechaHora).getTime() - new Date(a.fechaHora).getTime(),
+      );
+
+    const ultimaActividad =
+      citasRealizadas.length > 0
+        ? new Date(citasRealizadas[0].fechaHora)
+        : null;
+
+    return {
+      turnosPendientes,
+      turnosHoy,
+      turnosMes,
+      ultimaActividad,
     };
   }
 }
