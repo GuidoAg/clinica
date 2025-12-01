@@ -12,39 +12,48 @@
 
     <form (ngSubmit)="guardar()">
       @for (disp of disponibilidades(); track disp; let i = $index) {
-      <div class="mb-4 flex items-center justify-center gap-4">
-        <label class="flex min-w-[130px] items-center gap-2">
+      <div class="mb-4">
+        <div class="flex items-center justify-center gap-4">
+          <label class="flex min-w-[130px] items-center gap-2">
+            <input
+              type="checkbox"
+              [(ngModel)]="disp.habilitado"
+              name="habilitado{{ i }}"
+              class="h-5 w-5 accent-azul-oscuro"
+            />
+            <span class="text-gray-700">{{ dias[i] }}</span>
+          </label>
           <input
-            type="checkbox"
-            [(ngModel)]="disp.habilitado"
-            name="habilitado{{ i }}"
-            class="h-5 w-5 accent-azul-oscuro"
+            type="time"
+            [(ngModel)]="disp.horaDesde"
+            name="desde{{ i }}"
+            class="w-28 rounded-md border px-2 py-1 text-sm"
+            [disabled]="!disp.habilitado"
+            [ngClass]="{
+      'bg-gray-100 text-gray-400 border-gray-300': !disp.habilitado,
+      'bg-white text-gray-700 border-gray-300': disp.habilitado && !esHorarioInvalido(disp),
+      'bg-red-50 text-gray-700 border-red-500': disp.habilitado && esHorarioInvalido(disp)
+    }"
           />
-          <span class="text-gray-700">{{ dias[i] }}</span>
-        </label>
-        <input
-          type="time"
-          [(ngModel)]="disp.horaDesde"
-          name="desde{{ i }}"
-          class="w-28 rounded-md border border-gray-300 px-2 py-1 text-sm"
-          [disabled]="!disp.habilitado"
-          [ngClass]="{
-    'bg-gray-100 text-gray-400': !disp.habilitado,
-    'bg-white text-gray-700': disp.habilitado
-  }"
-        />
-        <span class="text-gray-500">a</span>
-        <input
-          type="time"
-          [(ngModel)]="disp.horaHasta"
-          name="hasta{{ i }}"
-          class="w-28 rounded-md border border-gray-300 px-2 py-1 text-sm"
-          [disabled]="!disp.habilitado"
-          [ngClass]="{
-    'bg-gray-100 text-gray-400': !disp.habilitado,
-    'bg-white text-gray-700': disp.habilitado
-  }"
-        />
+          <span class="text-gray-500">a</span>
+          <input
+            type="time"
+            [(ngModel)]="disp.horaHasta"
+            name="hasta{{ i }}"
+            class="w-28 rounded-md border px-2 py-1 text-sm"
+            [disabled]="!disp.habilitado"
+            [ngClass]="{
+      'bg-gray-100 text-gray-400 border-gray-300': !disp.habilitado,
+      'bg-white text-gray-700 border-gray-300': disp.habilitado && !esHorarioInvalido(disp),
+      'bg-red-50 text-gray-700 border-red-500': disp.habilitado && esHorarioInvalido(disp)
+    }"
+          />
+        </div>
+        @if (esHorarioInvalido(disp)) {
+        <div class="mt-1 text-center text-xs text-red-600">
+          La hora de inicio debe ser menor que la hora de fin
+        </div>
+        }
       </div>
       }
 

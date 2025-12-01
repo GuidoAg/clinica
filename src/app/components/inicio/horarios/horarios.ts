@@ -12,6 +12,7 @@ import { FormsModule } from "@angular/forms";
 import { Disponibilidad } from "../../../services/disponibilidad";
 import { DisponibilidadVisual } from "../../../models/disponibilidadVisual";
 import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "app-horarios",
@@ -38,12 +39,15 @@ export class Horarios implements OnInit {
     Array.from({ length: 7 }, (_, i) => ({
       dia: i + 1,
       habilitado: false,
-      horaDesde: "",
-      horaHasta: "",
+      horaDesde: "09:00",
+      horaHasta: "17:00",
     })),
   );
 
-  constructor(private disponibilidad: Disponibilidad) {}
+  constructor(
+    private disponibilidad: Disponibilidad,
+    private snackBar: MatSnackBar,
+  ) {}
 
   async ngOnInit() {
     if (!this.perfilId) {
@@ -60,11 +64,43 @@ export class Horarios implements OnInit {
     this.cerrar.emit();
   }
 
+  validarHorarios(): boolean {
+    const disponibilidadesHabilitadas = this.disponibilidades().filter(
+      (d) => d.habilitado,
+    );
+
+    for (const disp of disponibilidadesHabilitadas) {
+      if (disp.horaDesde >= disp.horaHasta) {
+        const nombreDia = this.dias[disp.dia - 1];
+        this.snackBar.open(
+          `Error en ${nombreDia}: la hora de inicio debe ser menor que la hora de fin.`,
+          "Cerrar",
+          {
+            duration: 4000,
+            panelClass: ["bg-red-600", "text-white"],
+          },
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
+  esHorarioInvalido(disp: DisponibilidadVisual): boolean {
+    return disp.habilitado && disp.horaDesde >= disp.horaHasta;
+  }
+
   async guardar() {
     if (!this.perfilId) {
       console.error("No se recibió perfilId en Horarios");
       return;
     }
+
+    // Validar horarios antes de guardar
+    if (!this.validarHorarios()) {
+      return;
+    }
+
     const exito = await this.disponibilidad.upsertDisponibilidades(
       this.perfilId,
       this.disponibilidades(),

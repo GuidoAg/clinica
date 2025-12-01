@@ -48,8 +48,8 @@ export class Disponibilidad {
         dias.push({
           dia: i,
           habilitado: false,
-          horaDesde: "00:00",
-          horaHasta: "00:00",
+          horaDesde: "09:00",
+          horaHasta: "17:00",
         });
       }
     }
