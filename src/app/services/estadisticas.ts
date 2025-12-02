@@ -1,6 +1,13 @@
 import { Injectable } from "@angular/core";
 import { Supabase } from "../supabase";
 import { EstadoCita } from "../enums/EstadoCita";
+import {
+  TABLA,
+  QUERY_PERFILES,
+  QUERY_ESPECIALIDADES,
+  QUERY_REGISTRO_INGRESOS,
+  QUERY_CITAS,
+} from "../constantes";
 
 interface CitaFechaDB {
   fecha_hora: string;
@@ -20,8 +27,10 @@ export class Estadisticas {
    * Log de ingresos al sistema
    */
   async obtenerLogIngresos(): Promise<Ingreso[]> {
-    const { data: ingresos, error } = await Supabase.from("registro_ingresos")
-      .select("fecha_ingreso, perfil_id")
+    const { data: ingresos, error } = await Supabase.from(
+      TABLA.REGISTRO_INGRESOS,
+    )
+      .select(QUERY_REGISTRO_INGRESOS.BASICO)
       .order("fecha_ingreso", { ascending: false });
 
     if (error || !ingresos) {
@@ -37,9 +46,9 @@ export class Estadisticas {
     ];
 
     const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      "perfiles",
+      TABLA.PERFILES,
     )
-      .select("id, nombre, apellido, rol")
+      .select(QUERY_PERFILES.IDENTIFICACION)
       .in("id", perfilIds);
 
     if (errorPerfiles || !perfiles) {
@@ -65,8 +74,9 @@ export class Estadisticas {
    * Cantidad de turnos por especialidad
    */
   async obtenerTurnosPorEspecialidad(): Promise<TurnosPorEspecialidad[]> {
-    const { data: citas, error } =
-      await Supabase.from("citas").select("especialidad_id");
+    const { data: citas, error } = await Supabase.from(TABLA.CITAS).select(
+      "especialidad_id",
+    );
 
     if (error || !citas) {
       console.error(
@@ -80,9 +90,9 @@ export class Estadisticas {
       ...new Set(citas.map((c) => c.especialidad_id).filter(Boolean)),
     ];
     const { data: especialidades, error: errorEsp } = await Supabase.from(
-      "especialidades",
+      TABLA.ESPECIALIDADES,
     )
-      .select("id, nombre")
+      .select(QUERY_ESPECIALIDADES.BASICO)
       .in("id", ids);
 
     if (errorEsp || !especialidades) {
@@ -115,7 +125,9 @@ export class Estadisticas {
    * Cantidad de turnos por día
    */
   async obtenerTurnosPorDia(): Promise<TurnosPorDia[]> {
-    const { data, error } = await Supabase.from("citas").select("fecha_hora");
+    const { data, error } = await Supabase.from(TABLA.CITAS).select(
+      "fecha_hora",
+    );
 
     if (error || !data) {
       console.error(
@@ -131,10 +143,12 @@ export class Estadisticas {
       agrupado.set(fecha, (agrupado.get(fecha) ?? 0) + 1);
     }
 
-    return Array.from(agrupado.entries()).map(([fecha, cantidad]) => ({
-      fecha,
-      cantidad,
-    }));
+    return Array.from(agrupado.entries())
+      .map(([fecha, cantidad]) => ({
+        fecha,
+        cantidad,
+      }))
+      .sort((a, b) => a.fecha.localeCompare(b.fecha));
   }
 
   /**
@@ -144,7 +158,7 @@ export class Estadisticas {
     desde: string,
     hasta: string,
   ): Promise<TurnosPorMedico[]> {
-    let query = Supabase.from("citas").select("especialista_id");
+    let query = Supabase.from(TABLA.CITAS).select("especialista_id");
 
     // Solo aplicar filtros si se proporcionan fechas
     if (desde && hasta) {
@@ -165,9 +179,9 @@ export class Estadisticas {
       ...new Set(citas.map((c) => c.especialista_id).filter(Boolean)),
     ];
     const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      "perfiles",
+      TABLA.PERFILES,
     )
-      .select("id, nombre, apellido")
+      .select(QUERY_PERFILES.NOMBRE_COMPLETO)
       .in("id", ids);
 
     if (errorPerfiles || !perfiles) {
@@ -203,7 +217,7 @@ export class Estadisticas {
     desde: string,
     hasta: string,
   ): Promise<TurnosPorMedico[]> {
-    let query = Supabase.from("citas")
+    let query = Supabase.from(TABLA.CITAS)
       .select("especialista_id, estado")
       .eq("estado", EstadoCita.COMPLETADO);
 
@@ -226,9 +240,9 @@ export class Estadisticas {
       ...new Set(citas.map((c) => c.especialista_id).filter(Boolean)),
     ];
     const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      "perfiles",
+      TABLA.PERFILES,
     )
-      .select("id, nombre, apellido")
+      .select(QUERY_PERFILES.NOMBRE_COMPLETO)
       .in("id", ids);
 
     if (errorPerfiles || !perfiles) {
@@ -281,8 +295,10 @@ export class Estadisticas {
     const fechaInicio = hace60Dias.toISOString();
 
     // Obtener ingresos de los últimos 60 días
-    const { data: ingresos, error } = await Supabase.from("registro_ingresos")
-      .select("fecha_ingreso, perfil_id")
+    const { data: ingresos, error } = await Supabase.from(
+      TABLA.REGISTRO_INGRESOS,
+    )
+      .select(QUERY_REGISTRO_INGRESOS.BASICO)
       .gte("fecha_ingreso", fechaInicio)
       .order("fecha_ingreso", { ascending: true });
 
@@ -304,7 +320,7 @@ export class Estadisticas {
     }
 
     const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      "perfiles",
+      TABLA.PERFILES,
     )
       .select("id, rol")
       .in("id", perfilIds)

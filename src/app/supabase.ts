@@ -19,5 +19,16 @@ export const Supabase = createClient(
         return await fn();
       },
     },
+    realtime: {
+      // Configuración optimizada para Realtime
+      params: {
+        eventsPerSecond: 10, // Límite de eventos por segundo
+      },
+      heartbeatIntervalMs: 30000, // Heartbeat cada 30 segundos
+      reconnectAfterMs: (tries: number) => {
+        // Backoff exponencial: 1s, 2s, 4s, 8s, hasta máx 30s
+        return Math.min(1000 * Math.pow(2, tries), 30000);
+      },
+    },
   },
 );

@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { Usuario } from "../models/Auth/Usuario";
 import { Supabase } from "../supabase";
+import { TABLA, QUERY_ESPECIALIDADES } from "../constantes";
 import { mapPerfilToUsuario } from "../mappers/mapPerfilToUsuario";
 import { RegistroPaciente } from "../models/Auth/RegistroPaciente";
 import { subirImagenDesdeBase64 } from "../helpers/upload-base64";
@@ -459,8 +460,8 @@ export class AuthSupabase {
   }
 
   async obtenerEspecialidades(): Promise<Especialidad[]> {
-    const { data, error } = await Supabase.from("especialidades")
-      .select("id, nombre, url_icono")
+    const { data, error } = await Supabase.from(TABLA.ESPECIALIDADES)
+      .select(QUERY_ESPECIALIDADES.COMPLETO)
       .order("nombre", { ascending: true });
 
     if (error || !data) {
@@ -482,9 +483,9 @@ export class AuthSupabase {
 
     // Verificamos si ya existe (case-insensitive)
     const { data: existentes, error: errorConsulta } = await Supabase.from(
-      "especialidades",
+      TABLA.ESPECIALIDADES,
     )
-      .select("id, nombre")
+      .select(QUERY_ESPECIALIDADES.BASICO)
       .ilike("nombre", nombreNormalizado);
 
     if (errorConsulta) {

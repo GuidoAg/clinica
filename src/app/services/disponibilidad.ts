@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Supabase } from "../supabase";
 import { DisponibilidadVisual } from "../models/disponibilidadVisual";
+import { TABLA } from "../constantes";
 
 interface DisponibilidadDB {
   dia_semana: number;
@@ -21,7 +22,7 @@ export class Disponibilidad {
   async obtenerDisponibilidades(
     perfilId: number,
   ): Promise<DisponibilidadVisual[]> {
-    const { data, error } = await Supabase.from("disponibilidades")
+    const { data, error } = await Supabase.from(TABLA.DISPONIBILIDADES)
       .select("dia_semana, hora_inicio, hora_fin, habilitado")
       .eq("perfil_id", perfilId);
 
@@ -72,7 +73,7 @@ export class Disponibilidad {
       habilitado: d.habilitado, // incluir habilitado explícitamente
     }));
 
-    const { error } = await Supabase.from("disponibilidades").upsert(rows, {
+    const { error } = await Supabase.from(TABLA.DISPONIBILIDADES).upsert(rows, {
       onConflict: "perfil_id,dia_semana",
     });
 

@@ -9,6 +9,9 @@ import { CitaCompletaTurnos } from "../models/Turnos/CitaCompletaTurnos";
 import { EncuestaTurnos } from "../models/Turnos/EncuestaTurnos";
 import { RegistroMedicoTurnos } from "../models/Turnos/RegistroMedicoTurnos";
 import { EstadoCita } from "../enums/EstadoCita";
+import { DisponibilidadService } from "./disponibilidad.service";
+import { CitasService } from "./citas.service";
+import { TABLA, QUERY_VISTA_ESPECIALISTAS_FULL } from "../constantes";
 
 export interface DiasDisponibles {
   lunes: boolean;
@@ -20,87 +23,34 @@ export interface DiasDisponibles {
   domingo: boolean;
 }
 
-interface CitaVista {
-  cita_id: number;
-  fecha_hora: string;
-  duracion_min: number;
-  estado: string;
-  comentario_paciente: string | null;
-  comentario_especialista: string | null;
-  resenia: string | null;
-  paciente_id: number;
-  paciente_nombre_completo: string;
-  especialista_id: number;
-  especialista_nombre_completo: string;
-  especialidad_id: number;
-  especialidad_nombre: string;
-  altura_cm: number | null;
-  peso_kg: number | null;
-  temperatura_c: number | null;
-  presion_arterial: string | null;
-}
-
 @Injectable({
   providedIn: "root",
 })
 export class Turnos {
-  async obtenerEspecialistas(): Promise<EspecialistaTurnos[]> {
-    const { data: perfiles, error } = await Supabase.from(
-      "vista_perfiles_con_email",
-    )
-      .select(
-        `
-      id,
-      auth_id,
-      nombre,
-      apellido,
-      edad,
-      dni,
-      url_imagen_perfil, 
-      rol,
-      email,
-      email_verificado_real,
-      detalles_paciente (
-        obra_social,
-        url_imagen_fondo
-      ),
-      detalles_especialista (
-        validado_admin,
-        activo
-      ),
-      especialista_especialidades (
-        duracion,
-        especialidades (
-          id,
-          nombre,
-          url_icono
-        )
-      )
-    `,
-      )
-      .eq("rol", "especialista")
-      .eq("email_verificado_real", true);
+  constructor(
+    private disponibilidadService: DisponibilidadService,
+    private citasService: CitasService,
+  ) {}
 
-    if (error || !perfiles) {
-      console.error("Error al obtener usuarios:", error);
+  async obtenerEspecialistas(): Promise<EspecialistaTurnos[]> {
+    const { data: especialistas, error } = await Supabase.from(
+      TABLA.VISTA_ESPECIALISTAS_FULL,
+    ).select(QUERY_VISTA_ESPECIALISTAS_FULL.ESPECIALISTA_ESPECIALIDADES);
+
+    if (error || !especialistas) {
+      console.error("Error al obtener especialistas:", error);
       return [];
     }
 
-    return perfiles.map((p) => {
-      const detallesEspecialista = Array.isArray(p.detalles_especialista)
-        ? p.detalles_especialista[0]
-        : (p.detalles_especialista ?? null);
-
-      return {
-        id: p.id,
-        nombre: p.nombre,
-        apellido: p.apellido,
-        imagenPerfil: p.url_imagen_perfil,
-        emailVerificado: p.email_verificado_real ?? false,
-        validadoAdmin: detallesEspecialista?.validado_admin ?? false,
-        activo: detallesEspecialista.activo ?? false,
-      } as EspecialistaTurnos;
-    });
+    return especialistas.map((e) => ({
+      id: e.especialista_id,
+      nombre: e.nombre,
+      apellido: e.apellido,
+      imagenPerfil: e.url_imagen_perfil,
+      emailVerificado: true, // vista_especialistas_full solo incluye validados
+      validadoAdmin: true, // vista ya filtra validado_admin = true
+      activo: true, // vista ya filtra activo = true
+    }));
   }
 
   /**
@@ -137,7 +87,7 @@ export class Turnos {
     idEspecialista: number,
   ): Promise<EspecialidadTurnos[]> {
     const { data: especialidades, error } = await Supabase.from(
-      "vista_especialista_especialidades",
+      TABLA.VISTA_ESPECIALISTA_ESPECIALIDADES,
     )
       .select(
         `
@@ -151,7 +101,7 @@ export class Turnos {
       .eq("especialista_id", idEspecialista);
 
     if (error || !especialidades) {
-      console.error("Error al obtener usuarios:", error);
+      console.error("Error al obtener especialidades:", error);
       return [];
     }
 
@@ -166,32 +116,7 @@ export class Turnos {
   }
 
   async obtenerDiasEspecialista(idEspecialista: number): Promise<string[]> {
-    const { data: dias, error } = await Supabase.from("disponibilidades")
-      .select("dia_semana")
-      .eq("perfil_id", idEspecialista)
-      .eq("habilitado", true);
-
-    if (error || !dias) {
-      console.error("Error al obtener días disponibles:", error);
-      return [];
-    }
-
-    const diasSemanaMap: Record<number, string> = {
-      1: "lunes",
-      2: "martes",
-      3: "miércoles",
-      4: "jueves",
-      5: "viernes",
-      6: "sábado",
-      7: "domingo",
-    };
-
-    // Convertimos a nombres y evitamos duplicados
-    const nombresDias = dias
-      .map((d) => diasSemanaMap[d.dia_semana])
-      .filter((dia, index, self) => dia && self.indexOf(dia) === index);
-
-    return nombresDias;
+    return this.disponibilidadService.obtenerDiasEspecialista(idEspecialista);
   }
 
   async calcularFechasDisponibles(
@@ -199,76 +124,57 @@ export class Turnos {
     diasARevisar = 15,
     desdeFecha = new Date(),
   ): Promise<string[]> {
-    const diasHabilitados = await this.obtenerDiasEspecialista(idEspecialista);
-
-    const diasSemanaNombreANumero: Record<string, number> = {
-      lunes: 1,
-      martes: 2,
-      miércoles: 3,
-      jueves: 4,
-      viernes: 5,
-      sábado: 6,
-      domingo: 0,
-    };
-
-    // Convertimos los nombres de días a sus números según JS
-    const diasHabilitadosNumericos = diasHabilitados.map(
-      (dia) => diasSemanaNombreANumero[dia.toLowerCase()],
+    return this.disponibilidadService.calcularFechasDisponibles(
+      idEspecialista,
+      diasARevisar,
+      desdeFecha,
     );
-
-    const fechasDisponibles: string[] = [];
-
-    for (let i = 0; i < diasARevisar; i++) {
-      const fecha = new Date(desdeFecha);
-      fecha.setDate(fecha.getDate() + i);
-
-      const diaJS = fecha.getDay(); // 0: domingo, 1: lunes, ..., 6: sábado
-
-      if (diasHabilitadosNumericos.includes(diaJS)) {
-        // Formateamos como "YYYY-MM-DD"
-        const yyyy = fecha.getFullYear();
-        const mm = String(fecha.getMonth() + 1).padStart(2, "0");
-        const dd = String(fecha.getDate()).padStart(2, "0");
-        fechasDisponibles.push(`${yyyy}-${mm}-${dd}`);
-      }
-    }
-
-    return fechasDisponibles;
   }
 
   /**
    * Obtiene solo las fechas que tienen al menos un horario disponible
-   * Filtra las fechas para mostrar únicamente aquellas con turnos libres
+   * Procesa fechas en paralelo para máxima eficiencia
+   * ✨ Point 13: Early exit si no hay disponibilidad configurada
+   * ✨ Optimización: 1 query para todas las disponibilidades (en vez de 15)
    */
   async obtenerFechasConHorariosDisponibles(
     idEspecialista: number,
     duracionMin: number,
     diasARevisar = 15,
     desdeFecha = new Date(),
+    pacienteId?: number,
   ): Promise<string[]> {
-    // Primero obtenemos todas las fechas potenciales
-    const fechasPotenciales = await this.calcularFechasDisponibles(
-      idEspecialista,
-      diasARevisar,
-      desdeFecha,
-    );
+    // ✨ Optimización: Obtener TODAS las disponibilidades en 1 query
+    const disponibilidades =
+      await this.disponibilidadService.obtenerTodasDisponibilidades(
+        idEspecialista,
+      );
 
-    // Ahora filtramos solo las que tienen al menos un horario disponible
-    const fechasConHorarios: string[] = [];
+    // ✨ Point 13: Early exit si no hay disponibilidades
+    if (disponibilidades.size === 0) {
+      return [];
+    }
 
-    for (const fecha of fechasPotenciales) {
+    const fechasPotenciales =
+      await this.disponibilidadService.calcularFechasDisponibles(
+        idEspecialista,
+        diasARevisar,
+        desdeFecha,
+      );
+
+    const promesas = fechasPotenciales.map(async (fecha) => {
       const horarios = await this.obtenerHorariosDisponibles(
         fecha,
         idEspecialista,
         duracionMin,
+        pacienteId,
+        disponibilidades, // ✨ Pasar disponibilidades para evitar query
       );
+      return horarios.length > 0 ? fecha : null;
+    });
 
-      if (horarios.length > 0) {
-        fechasConHorarios.push(fecha);
-      }
-    }
-
-    return fechasConHorarios;
+    const resultados = await Promise.all(promesas);
+    return resultados.filter((fecha): fecha is string => fecha !== null);
   }
 
   /**
@@ -308,69 +214,60 @@ export class Turnos {
     fecha: string, // formato "YYYY-MM-DD"
     especialistaId: number,
     duracion: number, // en minutos
+    pacienteId?: number,
+    disponibilidadesCache?: Map<
+      number,
+      { hora_inicio: string; hora_fin: string }
+    >, // ✨ Opcional: evita query si ya se obtuvo
   ): Promise<string[]> {
-    // 1. Obtener día de la semana (1 = lunes ... 7 = domingo)
-    const [year, month, day] = fecha.split("-").map(Number);
-    const date = new Date(year, month - 1, day); // Correctamente en zona local
+    // 1. Obtener disponibilidad (desde cache o query)
+    const diaSemana = this.disponibilidadService.calcularDiaSemana(fecha);
+    let disponibilidad: { hora_inicio: string; hora_fin: string } | null;
 
-    const diaSemana = ((date.getDay() + 6) % 7) + 1;
-    // getDay() => 0=Domingo ... 6=Sábado
-    // El cálculo lo convierte a 1=Lunes ... 7=Domingo
+    if (disponibilidadesCache) {
+      // ✨ Lookup en memoria (sin query)
+      disponibilidad = disponibilidadesCache.get(diaSemana) || null;
+    } else {
+      // Query individual (compatibilidad con llamadas directas)
+      disponibilidad =
+        await this.disponibilidadService.obtenerDisponibilidadDia(
+          especialistaId,
+          diaSemana,
+        );
+    }
 
-    // 2. Traer disponibilidad del especialista para ese día
-    const { data: disponibilidad, error: errorDisp } = await Supabase.from(
-      "disponibilidades",
-    )
-      .select("hora_inicio, hora_fin")
-      .eq("perfil_id", especialistaId)
-      .eq("dia_semana", diaSemana)
-      .eq("habilitado", true)
-      .maybeSingle();
-
-    if (errorDisp || !disponibilidad) {
-      console.error("Sin disponibilidad:", errorDisp);
+    if (!disponibilidad) {
       return [];
     }
 
     const { hora_inicio, hora_fin } = disponibilidad;
-
-    function parseHoraLocal(fecha: string, hora: string): Date {
-      const [year, month, day] = fecha.split("-").map(Number);
-      const [hour, minute] = hora.split(":").map(Number);
-      return new Date(year, month - 1, day, hour, minute);
-    }
-
-    const disponibilidadInicio = parseHoraLocal(fecha, hora_inicio);
-    const disponibilidadFin = parseHoraLocal(fecha, hora_fin);
-
-    // 3. Traer citas del especialista en esa fecha
-    const inicioDia = new Date(`${fecha}T00:00:00`);
-    const finDia = new Date(`${fecha}T23:59:59`);
-
-    const { data: citas, error: errorCitas } = await Supabase.from("citas")
-      .select("fecha_hora, duracion_min")
-      .eq("especialista_id", especialistaId)
-      .neq("estado", EstadoCita.CANCELADO)
-      .neq("estado", EstadoCita.RECHAZADO)
-      .gte("fecha_hora", inicioDia.toISOString())
-      .lte("fecha_hora", finDia.toISOString());
-
-    if (errorCitas) {
-      console.error("Error al obtener citas:", errorCitas);
-      return [];
-    }
-
-    // 4. Construir bloques ocupados
-    const bloquesOcupados: { inicio: Date; fin: Date }[] = (citas || []).map(
-      (cita) => {
-        const inicio = new Date(cita.fecha_hora);
-        const fin = new Date(inicio.getTime() + cita.duracion_min * 60000);
-        return { inicio, fin };
-      },
+    const disponibilidadInicio = this.disponibilidadService.parseHoraLocal(
+      fecha,
+      hora_inicio,
+    );
+    const disponibilidadFin = this.disponibilidadService.parseHoraLocal(
+      fecha,
+      hora_fin,
     );
 
-    // Ordenar por inicio
-    bloquesOcupados.sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
+    // 2. ✨ Point 6: Obtener citas usando CitasService (query simplificado)
+    const todasCitas = await this.citasService.obtenerCitasCombinadasDia(
+      especialistaId,
+      fecha,
+      pacienteId,
+    );
+
+    // 3. Separar citas del especialista y del paciente
+    const citasEspecialista = todasCitas.filter(
+      (c) => c.especialista_id === especialistaId || !c.especialista_id,
+    );
+    const citasPaciente = pacienteId
+      ? todasCitas.filter((c) => c.paciente_id === pacienteId)
+      : [];
+
+    // 4. Construir bloques ocupados usando CitasService
+    const bloquesOcupados =
+      this.citasService.construirBloquesOcupados(citasEspecialista);
 
     // 5. Calcular espacios libres reales
     const espaciosLibres: { inicio: Date; fin: Date }[] = [];
@@ -390,7 +287,6 @@ export class Turnos {
       }
     }
 
-    // Si hay espacio después de la última cita
     if (cursor < disponibilidadFin) {
       espaciosLibres.push({ inicio: cursor, fin: disponibilidadFin });
     }
@@ -413,206 +309,76 @@ export class Turnos {
       }
     }
 
+    // 7. Filtrar turnos que solapen con las citas del paciente
+    if (citasPaciente.length > 0) {
+      const turnosFiltrados: string[] = [];
+
+      for (const turnoHora of turnosDisponibles) {
+        const inicioTurno = this.disponibilidadService.parseHoraLocal(
+          fecha,
+          turnoHora,
+        );
+        const finTurno = new Date(inicioTurno.getTime() + duracion * 60000);
+
+        let solapa = false;
+        for (const citaPac of citasPaciente) {
+          const inicioCitaPac = new Date(citaPac.fecha_hora);
+          const finCitaPac = new Date(
+            inicioCitaPac.getTime() + citaPac.duracion_min * 60000,
+          );
+
+          if (
+            this.citasService.verificarSolapamiento(
+              inicioTurno,
+              finTurno,
+              inicioCitaPac,
+              finCitaPac,
+            )
+          ) {
+            solapa = true;
+            break;
+          }
+        }
+
+        if (!solapa) {
+          turnosFiltrados.push(turnoHora);
+        }
+      }
+
+      return turnosFiltrados;
+    }
+
     return turnosDisponibles;
   }
 
   async darAltaCita(cita: CitaTurnos): Promise<RespuestaApi<CitaTurnos>> {
-    try {
-      const { data, error } = await Supabase.from("citas")
-        .insert({
-          fecha_hora: cita.fechaHora.toISOString(), // Supabase acepta ISO string
-          duracion_min: cita.duracionMin,
-          paciente_id: cita.pacienteId,
-          especialista_id: cita.especialistaId,
-          especialidad_id: cita.especialidadId,
-          estado: cita.estado,
-          comentario_paciente: cita.comentarioPaciente,
-          comentario_especialista: cita.comentarioEspecialista,
-          resenia: cita.resenia,
-        })
-        .select()
-        .maybeSingle();
-
-      if (error || !data) {
-        console.error("Error al insertar cita:", error);
-        return {
-          success: false,
-          message: "No se pudo registrar la cita",
-          errorCode: error?.code ?? "insert_error",
-        };
-      }
-
-      return {
-        success: true,
-        data: {
-          ...cita,
-          fechaHora: new Date(data.fecha_hora),
-        },
-      };
-    } catch (e) {
-      console.error("Excepción en darAltaCita:", e);
-      return {
-        success: false,
-        message: "Ocurrió un error inesperado",
-        errorCode: "unexpected_error",
-      };
-    }
+    // ✨ Point 10: Delegamos a CitasService que tiene validación pre-insert
+    return this.citasService.darAltaCita(cita);
   }
 
   async obtenerCitasConRegistro(): Promise<CitaCompletaTurnos[]> {
-    // 1. Obtener las citas con datos de registro (vista)
-    const { data: citasPlano, error: errorCitas } = await Supabase.from(
-      "vista_citas_enteras",
-    ).select("*");
-
-    if (errorCitas)
-      throw new Error(`Error al obtener citas: ${errorCitas.message}`);
-    if (!citasPlano) return [];
-
-    // 2. Obtener todos los datos dinámicos
-    const { data: datosDinamicos, error: errorDatos } = await Supabase.from(
-      "datos_medicos_dinamicos",
-    ).select("*");
-
-    if (errorDatos)
-      throw new Error(
-        `Error al obtener datos dinámicos: ${errorDatos.message}`,
-      );
-
-    // 3. Agrupar datos dinámicos por cita_id
-    const datosPorCita: Record<number, DatoDinamicoTurnos[]> = {};
-    for (const dato of datosDinamicos || []) {
-      if (!dato.cita_id) continue;
-      if (!datosPorCita[dato.cita_id]) {
-        datosPorCita[dato.cita_id] = [];
-      }
-      datosPorCita[dato.cita_id].push({
-        id: dato.id,
-        clave: dato.clave,
-        valor: dato.valor,
-        citaId: dato.cita_id,
-      });
-    }
-
-    // 4. Mapear al modelo final
-    return citasPlano.map(
-      (c: CitaVista): CitaCompletaTurnos => ({
-        citaId: c.cita_id,
-        fechaHora: new Date(c.fecha_hora),
-        duracionMin: c.duracion_min,
-        estado: c.estado,
-        comentarioPaciente: c.comentario_paciente ?? "",
-        comentarioEspecialista: c.comentario_especialista ?? "",
-        resenia: c.resenia ?? "",
-        pacienteId: c.paciente_id,
-        pacienteNombreCompleto: c.paciente_nombre_completo,
-        especialistaId: c.especialista_id,
-        especialistaNombreCompleto: c.especialista_nombre_completo,
-        especialidadId: c.especialidad_id,
-        especialidadNombre: c.especialidad_nombre,
-        alturaCm: Number(c.altura_cm),
-        pesoKg: Number(c.peso_kg),
-        temperaturaC: Number(c.temperatura_c),
-        presionArterial: c.presion_arterial ?? "",
-        datosDinamicos: datosPorCita[c.cita_id] || [],
-      }),
-    );
+    return this.citasService.obtenerCitasConRegistro();
   }
 
   async obtenerCitasPaciente(
     id_usuario: number,
   ): Promise<CitaCompletaTurnos[]> {
-    // 1. Obtener las citas con datos de registro (vista)
-    const { data: citasPlano, error: errorCitas } = await Supabase.from(
-      "vista_citas_enteras",
-    )
-      .select("*")
-      .eq("paciente_id", id_usuario);
-
-    if (errorCitas)
-      throw new Error(`Error al obtener citas: ${errorCitas.message}`);
-    if (!citasPlano) return [];
-
-    // 2. Obtener todos los datos dinámicos
-    const { data: datosDinamicos, error: errorDatos } = await Supabase.from(
-      "datos_medicos_dinamicos",
-    ).select("*");
-
-    if (errorDatos)
-      throw new Error(
-        `Error al obtener datos dinámicos: ${errorDatos.message}`,
-      );
-
-    // 3. Agrupar datos dinámicos por cita_id
-    const datosPorCita: Record<number, DatoDinamicoTurnos[]> = {};
-    for (const dato of datosDinamicos || []) {
-      if (!dato.cita_id) continue;
-      if (!datosPorCita[dato.cita_id]) {
-        datosPorCita[dato.cita_id] = [];
-      }
-      datosPorCita[dato.cita_id].push({
-        id: dato.id,
-        clave: dato.clave,
-        valor: dato.valor,
-        citaId: dato.cita_id,
-      });
-    }
-
-    // 4. Mapear al modelo final
-    return citasPlano.map(
-      (c: CitaVista): CitaCompletaTurnos => ({
-        citaId: c.cita_id,
-        fechaHora: new Date(c.fecha_hora),
-        duracionMin: c.duracion_min,
-        estado: c.estado,
-        comentarioPaciente: c.comentario_paciente ?? "",
-        comentarioEspecialista: c.comentario_especialista ?? "",
-        resenia: c.resenia ?? "",
-        pacienteId: c.paciente_id,
-        pacienteNombreCompleto: c.paciente_nombre_completo,
-        especialistaId: c.especialista_id,
-        especialistaNombreCompleto: c.especialista_nombre_completo,
-        especialidadId: c.especialidad_id,
-        especialidadNombre: c.especialidad_nombre,
-        alturaCm: Number(c.altura_cm),
-        pesoKg: Number(c.peso_kg),
-        temperaturaC: Number(c.temperatura_c),
-        presionArterial: c.presion_arterial ?? "",
-        datosDinamicos: datosPorCita[c.cita_id] || [],
-      }),
-    );
+    return this.citasService.obtenerCitasPacienteCompletas(id_usuario);
   }
 
   async cancelarCitaPaciente(
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado === EstadoCita.COMPLETADO) {
-      return {
-        success: false,
-        message: "No se puede cancelar un turno ya realizado.",
-      };
-    }
-
-    const { error } = await Supabase.from("citas")
-      .update({
-        estado: EstadoCita.CANCELADO,
-        comentario_paciente: comentario,
-      })
-      .eq("id", cita.citaId);
-
-    if (error) {
-      return {
-        success: false,
-        message: "Ocurrió un error al cancelar el turno.",
-      };
-    }
-
-    return {
-      success: true,
-      message: "Turno cancelado exitosamente.",
-      data: true,
-    };
+    return this.citasService.actualizarEstadoCita(
+      cita.citaId,
+      EstadoCita.CANCELADO,
+      [EstadoCita.COMPLETADO],
+      cita.estado as EstadoCita,
+      "No se puede cancelar un turno ya realizado.",
+      "Turno cancelado exitosamente.",
+      { comentario_paciente: comentario },
+    );
   }
 
   async cargarEncuesta(
@@ -634,7 +400,7 @@ export class Turnos {
       };
     }
 
-    const { data, error } = await Supabase.from("encuesta")
+    const { data, error } = await Supabase.from(TABLA.ENCUESTA)
       .insert({
         id: cita.citaId,
         pregunta1: encuesta.pregunta1,
@@ -673,7 +439,7 @@ export class Turnos {
       };
     }
 
-    const { error } = await Supabase.from("citas")
+    const { error } = await Supabase.from(TABLA.CITAS)
       .update({
         comentario_paciente: comentario,
       })
@@ -689,7 +455,7 @@ export class Turnos {
 
     return {
       success: true,
-      message: "Antencion calificada exitosamente.",
+      message: "Atencion calificada exitosamente.",
       data: true,
     };
   }
@@ -698,115 +464,50 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (
-      cita.estado === EstadoCita.COMPLETADO ||
-      cita.estado === EstadoCita.ACEPTADO ||
-      cita.estado === EstadoCita.RECHAZADO
-    ) {
-      return {
-        success: false,
-        message:
-          "No se puede cancelar un turno ya realizado, aceptado o rechazado.",
-      };
-    }
-
-    const { error } = await Supabase.from("citas")
-      .update({
-        estado: EstadoCita.CANCELADO,
-        comentario_especialista: comentario,
-      })
-      .eq("id", cita.citaId);
-
-    if (error) {
-      return {
-        success: false,
-        message: "Ocurrió un error al cancelar el turno.",
-      };
-    }
-
-    return {
-      success: true,
-      message: "Turno cancelado exitosamente.",
-      data: true,
-    };
+    return this.citasService.actualizarEstadoCita(
+      cita.citaId,
+      EstadoCita.CANCELADO,
+      [EstadoCita.COMPLETADO, EstadoCita.ACEPTADO, EstadoCita.RECHAZADO],
+      cita.estado as EstadoCita,
+      "No se puede cancelar un turno ya realizado, aceptado o rechazado.",
+      "Turno cancelado exitosamente.",
+      { comentario_especialista: comentario },
+    );
   }
 
   async rechazarCitaEspecialista(
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    if (
-      cita.estado === EstadoCita.COMPLETADO ||
-      cita.estado === EstadoCita.ACEPTADO ||
-      cita.estado === EstadoCita.CANCELADO
-    ) {
-      return {
-        success: false,
-        message:
-          "No se puede rechazar un turno ya realizado, aceptado o cancelado.",
-      };
-    }
-
-    const { error } = await Supabase.from("citas")
-      .update({
-        estado: EstadoCita.RECHAZADO,
-        comentario_especialista: comentario,
-      })
-      .eq("id", cita.citaId);
-
-    if (error) {
-      return {
-        success: false,
-        message: "Ocurrió un error al rechazar el turno.",
-      };
-    }
-
-    return {
-      success: true,
-      message: "Turno rechazado exitosamente.",
-      data: true,
-    };
+    return this.citasService.actualizarEstadoCita(
+      cita.citaId,
+      EstadoCita.RECHAZADO,
+      [EstadoCita.COMPLETADO, EstadoCita.ACEPTADO, EstadoCita.CANCELADO],
+      cita.estado as EstadoCita,
+      "No se puede rechazar un turno ya realizado, aceptado o cancelado.",
+      "Turno rechazado exitosamente.",
+      { comentario_especialista: comentario },
+    );
   }
 
   async aceptarCitaEspecialista(
     cita: CitaCompletaTurnos,
   ): Promise<RespuestaApi<boolean>> {
-    if (
-      cita.estado === EstadoCita.COMPLETADO ||
-      cita.estado === EstadoCita.RECHAZADO ||
-      cita.estado === EstadoCita.CANCELADO
-    ) {
-      return {
-        success: false,
-        message:
-          "No se puede aceprtar un turno ya realizado, rechazado o cancelado.",
-      };
-    }
-
-    const { error } = await Supabase.from("citas")
-      .update({
-        estado: EstadoCita.ACEPTADO,
-      })
-      .eq("id", cita.citaId);
-
-    if (error) {
-      return {
-        success: false,
-        message: "Ocurrió un error al aceptar el turno.",
-      };
-    }
-
-    return {
-      success: true,
-      message: "Turno aceptado exitosamente.",
-      data: true,
-    };
+    return this.citasService.actualizarEstadoCita(
+      cita.citaId,
+      EstadoCita.ACEPTADO,
+      [EstadoCita.COMPLETADO, EstadoCita.RECHAZADO, EstadoCita.CANCELADO],
+      cita.estado as EstadoCita,
+      "No se puede aceptar un turno ya realizado, rechazado o cancelado.",
+      "Turno aceptado exitosamente.",
+    );
   }
 
   async completarCitaEspecialista(
     cita: CitaCompletaTurnos,
     resenia: string,
   ): Promise<RespuestaApi<boolean>> {
+    // Validación especial: solo ACEPTADO puede pasar a COMPLETADO
     if (cita.estado !== EstadoCita.ACEPTADO) {
       return {
         success: false,
@@ -814,89 +515,21 @@ export class Turnos {
       };
     }
 
-    const { error } = await Supabase.from("citas")
-      .update({
-        estado: EstadoCita.COMPLETADO,
-        resenia: resenia,
-      })
-      .eq("id", cita.citaId);
-
-    if (error) {
-      return {
-        success: false,
-        message: "Ocurrió un error al completar el turno.",
-      };
-    }
-
-    return {
-      success: true,
-      message: "Turno completado exitosamente.",
-      data: true,
-    };
+    return this.citasService.actualizarEstadoCita(
+      cita.citaId,
+      EstadoCita.COMPLETADO,
+      [], // Ya validamos arriba
+      cita.estado as EstadoCita,
+      "", // No se usa porque validamos arriba
+      "Turno completado exitosamente.",
+      { resenia },
+    );
   }
 
   async obtenerCitasEspecialista(
     id_usuario: number,
   ): Promise<CitaCompletaTurnos[]> {
-    // 1. Obtener las citas con datos de registro (vista)
-    const { data: citasPlano, error: errorCitas } = await Supabase.from(
-      "vista_citas_enteras",
-    )
-      .select("*")
-      .eq("especialista_id", id_usuario);
-
-    if (errorCitas)
-      throw new Error(`Error al obtener citas: ${errorCitas.message}`);
-    if (!citasPlano) return [];
-
-    // 2. Obtener todos los datos dinámicos
-    const { data: datosDinamicos, error: errorDatos } = await Supabase.from(
-      "datos_medicos_dinamicos",
-    ).select("*");
-
-    if (errorDatos)
-      throw new Error(
-        `Error al obtener datos dinámicos: ${errorDatos.message}`,
-      );
-
-    // 3. Agrupar datos dinámicos por cita_id
-    const datosPorCita: Record<number, DatoDinamicoTurnos[]> = {};
-    for (const dato of datosDinamicos || []) {
-      if (!dato.cita_id) continue;
-      if (!datosPorCita[dato.cita_id]) {
-        datosPorCita[dato.cita_id] = [];
-      }
-      datosPorCita[dato.cita_id].push({
-        id: dato.id,
-        clave: dato.clave,
-        valor: dato.valor,
-        citaId: dato.cita_id,
-      });
-    }
-
-    // 4. Mapear al modelo final
-    return citasPlano.map(
-      (c: CitaVista): CitaCompletaTurnos => ({
-        citaId: c.cita_id,
-        fechaHora: new Date(c.fecha_hora),
-        duracionMin: c.duracion_min,
-        estado: c.estado,
-        comentarioPaciente: c.comentario_paciente ?? "",
-        comentarioEspecialista: c.comentario_especialista ?? "",
-        resenia: c.resenia ?? "",
-        pacienteId: c.paciente_id,
-        pacienteNombreCompleto: c.paciente_nombre_completo,
-        especialistaId: c.especialista_id,
-        especialistaNombreCompleto: c.especialista_nombre_completo,
-        especialidadId: c.especialidad_id,
-        especialidadNombre: c.especialidad_nombre,
-        alturaCm: Number(c.altura_cm),
-        pesoKg: Number(c.peso_kg),
-        temperaturaC: Number(c.temperatura_c),
-        presionArterial: c.presion_arterial ?? "",
-        datosDinamicos: datosPorCita[c.cita_id] || [],
-      }),
-    );
+    return this.citasService.obtenerCitasEspecialistaCompletas(id_usuario);
   }
 
   async cargarHistoriaClinica(
@@ -912,7 +545,7 @@ export class Turnos {
 
     // Insertar en registros_medicos
     const { error: errorRegistro } = await Supabase.from(
-      "registros_medicos",
+      TABLA.REGISTROS_MEDICOS,
     ).insert({
       cita_id: registro.citaId,
       altura_cm: registro.alturaCm,
@@ -937,7 +570,7 @@ export class Turnos {
     }));
 
     const { error: errorDinamicos } = await Supabase.from(
-      "datos_medicos_dinamicos",
+      TABLA.DATOS_MEDICOS_DINAMICOS,
     ).insert(dinamicosFormateados);
 
     if (errorDinamicos) {
@@ -959,7 +592,7 @@ export class Turnos {
    */
   obtenerProximosTurnos(
     citas: CitaCompletaTurnos[],
-    cantidad: number = 3,
+    cantidad: 3,
   ): CitaCompletaTurnos[] {
     const ahora = new Date();
     return citas

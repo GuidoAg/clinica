@@ -13,6 +13,7 @@ import { takeUntil } from "rxjs/operators";
 import { AuthSupabase } from "../../../services/auth-supabase";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { EstadoCita } from "../../../enums/EstadoCita";
+import { withLoading } from "../../../helpers/with-loading";
 import {
   trigger,
   transition,
@@ -125,11 +126,13 @@ export class SolicitarTurno implements OnInit, OnDestroy {
       this.usuarioActual = usuario;
     });
 
-    // Usamos el método centralizado del servicio
-    const especialistasConDisponibilidad =
-      await this.turnosService.obtenerEspecialistasConDisponibilidad();
+    // Cargar solo especialistas validados (sin verificar disponibilidad aún)
+    const todosEspecialistas = await this.turnosService.obtenerEspecialistas();
+    const especialistasValidados = todosEspecialistas.filter(
+      (e) => e.validadoAdmin === true && e.activo === true,
+    );
 
-    this.especialistas.set(especialistasConDisponibilidad);
+    this.especialistas.set(especialistasValidados);
     this.especialistasBuscados.set(true);
 
     this.loadin.hide();
@@ -152,12 +155,13 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     this.diasBuscados.set(false);
     this.horasBuscadas.set(false);
 
-    this.cargando.set(true);
-    const especialidades =
-      await this.turnosService.obtenerEspecialidadesDeEspecialista(e.id);
-    this.especialidades.set(especialidades);
-    this.especialidadesBuscadas.set(true);
-    this.cargando.set(false);
+    // ✨ Point 8: Usando withLoading helper
+    await withLoading(this.cargando, async () => {
+      const especialidades =
+        await this.turnosService.obtenerEspecialidadesDeEspecialista(e.id);
+      this.especialidades.set(especialidades);
+      this.especialidadesBuscadas.set(true);
+    });
   }
 
   async seleccionarEspecialidad(es: EspecialidadTurnos) {
@@ -165,30 +169,38 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     this.fechaSeleccionada.set(null);
     this.horaSelecionada.set(null);
     this.horariosDisponibles.set([]);
-    this.cargando.set(true);
 
-    const fechas = await this.turnosService.obtenerFechasConHorariosDisponibles(
-      this.especialistaSeleccionado()!.id,
-      es.duracion,
-    );
-    this.fechasDisponibles.set(fechas);
-    this.diasBuscados.set(true);
-    this.cargando.set(false);
+    // ✨ Point 8: Usando withLoading helper
+    await withLoading(this.cargando, async () => {
+      // Obtener fechas disponibles de forma eficiente
+      const fechas =
+        await this.turnosService.obtenerFechasConHorariosDisponibles(
+          this.especialistaSeleccionado()!.id,
+          es.duracion,
+          15,
+          new Date(),
+          this.usuarioActual?.id, // 🆕 Pasar ID del paciente
+        );
+      this.fechasDisponibles.set(fechas);
+      this.diasBuscados.set(true);
+    });
   }
 
   async seleccionarFecha(fecha: string) {
     this.horaSelecionada.set(null);
     this.fechaSeleccionada.set(fecha);
-    this.cargando.set(true);
 
-    const horarios = await this.turnosService.obtenerHorariosDisponibles(
-      fecha,
-      this.especialistaSeleccionado()!.id,
-      this.especialidadSeleccionada()!.duracion,
-    );
-    this.horariosDisponibles.set(horarios);
-    this.horasBuscadas.set(true);
-    this.cargando.set(false);
+    // ✨ Point 8: Usando withLoading helper
+    await withLoading(this.cargando, async () => {
+      const horarios = await this.turnosService.obtenerHorariosDisponibles(
+        fecha,
+        this.especialistaSeleccionado()!.id,
+        this.especialidadSeleccionada()!.duracion,
+        this.usuarioActual?.id, // 🆕 Pasar ID del paciente para validar solapamientos
+      );
+      this.horariosDisponibles.set(horarios);
+      this.horasBuscadas.set(true);
+    });
   }
 
   seleccionarHorario(hora: string) {
@@ -222,27 +234,51 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     };
 
     try {
-      await this.turnosService.darAltaCita(cita);
+      const resultado = await this.turnosService.darAltaCita(cita);
 
-      this.snackBar.open("Cita agendada", "exito", {
-        duration: 4000,
-        panelClass: ["bg-blue-600", "text-white"],
-      });
-      this.especialistaSeleccionado.set(null);
-      this.especialidadSeleccionada.set(null);
-      this.fechaSeleccionada.set(null);
-      this.horaSelecionada.set(null);
+      if (resultado.success) {
+        this.snackBar.open("Cita agendada exitosamente", "✓", {
+          duration: 4000,
+          panelClass: ["bg-green-600", "text-white"],
+        });
+        this.especialistaSeleccionado.set(null);
+        this.especialidadSeleccionada.set(null);
+        this.fechaSeleccionada.set(null);
+        this.horaSelecionada.set(null);
+      } else {
+        // Mostrar mensaje específico del error
+        const mensaje =
+          resultado.errorCode === "horario_no_disponible"
+            ? "El horario seleccionado ya no está disponible. Por favor, selecciona otro horario."
+            : resultado.message || "No se pudo agendar la cita";
+
+        this.snackBar.open(mensaje, "✕", {
+          duration: 6000,
+          panelClass: ["bg-red-600", "text-white"],
+        });
+
+        // Recargar horarios disponibles para mostrar actualización
+        if (resultado.errorCode === "horario_no_disponible") {
+          this.horaSelecionada.set(null);
+          await withLoading(this.cargando, async () => {
+            const horarios =
+              await this.turnosService.obtenerHorariosDisponibles(
+                this.fechaSeleccionada()!,
+                this.especialistaSeleccionado()!.id,
+                this.especialidadSeleccionada()!.duracion,
+                this.usuarioActual?.id,
+              );
+            this.horariosDisponibles.set(horarios);
+          });
+        }
+      }
     } catch (error) {
       console.error("Error al cargar la cita:", error);
 
-      this.snackBar.open("Ups algo salio mal", "error", {
+      this.snackBar.open("Error inesperado al procesar la solicitud", "✕", {
         duration: 4000,
         panelClass: ["bg-red-600", "text-white"],
       });
-      this.especialistaSeleccionado.set(null);
-      this.especialidadSeleccionada.set(null);
-      this.fechaSeleccionada.set(null);
-      this.horaSelecionada.set(null);
     }
   }
 }

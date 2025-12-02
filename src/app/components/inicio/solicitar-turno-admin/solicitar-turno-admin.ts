@@ -124,20 +124,20 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
       this.usuarioActual = usuario;
     });
 
-    // Usamos el método centralizado del servicio
-    const especialistasConDisponibilidad =
-      await this.turnosService.obtenerEspecialistasConDisponibilidad();
+    // Cargar datos en paralelo para mayor velocidad
+    const [todosEspecialistas, pacientesData] = await Promise.all([
+      this.turnosService.obtenerEspecialistas(),
+      this.usuariosService.obtenerPacientesVerificados(),
+    ]);
 
-    this.especialistas.set(especialistasConDisponibilidad);
-    this.especialistasBuscados.set(true);
-
-    // cargar pacientes
-    const todosUsuarios = await this.usuariosService.obtenerTodosUsuarios();
-    this.pacientes.set(
-      todosUsuarios.filter(
-        (u) => u.rol === "paciente" && u.emailVerificado === true,
-      ),
+    // Filtrar solo especialistas validados y activos
+    const especialistasValidados = todosEspecialistas.filter(
+      (e) => e.validadoAdmin === true && e.activo === true,
     );
+
+    this.especialistas.set(especialistasValidados);
+    this.especialistasBuscados.set(true);
+    this.pacientes.set(pacientesData);
 
     this.loadin.hide();
   }
@@ -178,9 +178,13 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     this.horariosDisponibles.set([]);
     this.cargando.set(true);
 
+    // Obtener fechas disponibles de forma eficiente
     const fechas = await this.turnosService.obtenerFechasConHorariosDisponibles(
       this.especialistaSeleccionado()!.id,
       es.duracion,
+      15,
+      new Date(),
+      this.pacienteSeleccionado()?.id, // 🆕 Pasar ID del paciente
     );
     this.fechasDisponibles.set(fechas);
     this.diasBuscados.set(true);
@@ -196,6 +200,7 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
       fecha,
       this.especialistaSeleccionado()!.id,
       this.especialidadSeleccionada()!.duracion,
+      this.pacienteSeleccionado()?.id, // 🆕 Pasar ID del paciente para validar solapamientos
     );
     this.horariosDisponibles.set(horarios);
     this.horasBuscadas.set(true);
@@ -233,28 +238,52 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     };
 
     try {
-      await this.turnosService.darAltaCita(cita);
-      this.snackBar.open("Cita agendada", "exito", {
-        duration: 4000,
-        panelClass: ["bg-blue-600", "text-white"],
-      });
+      const resultado = await this.turnosService.darAltaCita(cita);
 
-      // Resetear flujo
-      this.pacienteSeleccionado.set(null);
-      this.especialistaSeleccionado.set(null);
-      this.especialidadSeleccionada.set(null);
-      this.fechaSeleccionada.set(null);
-      this.horaSelecionada.set(null);
-    } catch {
-      this.snackBar.open("Ups algo salio mal", "error", {
+      if (resultado.success) {
+        this.snackBar.open("Cita agendada exitosamente", "✓", {
+          duration: 4000,
+          panelClass: ["bg-green-600", "text-white"],
+        });
+
+        // Resetear flujo
+        this.pacienteSeleccionado.set(null);
+        this.especialistaSeleccionado.set(null);
+        this.especialidadSeleccionada.set(null);
+        this.fechaSeleccionada.set(null);
+        this.horaSelecionada.set(null);
+      } else {
+        // Mostrar mensaje específico del error
+        const mensaje =
+          resultado.errorCode === "horario_no_disponible"
+            ? "El horario seleccionado ya no está disponible. Por favor, selecciona otro horario."
+            : resultado.message || "No se pudo agendar la cita";
+
+        this.snackBar.open(mensaje, "✕", {
+          duration: 6000,
+          panelClass: ["bg-red-600", "text-white"],
+        });
+
+        // Recargar horarios disponibles si el error es por conflicto
+        if (resultado.errorCode === "horario_no_disponible") {
+          this.horaSelecionada.set(null);
+          this.cargando.set(true);
+          const horarios = await this.turnosService.obtenerHorariosDisponibles(
+            this.fechaSeleccionada()!,
+            this.especialistaSeleccionado()!.id,
+            this.especialidadSeleccionada()!.duracion,
+            this.pacienteSeleccionado()?.id,
+          );
+          this.horariosDisponibles.set(horarios);
+          this.cargando.set(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error al cargar la cita:", error);
+      this.snackBar.open("Error inesperado al procesar la solicitud", "✕", {
         duration: 4000,
         panelClass: ["bg-red-600", "text-white"],
       });
     }
-  }
-
-  async btenerPacientes() {
-    const todosUsuarios = await this.usuariosService.obtenerTodosUsuarios();
-    todosUsuarios.filter((u) => u.rol === "paciente");
   }
 }
