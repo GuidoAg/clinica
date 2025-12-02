@@ -27,6 +27,15 @@ export interface DiasDisponibles {
   providedIn: "root",
 })
 export class Turnos {
+  private cacheDisponibilidad = new Map<
+    string,
+    {
+      data: string[];
+      timestamp: number;
+    }
+  >();
+  private readonly CACHE_TTL = 1 * 60 * 1000;
+
   constructor(
     private disponibilidadService: DisponibilidadService,
     private citasService: CitasService,
@@ -131,6 +140,13 @@ export class Turnos {
     desdeFecha = new Date(),
     pacienteId?: number,
   ): Promise<string[]> {
+    const cacheKey = `${idEspecialista}-${duracionMin}-${desdeFecha.toISOString().split("T")[0]}-${pacienteId || "sin-paciente"}`;
+    const cached = this.cacheDisponibilidad.get(cacheKey);
+
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      return cached.data;
+    }
+
     const disponibilidades =
       await this.disponibilidadService.obtenerTodasDisponibilidades(
         idEspecialista,
@@ -159,7 +175,127 @@ export class Turnos {
     });
 
     const resultados = await Promise.all(promesas);
-    return resultados.filter((fecha): fecha is string => fecha !== null);
+    const fechasDisponibles = resultados.filter(
+      (fecha): fecha is string => fecha !== null,
+    );
+
+    this.cacheDisponibilidad.set(cacheKey, {
+      data: fechasDisponibles,
+      timestamp: Date.now(),
+    });
+
+    return fechasDisponibles;
+  }
+
+  async obtenerFechasConHorariosDisponiblesProgresivo(
+    idEspecialista: number,
+    duracionMin: number,
+    pacienteId?: number,
+    diasIniciales = 7,
+    diasTotales = 15,
+  ): Promise<{ inicial: string[]; completar: () => Promise<string[]> }> {
+    const desdeFecha = new Date();
+    const cacheKey = `${idEspecialista}-${duracionMin}-${desdeFecha.toISOString().split("T")[0]}-${pacienteId || "sin-paciente"}`;
+    const cached = this.cacheDisponibilidad.get(cacheKey);
+
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      return {
+        inicial: cached.data.slice(0, diasIniciales),
+        completar: async () => cached.data,
+      };
+    }
+
+    const disponibilidades =
+      await this.disponibilidadService.obtenerTodasDisponibilidades(
+        idEspecialista,
+      );
+
+    if (disponibilidades.size === 0) {
+      return { inicial: [], completar: async () => [] };
+    }
+
+    const fechasPotencialesIniciales =
+      await this.disponibilidadService.calcularFechasDisponibles(
+        idEspecialista,
+        diasIniciales,
+        desdeFecha,
+      );
+
+    const promesasIniciales = fechasPotencialesIniciales.map(async (fecha) => {
+      const horarios = await this.obtenerHorariosDisponibles(
+        fecha,
+        idEspecialista,
+        duracionMin,
+        pacienteId,
+        disponibilidades,
+      );
+      return horarios.length > 0 ? fecha : null;
+    });
+
+    const resultadosIniciales = await Promise.all(promesasIniciales);
+    const fechasInicialesDisponibles = resultadosIniciales.filter(
+      (fecha): fecha is string => fecha !== null,
+    );
+
+    const completar = async (): Promise<string[]> => {
+      const fechasPotencialesTotales =
+        await this.disponibilidadService.calcularFechasDisponibles(
+          idEspecialista,
+          diasTotales,
+          desdeFecha,
+        );
+
+      const fechasRestantes = fechasPotencialesTotales.slice(diasIniciales);
+
+      const promesasRestantes = fechasRestantes.map(async (fecha) => {
+        const horarios = await this.obtenerHorariosDisponibles(
+          fecha,
+          idEspecialista,
+          duracionMin,
+          pacienteId,
+          disponibilidades,
+        );
+        return horarios.length > 0 ? fecha : null;
+      });
+
+      const resultadosRestantes = await Promise.all(promesasRestantes);
+      const fechasRestantesDisponibles = resultadosRestantes.filter(
+        (fecha): fecha is string => fecha !== null,
+      );
+
+      const todasLasFechas = [
+        ...fechasInicialesDisponibles,
+        ...fechasRestantesDisponibles,
+      ];
+
+      this.cacheDisponibilidad.set(cacheKey, {
+        data: todasLasFechas,
+        timestamp: Date.now(),
+      });
+
+      return todasLasFechas;
+    };
+
+    return {
+      inicial: fechasInicialesDisponibles,
+      completar,
+    };
+  }
+
+  invalidarCacheDisponibilidad(especialistaId?: number): void {
+    if (!especialistaId) {
+      this.cacheDisponibilidad.clear();
+      return;
+    }
+
+    const keysToDelete: string[] = [];
+    this.cacheDisponibilidad.forEach((_, key) => {
+      if (key.startsWith(`${especialistaId}-`)) {
+        keysToDelete.push(key);
+      }
+    });
+
+    keysToDelete.forEach((key) => this.cacheDisponibilidad.delete(key));
   }
 
   async especialistaTieneDisponibilidad(
@@ -321,7 +457,11 @@ export class Turnos {
   }
 
   async darAltaCita(cita: CitaTurnos): Promise<RespuestaApi<CitaTurnos>> {
-    return this.citasService.darAltaCita(cita);
+    const resultado = await this.citasService.darAltaCita(cita);
+    if (resultado.success) {
+      this.invalidarCacheDisponibilidad(cita.especialistaId);
+    }
+    return resultado;
   }
 
   async obtenerCitasConRegistro(): Promise<CitaCompletaTurnos[]> {
@@ -338,7 +478,7 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    return this.citasService.actualizarEstadoCita(
+    const resultado = await this.citasService.actualizarEstadoCita(
       cita.citaId,
       EstadoCita.CANCELADO,
       [EstadoCita.COMPLETADO],
@@ -347,6 +487,10 @@ export class Turnos {
       "Turno cancelado exitosamente.",
       { comentario_paciente: comentario },
     );
+    if (resultado.success) {
+      this.invalidarCacheDisponibilidad(cita.especialistaId);
+    }
+    return resultado;
   }
 
   async cargarEncuesta(
@@ -432,7 +576,7 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     comentario: string,
   ): Promise<RespuestaApi<boolean>> {
-    return this.citasService.actualizarEstadoCita(
+    const resultado = await this.citasService.actualizarEstadoCita(
       cita.citaId,
       EstadoCita.CANCELADO,
       [EstadoCita.COMPLETADO, EstadoCita.ACEPTADO, EstadoCita.RECHAZADO],
@@ -441,6 +585,10 @@ export class Turnos {
       "Turno cancelado exitosamente.",
       { comentario_especialista: comentario },
     );
+    if (resultado.success) {
+      this.invalidarCacheDisponibilidad(cita.especialistaId);
+    }
+    return resultado;
   }
 
   async rechazarCitaEspecialista(

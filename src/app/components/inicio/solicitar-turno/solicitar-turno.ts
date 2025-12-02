@@ -60,6 +60,7 @@ export class SolicitarTurno implements OnInit, OnDestroy {
   especialidades = signal<EspecialidadTurnos[]>([]);
   fechasDisponibles = signal<string[]>([]);
   horariosDisponibles = signal<string[]>([]);
+  cargandoDiasProgresivo = signal(false);
 
   especialistaSeleccionado = signal<EspecialistaTurnos | null>(null);
   especialidadSeleccionada = signal<EspecialidadTurnos | null>(null);
@@ -166,19 +167,33 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     this.fechaSeleccionada.set(null);
     this.horaSelecionada.set(null);
     this.horariosDisponibles.set([]);
+    this.fechasDisponibles.set([]);
+    this.diasBuscados.set(false);
+    this.cargandoDiasProgresivo.set(true);
 
-    await withLoading(this.cargando, async () => {
-      const fechas =
-        await this.turnosService.obtenerFechasConHorariosDisponibles(
+    try {
+      const { inicial, completar } =
+        await this.turnosService.obtenerFechasConHorariosDisponiblesProgresivo(
           this.especialistaSeleccionado()!.id,
           es.duracion,
-          15,
-          new Date(),
           this.usuarioActual?.id,
+          7,
+          15,
         );
-      this.fechasDisponibles.set(fechas);
+
+      this.fechasDisponibles.set(inicial);
       this.diasBuscados.set(true);
-    });
+      this.cargandoDiasProgresivo.set(false);
+
+      setTimeout(async () => {
+        const todasLasFechas = await completar();
+        this.fechasDisponibles.set(todasLasFechas);
+      }, 100);
+    } catch (error) {
+      console.error("Error al cargar disponibilidad:", error);
+      this.diasBuscados.set(true);
+      this.cargandoDiasProgresivo.set(false);
+    }
   }
 
   async seleccionarFecha(fecha: string) {

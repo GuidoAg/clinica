@@ -72,6 +72,14 @@
           <h2 class="mb-4 text-center text-xl font-semibold">
             ---- Seleccioná un día ----
           </h2>
+
+          @if (cargandoDiasProgresivo()) {
+          <div class="flex flex-wrap justify-center gap-2">
+            @for (i of [1,2,3,4,5,6,7]; track i) {
+            <div class="h-10 w-24 animate-pulse rounded bg-gray-200"></div>
+            }
+          </div>
+          } @else {
           <div class="flex flex-wrap justify-center gap-2">
             @for (fecha of fechasDisponibles(); track fecha) {
             <button
@@ -84,7 +92,7 @@
             </button>
             }
           </div>
-          @if (noHayFechas()) {
+          } @if (noHayFechas()) {
           <p class="mt-4 text-center text-red-500">No hay días disponibles.</p>
           }
         </div>

@@ -22,46 +22,6 @@
     } @else {
 
     <div class="mx-auto max-w-6xl space-y-6">
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div
-          class="rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-4 text-white shadow-md transition-transform hover:scale-105"
-        >
-          <div class="mb-2 flex items-center justify-between">
-            <mat-icon class="text-3xl">event_available</mat-icon>
-            <span class="text-3xl font-bold"
-              >{{ resumen().turnosPendientes }}</span
-            >
-          </div>
-          <p class="text-sm font-medium">
-            {{ usuario.rol === 'paciente' ? 'Turnos Pendientes' : 'Turnos por
-            Atender' }}
-          </p>
-        </div>
-
-        <div
-          class="rounded-lg bg-gradient-to-br from-green-500 to-green-600 p-4 text-white shadow-md transition-transform hover:scale-105"
-        >
-          <div class="mb-2 flex items-center justify-between">
-            <mat-icon class="text-3xl">today</mat-icon>
-            <span class="text-3xl font-bold">{{ resumen().turnosHoy }}</span>
-          </div>
-          <p class="text-sm font-medium">Turnos Hoy</p>
-        </div>
-
-        <div
-          class="rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 p-4 text-white shadow-md transition-transform hover:scale-105"
-        >
-          <div class="mb-2 flex items-center justify-between">
-            <mat-icon class="text-3xl">calendar_month</mat-icon>
-            <span class="text-3xl font-bold">{{ resumen().turnosMes }}</span>
-          </div>
-          <p class="text-sm font-medium">
-            {{ usuario.rol === 'paciente' ? 'Turnos Este Mes' : 'Atendidos Este
-            Mes' }}
-          </p>
-        </div>
-      </div>
-
       <div class="rounded-lg bg-white p-6 shadow-md">
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-2xl font-semibold text-azul-oscuro">

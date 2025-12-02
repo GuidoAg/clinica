@@ -13,12 +13,6 @@ import { Supabase } from "../../../supabase";
 import { TABLA } from "../../../constantes";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
-interface ResumenActividad {
-  turnosPendientes: number;
-  turnosHoy: number;
-  turnosMes: number;
-}
-
 @Component({
   selector: "app-entrada",
   standalone: true,
@@ -32,11 +26,6 @@ export class Entrada implements OnInit, OnDestroy {
   private realtimeChannel?: RealtimeChannel;
 
   proximosTurnos = signal<CitaCompletaTurnos[]>([]);
-  resumen = signal<ResumenActividad>({
-    turnosPendientes: 0,
-    turnosHoy: 0,
-    turnosMes: 0,
-  });
   cargando = signal(true);
 
   constructor(
@@ -113,15 +102,6 @@ export class Entrada implements OnInit, OnDestroy {
       this.proximosTurnos.set(
         this.turnosService.obtenerProximosTurnos(todasLasCitas, 3),
       );
-
-      const resumenCalc =
-        this.turnosService.calcularResumenActividad(todasLasCitas);
-
-      this.resumen.set({
-        turnosPendientes: resumenCalc.turnosPendientes,
-        turnosHoy: resumenCalc.turnosHoy,
-        turnosMes: resumenCalc.turnosMes,
-      });
     } catch (error) {
       console.error("Error al cargar datos:", error);
     } finally {
