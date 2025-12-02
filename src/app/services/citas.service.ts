@@ -39,23 +39,12 @@ interface CitaHorarios {
   paciente_id?: number;
 }
 
-/**
- * Servicio especializado para manejo de citas
- * Responsabilidades:
- * - CRUD de citas
- * - Obtener citas por especialista/paciente
- * - Validaciones de disponibilidad
- * - Cálculo de bloques ocupados
- */
 @Injectable({
   providedIn: "root",
 })
 export class CitasService {
   constructor(private disponibilidadService: DisponibilidadService) {}
 
-  /**
-   * Factory method para crear respuestas de error consistentes
-   */
   private crearRespuestaError<T>(
     mensaje: string,
     errorCode?: string,
@@ -67,9 +56,6 @@ export class CitasService {
     };
   }
 
-  /**
-   * Factory method para crear respuestas de éxito consistentes
-   */
   private crearRespuestaExito<T>(mensaje: string, data?: T): RespuestaApi<T> {
     return {
       success: true,
@@ -78,9 +64,6 @@ export class CitasService {
     };
   }
 
-  /**
-   * Verifica si dos rangos de tiempo se solapan
-   */
   verificarSolapamiento(
     inicio1: Date,
     fin1: Date,
@@ -90,9 +73,6 @@ export class CitasService {
     return inicio1 < fin2 && fin1 > inicio2;
   }
 
-  /**
-   * Actualiza el estado de una cita con validaciones
-   */
   async actualizarEstadoCita(
     citaId: number,
     nuevoEstado: EstadoCita,
@@ -102,12 +82,10 @@ export class CitasService {
     mensajeExito: string,
     camposAdicionales?: Record<string, unknown>,
   ): Promise<RespuestaApi<boolean>> {
-    // Validar que el estado actual permite la transición
     if (estadosNoPermitidos.includes(estadoActual)) {
       return this.crearRespuestaError(mensajeError);
     }
 
-    // Preparar datos de actualización
     const datosActualizacion: Record<string, unknown> = {
       estado: nuevoEstado,
       ...camposAdicionales,
@@ -127,9 +105,6 @@ export class CitasService {
     return this.crearRespuestaExito(mensajeExito, true);
   }
 
-  /**
-   * Método privado centralizado para mapear citas con sus datos dinámicos
-   */
   private async mapearCitasCompletas(
     citasPlano: CitaVista[],
   ): Promise<CitaCompletaTurnos[]> {
@@ -189,9 +164,6 @@ export class CitasService {
     );
   }
 
-  /**
-   * Obtiene todas las citas completas con sus datos médicos
-   */
   async obtenerCitasConRegistro(): Promise<CitaCompletaTurnos[]> {
     const { data: citasPlano, error: errorCitas } = await Supabase.from(
       TABLA.VISTA_CITAS_ENTERAS,
@@ -204,9 +176,6 @@ export class CitasService {
     return this.mapearCitasCompletas(citasPlano || []);
   }
 
-  /**
-   * Obtiene todas las citas completas de un paciente
-   */
   async obtenerCitasPacienteCompletas(
     id_usuario: number,
   ): Promise<CitaCompletaTurnos[]> {
@@ -223,9 +192,6 @@ export class CitasService {
     return this.mapearCitasCompletas(citasPlano || []);
   }
 
-  /**
-   * Obtiene todas las citas completas de un especialista
-   */
   async obtenerCitasEspecialistaCompletas(
     id_usuario: number,
   ): Promise<CitaCompletaTurnos[]> {
@@ -242,9 +208,6 @@ export class CitasService {
     return this.mapearCitasCompletas(citasPlano || []);
   }
 
-  /**
-   * Obtiene citas de un especialista en una fecha específica (solo horarios)
-   */
   private async obtenerCitasEspecialista(
     especialistaId: number,
     fecha: string,
@@ -269,9 +232,6 @@ export class CitasService {
     return data || [];
   }
 
-  /**
-   * Obtiene citas de un paciente en una fecha específica (solo horarios)
-   */
   private async obtenerCitasPaciente(
     pacienteId: number,
     fecha: string,
@@ -300,12 +260,6 @@ export class CitasService {
     return data || [];
   }
 
-  /**
-   * Obtiene todas las citas (especialista + paciente) en una fecha
-   * Simplifica la query compleja en obtenerHorariosDisponibles
-   * ✨ Point 6: Query simplificado y más legible
-   * ✨ Optimización: 1 query única cuando hay pacienteId (en vez de 2)
-   */
   async obtenerCitasCombinadasDia(
     especialistaId: number,
     fecha: string,
@@ -315,7 +269,6 @@ export class CitasService {
       return this.obtenerCitasEspecialista(especialistaId, fecha);
     }
 
-    // ✨ Optimización: Query única combinada en vez de 2 separadas
     const inicioDia = new Date(`${fecha}T00:00:00`);
     const finDia = new Date(`${fecha}T23:59:59`);
 
@@ -335,9 +288,6 @@ export class CitasService {
     return data || [];
   }
 
-  /**
-   * Construye bloques de tiempo ocupados a partir de citas
-   */
   construirBloquesOcupados(
     citas: CitaHorarios[],
   ): { inicio: Date; fin: Date }[] {
@@ -347,15 +297,10 @@ export class CitasService {
       return { inicio, fin };
     });
 
-    // Ordenar por inicio
     bloques.sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
     return bloques;
   }
 
-  /**
-   * Valida que un horario específico esté disponible
-   * Retorna true si está disponible, false si hay conflicto
-   */
   async validarHorarioDisponible(
     especialistaId: number,
     fechaHora: Date,
@@ -364,7 +309,6 @@ export class CitasService {
     const inicio = fechaHora;
     const fin = new Date(inicio.getTime() + duracionMin * 60000);
 
-    // Buscar citas que se solapen con este horario
     const { data, error } = await Supabase.from(TABLA.CITAS)
       .select(QUERY_CITAS.FECHA_DURACION)
       .eq("especialista_id", especialistaId)
@@ -373,18 +317,17 @@ export class CitasService {
       .gte(
         "fecha_hora",
         new Date(inicio.getTime() - 24 * 60 * 60 * 1000).toISOString(),
-      ) // Un día antes
+      )
       .lte(
         "fecha_hora",
         new Date(fin.getTime() + 24 * 60 * 60 * 1000).toISOString(),
-      ); // Un día después
+      );
 
     if (error) {
       console.error("Error al validar horario:", error);
       return false;
     }
 
-    // Verificar si alguna cita existente se solapa usando método centralizado
     const citas = data || [];
     for (const cita of citas) {
       const citaInicio = new Date(cita.fecha_hora);
@@ -393,19 +336,15 @@ export class CitasService {
       );
 
       if (this.verificarSolapamiento(inicio, fin, citaInicio, citaFin)) {
-        return false; // Hay conflicto
+        return false;
       }
     }
 
-    return true; // No hay conflictos
+    return true;
   }
 
-  /**
-   * Inserta una nueva cita con validación atómica
-   */
   async darAltaCita(cita: CitaTurnos): Promise<RespuestaApi<CitaTurnos>> {
     try {
-      // Validación pre-insert: verificar que el horario sigue disponible
       const estaDisponible = await this.validarHorarioDisponible(
         cita.especialistaId,
         cita.fechaHora,

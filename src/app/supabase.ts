@@ -10,7 +10,6 @@ export const Supabase = createClient(
       persistSession: true,
       autoRefreshToken: true,
       flowType: "pkce",
-      // Deshabilita el lock completamente para evitar conflictos entre pestañas
       lock: async <R>(
         _name: string,
         _acquireTimeout: number,
@@ -20,13 +19,11 @@ export const Supabase = createClient(
       },
     },
     realtime: {
-      // Configuración optimizada para Realtime
       params: {
-        eventsPerSecond: 10, // Límite de eventos por segundo
+        eventsPerSecond: 10,
       },
-      heartbeatIntervalMs: 30000, // Heartbeat cada 30 segundos
+      heartbeatIntervalMs: 30000,
       reconnectAfterMs: (tries: number) => {
-        // Backoff exponencial: 1s, 2s, 4s, 8s, hasta máx 30s
         return Math.min(1000 * Math.pow(2, tries), 30000);
       },
     },

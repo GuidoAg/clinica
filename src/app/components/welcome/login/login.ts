@@ -49,7 +49,7 @@ export class Login implements OnInit, AfterViewInit {
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private auth = inject(AuthSupabase);
-  private overlay = inject(LoadingOverlayService); // nuevo
+  private overlay = inject(LoadingOverlayService);
 
   loginForm!: FormGroup;
   hidePassword = true;
@@ -129,11 +129,10 @@ export class Login implements OnInit, AfterViewInit {
       return;
     }
 
-    // Obtener perfil logueado
     const user = await this.auth.getCurrentUser();
 
     if (user) {
-      await this.auth.registrarIngreso(user.id); // esto guarda en Supabase
+      await this.auth.registrarIngreso(user.id);
     }
 
     this.router.navigate(["/home"]);

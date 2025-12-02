@@ -53,7 +53,6 @@ export class AuthSupabase {
   private async restoreUserFromSession(): Promise<void> {
     const { data, error } = await Supabase.auth.getUser();
 
-    // Si el token quedó inválido, cerramos sesión y limpiamos
     if (error?.message === "User from sub claim in JWT does not exist") {
       await Supabase.auth.signOut();
       localStorage.clear();
@@ -79,7 +78,7 @@ export class AuthSupabase {
       return { success: false };
     }
 
-    const { data: perfil, error } = await Supabase.from("perfiles")
+    const { data: perfil, error } = await Supabase.from(TABLA.PERFILES)
       .select(
         `
         id,
@@ -119,7 +118,6 @@ export class AuthSupabase {
 
     const usuario = mapPerfilToUsuario(perfil, email);
 
-    // Si es especialista pero no validado, no dejamos pasar
     if (usuario.rol === "especialista" && !usuario.validadoAdmin) {
       this.userSubject.next(null);
       return {
@@ -129,7 +127,7 @@ export class AuthSupabase {
     }
 
     if (!usuario.emailVerificado) {
-      const { error: updateError } = await Supabase.from("perfiles")
+      const { error: updateError } = await Supabase.from(TABLA.PERFILES)
         .update({ email_verificado: true })
         .eq("auth_id", auth_id);
 
@@ -142,7 +140,6 @@ export class AuthSupabase {
         };
       }
 
-      // Refrescar el usuario
       usuario.emailVerificado = true;
     }
 
@@ -184,7 +181,6 @@ export class AuthSupabase {
   async registerPaciente(
     dataRegistro: RegistroPaciente,
   ): Promise<RespuestaApi<void>> {
-    // Paso 1: Crear usuario en Auth
     const { data, error } = await Supabase.auth.signUp({
       email: dataRegistro.mail,
       password: dataRegistro.contrasena,
@@ -209,7 +205,6 @@ export class AuthSupabase {
     const auth_id = data.user.id;
     const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, "");
 
-    // Paso 2: Subir imágenes
     const imagenPerfilRes = await subirImagenDesdeBase64(
       dataRegistro.imagenPerfil,
       "fotoPerfilPaciente",
@@ -230,9 +225,8 @@ export class AuthSupabase {
       return { success: false, message: imagenFondoRes.message };
     }
 
-    // Paso 3: Insertar perfil y obtener el id generado
     const { data: perfilData, error: perfilError } = await Supabase.from(
-      "perfiles",
+      TABLA.PERFILES,
     )
       .insert({
         auth_id,
@@ -253,9 +247,8 @@ export class AuthSupabase {
       };
     }
 
-    // Paso 4: Insertar detalles_paciente usando perfilData.id
     const { error: detallesError } = await Supabase.from(
-      "detalles_paciente",
+      TABLA.DETALLES_PACIENTE,
     ).insert({
       perfil_id: perfilData.id,
       obra_social: dataRegistro.obraSocial,
@@ -275,7 +268,6 @@ export class AuthSupabase {
   async registerEspecialista(
     dataRegistro: RegistroEspecialista,
   ): Promise<RespuestaApi<void>> {
-    // Paso 1: Crear usuario en Auth
     const { data, error } = await Supabase.auth.signUp({
       email: dataRegistro.mail,
       password: dataRegistro.contrasena,
@@ -311,9 +303,8 @@ export class AuthSupabase {
       return { success: false, message: imagenPerfilRes.message };
     }
 
-    // Paso 3: Insertar en perfiles y obtener el id generado
     const { data: perfilData, error: perfilError } = await Supabase.from(
-      "perfiles",
+      TABLA.PERFILES,
     )
       .insert({
         auth_id,
@@ -334,9 +325,8 @@ export class AuthSupabase {
       };
     }
 
-    // Paso 4: Insertar en detalles_especialista usando perfilData.id
     const { error: detallesError } = await Supabase.from(
-      "detalles_especialista",
+      TABLA.DETALLES_ESPECIALISTA,
     ).insert({
       perfil_id: perfilData.id,
       validado_admin: false,
@@ -350,7 +340,6 @@ export class AuthSupabase {
       };
     }
 
-    // Paso 5: Insertar especialidades (múltiples)
     const especialidadesParaInsertar = [];
 
     for (const especialidad of dataRegistro.especialidades) {
@@ -360,7 +349,6 @@ export class AuthSupabase {
       let especialidadId: number;
 
       if (esNueva) {
-        // Es una nueva especialidad (texto)
         const resultado = await this.agregarEspecialidadSiNoExiste(
           String(especialidad),
         );
@@ -371,7 +359,6 @@ export class AuthSupabase {
 
         especialidadId = resultado.data;
       } else {
-        // Es un ID existente
         especialidadId = parsedId;
       }
 
@@ -382,10 +369,9 @@ export class AuthSupabase {
       });
     }
 
-    // Insertar todas las especialidades
     if (especialidadesParaInsertar.length > 0) {
       const { error: especialidadError } = await Supabase.from(
-        "especialista_especialidades",
+        TABLA.ESPECIALISTA_ESPECIALIDADES,
       ).insert(especialidadesParaInsertar);
 
       if (especialidadError) {
@@ -402,7 +388,6 @@ export class AuthSupabase {
   async registerAdmin(
     dataRegistro: RegistroAdmin,
   ): Promise<RespuestaApi<void>> {
-    // Paso 1: Crear usuario en Auth
     const { data, error } = await Supabase.auth.signUp({
       email: dataRegistro.mail,
       password: dataRegistro.contrasena,
@@ -438,8 +423,7 @@ export class AuthSupabase {
       return { success: false, message: imagenPerfilRes.message };
     }
 
-    // Paso 3: Insertar perfil y obtener el id generado
-    const { error: perfilError } = await Supabase.from("perfiles").insert({
+    const { error: perfilError } = await Supabase.from(TABLA.PERFILES).insert({
       auth_id,
       nombre: dataRegistro.nombre,
       apellido: dataRegistro.apellido,
@@ -481,7 +465,6 @@ export class AuthSupabase {
   ): Promise<RespuestaApi<number>> {
     const nombreNormalizado = nombre.trim().toLowerCase();
 
-    // Verificamos si ya existe (case-insensitive)
     const { data: existentes, error: errorConsulta } = await Supabase.from(
       TABLA.ESPECIALIDADES,
     )
@@ -500,16 +483,14 @@ export class AuthSupabase {
     );
 
     if (yaExiste && existentes?.[0]?.id) {
-      return { success: true, data: existentes[0].id }; // Reutilizamos la existente
+      return { success: true, data: existentes[0].id };
     }
 
-    // Insertamos la nueva especialidad con URL default
     const defaultUrl =
       "https://rtcjwvxzoxhglvqirrel.supabase.co/storage/v1/object/public/imagenes/fotoEspecialidad/default.png";
 
-    // Insertamos la nueva especialidad
     const { data: insertada, error: errorInsert } = await Supabase.from(
-      "especialidades",
+      TABLA.ESPECIALIDADES,
     )
       .insert({ nombre, url_icono: defaultUrl })
       .select("id")
@@ -526,7 +507,7 @@ export class AuthSupabase {
   }
 
   async getCaptchas(): Promise<Captcha[]> {
-    const { data, error } = await Supabase.from("captcha")
+    const { data, error } = await Supabase.from(TABLA.CAPTCHA)
       .select("imagenUrl, respuesta")
       .overrideTypes<
         { imagenUrl: string; respuesta: string }[],
@@ -545,8 +526,9 @@ export class AuthSupabase {
   }
 
   async registrarIngreso(perfilId: number): Promise<void> {
-    // Obtener el rol del perfil para verificar si es admin
-    const { data: perfil, error: perfilError } = await Supabase.from("perfiles")
+    const { data: perfil, error: perfilError } = await Supabase.from(
+      TABLA.PERFILES,
+    )
       .select("rol")
       .eq("id", perfilId)
       .single();
@@ -556,14 +538,12 @@ export class AuthSupabase {
       return;
     }
 
-    // No registrar ingresos de administradores
     if (perfil.rol === "admin") {
       return;
     }
 
-    const { error } = await Supabase.from("registro_ingresos").insert({
+    const { error } = await Supabase.from(TABLA.REGISTRO_INGRESOS).insert({
       perfil_id: perfilId,
-      // fecha_ingreso se setea solo si tiene default value `now()` en Supabase
     });
 
     if (error) {

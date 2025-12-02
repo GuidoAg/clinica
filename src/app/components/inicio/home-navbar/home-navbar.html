@@ -1,9 +1,6 @@
-<!-- Contenedor global sin scroll y pantalla completa -->
 <div class="fixed inset-0 flex flex-col overflow-hidden bg-gray-300">
-  <!-- Navbar superior -->
   <nav class="z-50 flex items-center justify-between bg-crema px-6 py-3 shadow">
     <div class="flex items-center gap-4">
-      <!-- Botón hamburguesa -->
       <button
         mat-icon-button
         (click)="toggleSidebar()"
@@ -12,7 +9,6 @@
         <mat-icon>menu</mat-icon>
       </button>
 
-      <!-- Logo y texto -->
       <div
         class="flex cursor-pointer items-center space-x-4"
         (click)="clickLogo()"
@@ -31,9 +27,7 @@
       </div>
     </div>
 
-    <!-- Language Selector y Cerrar Sesión -->
     <div class="flex items-end space-x-4">
-      <!-- Language Selector -->
       <div class="relative flex items-end">
         <button
           class="flex items-center gap-0.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:shadow"
@@ -45,7 +39,6 @@
           >
         </button>
 
-        <!-- Dropdown Menu -->
         <div
           *ngIf="showLanguageMenu"
           class="ring-opacity-5 absolute top-full right-0 mt-1 w-32 rounded-lg bg-white shadow-lg ring-1 ring-black"
@@ -74,7 +67,6 @@
         </div>
       </div>
 
-      <!-- Botón Cerrar sesión -->
       <button
         class="rounded-full bg-verde-oscuro px-6 py-1.5 text-sm font-semibold text-white transition-transform hover:scale-110"
         (click)="clickCerrarSesion()"
@@ -84,9 +76,7 @@
     </div>
   </nav>
 
-  <!-- Contenido con sidebar + router outlet -->
-  <div class="flex flex-grow overflow-hidden">
-    <!-- Barra lateral -->
+  <div class="flex h-full overflow-hidden">
     <aside
       class="w-64 bg-azul-oscuro p-6 text-crema transition-all duration-300"
       [class.-ml-64]="!sidebarOpen"
@@ -158,7 +148,6 @@
       </nav>
     </aside>
 
-    <!-- Contenido principal -->
     <main class="flex-grow overflow-auto p-6 transition-all duration-300">
       <router-outlet class="h-full w-full"></router-outlet>
     </main>

@@ -19,7 +19,6 @@ export class TurnosPorDiaChart implements AfterViewInit {
   canvasRef!: ElementRef<HTMLCanvasElement>;
 
   async ngAfterViewInit() {
-    // Lazy loading: cargar Chart.js y componentes solo cuando se necesiten
     const {
       Chart,
       BarElement,

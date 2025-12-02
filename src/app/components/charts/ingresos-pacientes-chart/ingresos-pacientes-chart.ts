@@ -18,7 +18,6 @@ import { Estadisticas } from "../../../services/estadisticas";
 })
 export class IngresosPacientesChart implements AfterViewInit {
   private estadisticas = inject(Estadisticas);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private chart?: any;
 
   @ViewChild("canvas", { static: true })
@@ -29,7 +28,6 @@ export class IngresosPacientesChart implements AfterViewInit {
   }
 
   async render(): Promise<void> {
-    // Lazy loading: cargar Chart.js y componentes solo cuando se necesiten
     const {
       Chart,
       LineElement,
@@ -97,7 +95,6 @@ export class IngresosPacientesChart implements AfterViewInit {
               callback: function (value, index) {
                 const label = labels[index];
                 if (!label) return "";
-                // Mostrar solo cada N etiquetas para evitar sobreposición
                 if (index % Math.ceil(labels.length / 20) === 0) {
                   return label;
                 }

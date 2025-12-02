@@ -30,7 +30,6 @@ export class HomeRouter implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Ocultamos el spinner después de que la vista esté completamente renderizada
     setTimeout(() => {
       this.loading.hide();
     }, 0);

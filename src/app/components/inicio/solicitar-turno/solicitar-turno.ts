@@ -119,14 +119,12 @@ export class SolicitarTurno implements OnInit, OnDestroy {
         this.usuarioActual = null;
         return;
       }
-      // Asegurar que id sea número
       usuario.id =
         typeof usuario.id === "string" ? Number(usuario.id) : usuario.id;
 
       this.usuarioActual = usuario;
     });
 
-    // Cargar solo especialistas validados (sin verificar disponibilidad aún)
     const todosEspecialistas = await this.turnosService.obtenerEspecialistas();
     const especialistasValidados = todosEspecialistas.filter(
       (e) => e.validadoAdmin === true && e.activo === true,
@@ -155,7 +153,6 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     this.diasBuscados.set(false);
     this.horasBuscadas.set(false);
 
-    // ✨ Point 8: Usando withLoading helper
     await withLoading(this.cargando, async () => {
       const especialidades =
         await this.turnosService.obtenerEspecialidadesDeEspecialista(e.id);
@@ -170,16 +167,14 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     this.horaSelecionada.set(null);
     this.horariosDisponibles.set([]);
 
-    // ✨ Point 8: Usando withLoading helper
     await withLoading(this.cargando, async () => {
-      // Obtener fechas disponibles de forma eficiente
       const fechas =
         await this.turnosService.obtenerFechasConHorariosDisponibles(
           this.especialistaSeleccionado()!.id,
           es.duracion,
           15,
           new Date(),
-          this.usuarioActual?.id, // 🆕 Pasar ID del paciente
+          this.usuarioActual?.id,
         );
       this.fechasDisponibles.set(fechas);
       this.diasBuscados.set(true);
@@ -190,13 +185,12 @@ export class SolicitarTurno implements OnInit, OnDestroy {
     this.horaSelecionada.set(null);
     this.fechaSeleccionada.set(fecha);
 
-    // ✨ Point 8: Usando withLoading helper
     await withLoading(this.cargando, async () => {
       const horarios = await this.turnosService.obtenerHorariosDisponibles(
         fecha,
         this.especialistaSeleccionado()!.id,
         this.especialidadSeleccionada()!.duracion,
-        this.usuarioActual?.id, // 🆕 Pasar ID del paciente para validar solapamientos
+        this.usuarioActual?.id,
       );
       this.horariosDisponibles.set(horarios);
       this.horasBuscadas.set(true);
@@ -246,7 +240,6 @@ export class SolicitarTurno implements OnInit, OnDestroy {
         this.fechaSeleccionada.set(null);
         this.horaSelecionada.set(null);
       } else {
-        // Mostrar mensaje específico del error
         const mensaje =
           resultado.errorCode === "horario_no_disponible"
             ? "El horario seleccionado ya no está disponible. Por favor, selecciona otro horario."
@@ -257,7 +250,6 @@ export class SolicitarTurno implements OnInit, OnDestroy {
           panelClass: ["bg-red-600", "text-white"],
         });
 
-        // Recargar horarios disponibles para mostrar actualización
         if (resultado.errorCode === "horario_no_disponible") {
           this.horaSelecionada.set(null);
           await withLoading(this.cargando, async () => {

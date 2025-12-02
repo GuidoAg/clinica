@@ -45,7 +45,7 @@ export class WelcomeNavbar {
   clickLogo() {
     const currentUrl = this.router.url;
     if (currentUrl === "/welcome-page") {
-      window.scrollTo({ top: 0, behavior: "smooth" }); // ← esto es lo vistoso
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       this.router.navigate(["/welcome-page"]).then(() => {
         setTimeout(() => {
@@ -67,10 +67,8 @@ export class WelcomeNavbar {
     const currentUrl = this.router.url;
 
     if (currentUrl === "/welcome-page/registro") {
-      // Si ya estamos en registro, trigger reset
       this.registerState.triggerReset();
     } else {
-      // Si no estamos en registro, navegar
       this.router.navigate(["/welcome-page/registro"]);
     }
   }

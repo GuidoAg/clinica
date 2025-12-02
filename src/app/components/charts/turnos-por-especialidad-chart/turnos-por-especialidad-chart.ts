@@ -28,7 +28,6 @@ export class TurnosPorEspecialidadChart implements AfterViewInit {
   }
 
   private async render(): Promise<void> {
-    // Lazy loading: cargar Chart.js y componentes solo cuando se necesiten
     const { Chart, ArcElement, PieController, Tooltip, Legend } = await import(
       "chart.js"
     );

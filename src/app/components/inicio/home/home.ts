@@ -35,7 +35,6 @@ interface FechaRango {
 export class Home implements AfterViewInit {
   private loading = inject(LoadingOverlayService);
 
-  // Rangos de fechas para cada gráfico
   rangoTurnosPorMedico: WritableSignal<FechaRango> = signal({
     desde: "2024-01-01",
     hasta: "2027-01-01",
@@ -79,7 +78,6 @@ export class Home implements AfterViewInit {
     await this.turnosFinalizadosChart?.render(desde, hasta);
   }
 
-  // Métodos para Turnos por Médico
   onDesdeTurnosMedicoChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.rangoTurnosPorMedico.set({
@@ -105,7 +103,6 @@ export class Home implements AfterViewInit {
     }
   }
 
-  // Métodos para Turnos Finalizados
   onDesdeTurnosFinalizadosChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.rangoTurnosFinalizados.set({

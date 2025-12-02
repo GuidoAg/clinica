@@ -71,7 +71,6 @@ export class HomeNavbar implements OnInit {
       return;
     }
 
-    // Solo si la ruta es distinta
     this.router.navigate(["/home/solicitar-turnos"]);
   }
 
@@ -84,7 +83,6 @@ export class HomeNavbar implements OnInit {
       return;
     }
 
-    // Solo si la ruta es distinta
     this.router.navigate(["/home/solicitar-turnos-admin"]);
   }
 
@@ -97,7 +95,6 @@ export class HomeNavbar implements OnInit {
       return;
     }
 
-    // Solo si la ruta es distinta
     this.router.navigate(["/home/usuarios"]);
   }
 
@@ -126,7 +123,6 @@ export class HomeNavbar implements OnInit {
       return;
     }
 
-    // Solo si la ruta es distinta
     this.router.navigate([rutaDestino]);
   }
 
@@ -139,7 +135,6 @@ export class HomeNavbar implements OnInit {
     this.router.navigate([`/home/${ruta}`]);
   }
 
-  // Language selector methods
   changeLanguage(lang: string) {
     this.translocoService.setActiveLang(lang);
     localStorage.setItem("selectedLang", lang);

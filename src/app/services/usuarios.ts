@@ -62,10 +62,6 @@ export class UsuariosService {
     });
   }
 
-  /**
-   * Versión optimizada que obtiene solo pacientes verificados
-   * Mucho más rápido que obtener todos y filtrar
-   */
   async obtenerPacientesVerificados(): Promise<Usuario[]> {
     const { data: perfiles, error } = await Supabase.from(
       TABLA.VISTA_PERFILES_CON_EMAIL,

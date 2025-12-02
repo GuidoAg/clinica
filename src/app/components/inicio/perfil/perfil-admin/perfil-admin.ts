@@ -24,8 +24,7 @@ export class PerfilAdmin implements OnInit, AfterViewInit {
   }
 
   async ngOnInit(): Promise<void> {
-    // Esperamos el primer valor emitido para el usuario
-    const usuario = await firstValueFrom(this.usuario$);
+    this.usuario = await firstValueFrom(this.usuario$);
 
     if (usuario) {
       console.log("Usuario cargado en ngOnInit:", usuario.urlImagenFondo);
@@ -33,8 +32,6 @@ export class PerfilAdmin implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Aca Angular ya terminó de renderizar el DOM
-    // Ocultamos el spinner ahora para asegurar que el contenido ya esté visible
     this.loading.hide();
   }
 }

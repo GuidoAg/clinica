@@ -18,7 +18,6 @@ export class TurnosPorMedicoChart {
   canvasRef!: ElementRef<HTMLCanvasElement>;
 
   async render(desde: string, hasta: string): Promise<void> {
-    // Lazy loading: cargar Chart.js y componentes solo cuando se necesiten
     const {
       Chart,
       BarElement,

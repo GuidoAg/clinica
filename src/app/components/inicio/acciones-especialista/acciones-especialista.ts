@@ -39,10 +39,8 @@ export class AccionesEspecialista {
 
   cargando = signal(false);
 
-  // Exponer rangos médicos para el template
   readonly RANGOS_MEDICOS = RANGOS_MEDICOS;
 
-  // Mensajes de error de validación
   errorAltura = "";
   errorPeso = "";
   errorTemperatura = "";
@@ -302,7 +300,6 @@ export class AccionesEspecialista {
   }
 
   async guardarHistoriaClinica() {
-    // Validar campos médicos primero
     const validacion = validarRegistroMedico(this.registro);
     if (!validacion.valido) {
       this.snackBar.open(validacion.errores.join(". "), "Cerrar", {
@@ -389,7 +386,6 @@ export class AccionesEspecialista {
     const datosTextoValidos = this.datosTexto.every((d) => {
       const clave = d.clave.trim();
       const valor = d.valor.trim();
-      // Ambos deben estar completos o ambos vacíos (para evitar mitad cargados)
       return (clave && valor) || (!clave && !valor);
     });
 
@@ -409,7 +405,6 @@ export class AccionesEspecialista {
     this.cerrar.emit();
   }
 
-  // Métodos de validación en tiempo real para el template
   validarAltura() {
     const resultado = validarRango(
       this.registro.alturaCm,

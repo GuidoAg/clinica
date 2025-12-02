@@ -23,7 +23,7 @@ export class MiCaptcha implements OnInit {
   mensajeVerificacion = "";
   verificando = false;
   cargado = false;
-  captchaActivo = true; // Switch para activar/desactivar el captcha
+  captchaActivo = true;
 
   async ngOnInit() {
     await this.cargarCaptchasDesdeSupabase();
@@ -53,7 +53,7 @@ export class MiCaptcha implements OnInit {
     do {
       const index = Math.floor(Math.random() * this.captchas.length);
       nuevo = this.captchas[index];
-    } while (nuevo === this.captchaActual); // evita repetir el actual
+    } while (nuevo === this.captchaActual);
 
     return nuevo;
   }
@@ -61,7 +61,6 @@ export class MiCaptcha implements OnInit {
   async verificarRespuesta() {
     if (!this.captchaActual) return;
 
-    // Si el captcha está desactivado, siempre emite true
     if (!this.captchaActivo) {
       this.captchaValido = true;
       this.mensajeVerificacion = "Captcha desactivado - Verificación omitida";
@@ -72,7 +71,6 @@ export class MiCaptcha implements OnInit {
     this.mensajeVerificacion = "";
     this.verificando = true;
 
-    // Delay artificial de 1 segundo
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     const inputHash = await this.sha256(this.userInput.trim().toLowerCase());
@@ -107,8 +105,6 @@ export class MiCaptcha implements OnInit {
     this.userInput = "";
     this.mensajeVerificacion = "";
 
-    // Cuando se desactiva, automáticamente se considera válido
-    // Cuando se activa, se resetea a false hasta que se verifique
     if (!this.captchaActivo) {
       this.captchaValido = true;
       this.captchaResuelto.emit(true);

@@ -1,7 +1,6 @@
 <div
   class="relative w-[300px] items-center justify-center align-middle text-sm"
 >
-  <!-- Capa de opacidad -->
   @if (verificando || !cargado) {
   <div
     class="absolute inset-0 z-10 flex items-center justify-center bg-white/120 backdrop-blur-sm"
@@ -31,7 +30,6 @@
   <div
     class="relative rounded-lg border border-gray-300 bg-crema p-4 shadow-sm"
   >
-    <!-- Switch para activar/desactivar captcha -->
     <button
       type="button"
       (click)="toggleCaptcha()"

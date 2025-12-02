@@ -1,5 +1,4 @@
 <nav class="fixed top-0 left-0 z-50 flex w-full bg-crema px-6 py-3 shadow">
-  <!-- Logo a la izquierda -->
   <div
     class="flex cursor-pointer items-center space-x-4"
     (click)="clickLogo()"
@@ -17,12 +16,9 @@
     </div>
   </div>
 
-  <!-- Espacio flexible en el medio para empujar el resto hacia la derecha -->
   <div class="flex-grow"></div>
 
-  <!-- Contenedor derecho (texto plano + botones) -->
   <div class="flex items-end space-y-1 space-x-9">
-    <!-- Texto plano -->
     <div class="flex items-end space-x-4">
       <a
         href="welcome-page/planes"
@@ -46,10 +42,9 @@
         href="welcome-page/comentarios"
         class="text-black transition-colors hover:text-verde-oscuro"
         >{{ 'navbar.comentarios' | transloco }}</a
-      >
+      </a>
     </div>
 
-    <!-- Selector de idioma con dropdown -->
     <div class="relative flex items-end">
       <button
         class="flex items-center gap-0.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:shadow"
@@ -61,7 +56,6 @@
         >
       </button>
 
-      <!-- Dropdown menu -->
       <div
         *ngIf="showLanguageMenu"
         class="ring-opacity-5 absolute top-full right-0 mt-1 w-32 rounded-lg bg-white shadow-lg ring-1 ring-black"
@@ -90,8 +84,7 @@
       </div>
     </div>
 
-    <!-- Botones normales -->
-    <div class="flex items-end space-x-4 text-sm">
+    <div class="flex items-end space-x-2">
       <button
         class="rounded-full bg-verde-oscuro px-6 py-1.5 font-semibold text-white transition-transform hover:scale-110"
         (click)="clickLogin()"
@@ -110,7 +103,6 @@
 
 <router-outlet></router-outlet>
 
-<!-- Footer tipo chin -->
 <footer class="bg-gray-400 px-4 py-6 text-sm text-gray-600">
   <div class="flex flex-wrap justify-center gap-6">
     <a href="#" class="hover:underline"

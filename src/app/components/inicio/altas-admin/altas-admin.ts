@@ -94,7 +94,6 @@ export class AltasAdmin implements OnInit, OnDestroy {
 
       this.especialidadOptions = await this.auth.obtenerEspecialidades();
 
-      // Construcción del form
       this.registroForm = this.fb.group({
         nombre: [
           "",
@@ -132,7 +131,6 @@ export class AltasAdmin implements OnInit, OnDestroy {
         imagenFondo: [""],
       });
     } catch {
-      // Error al cargar especialidades
       console.error("Error al cargar especialidades");
     } finally {
       this.loading.hide();
@@ -144,7 +142,6 @@ export class AltasAdmin implements OnInit, OnDestroy {
 
     if (!this.registroForm) return;
 
-    // Limpiar especialidades temporales al cambiar de tipo
     this.especialidadOptions = this.especialidadOptions.filter(
       (esp) => esp.id > 0,
     );
@@ -173,13 +170,11 @@ export class AltasAdmin implements OnInit, OnDestroy {
       this.especialidadesSeleccionadas.clear();
       this.mostrarCampoOtraEspecialidad = false;
 
-      // Admin no requiere ni obraSocial ni especialidad
       obraSocialCtrl?.clearValidators();
       especialidadesCtrl?.clearValidators();
       nuevaEspecialidadCtrl?.clearValidators();
     }
 
-    // Actualizar validez
     obraSocialCtrl?.updateValueAndValidity();
     especialidadesCtrl?.updateValueAndValidity();
     nuevaEspecialidadCtrl?.updateValueAndValidity();
@@ -231,10 +226,8 @@ export class AltasAdmin implements OnInit, OnDestroy {
       return;
     }
 
-    // Normalizar el nombre
     const nombreNormalizado = this.normalizarNombre(nombreEspecialidad);
 
-    // Verificar si ya existe una especialidad con ese nombre
     const existeEspecialidad = this.especialidadOptions.some(
       (esp) => esp.nombre.toLowerCase() === nombreNormalizado.toLowerCase(),
     );
@@ -248,27 +241,22 @@ export class AltasAdmin implements OnInit, OnDestroy {
       return;
     }
 
-    // Crear un ID temporal negativo para distinguir nuevas especialidades
     const nuevoId = -(this.especialidadOptions.length + 1);
     const nuevaEspecialidad: Especialidad = {
       id: nuevoId,
       nombre: nombreNormalizado,
     };
 
-    // Agregar al array local
     this.especialidadOptions.push(nuevaEspecialidad);
 
-    // Auto-seleccionar la nueva especialidad
     this.especialidadesSeleccionadas.add(nuevoId);
     this.actualizarEspecialidadesEnForm();
 
-    // Limpiar el campo y ocultar
     if (nuevaEspControl) {
       nuevaEspControl.setValue("");
     }
     this.mostrarCampoOtraEspecialidad = false;
 
-    // Mostrar confirmación
     this.snackBar.open(
       `Especialidad "${nombreNormalizado}" agregada y seleccionada.`,
       "Cerrar",
@@ -347,7 +335,7 @@ export class AltasAdmin implements OnInit, OnDestroy {
   async registrar(): Promise<void> {
     if (this.registroForm.invalid || !this.tipoUsuario) return;
 
-    this.loading.show(); // <--- spinner on
+    this.loading.show();
     try {
       if (this.tipoUsuario === "paciente") {
         await this.handleRegistroPaciente();
@@ -427,20 +415,16 @@ export class AltasAdmin implements OnInit, OnDestroy {
       const f = this.registroForm.value;
       const imgPerfil = await fileToBase64(f.imagenPerfil as File);
 
-      // Construir array de especialidades
       const especialidades: string[] = [];
 
-      // Agregar especialidades seleccionadas
       if (
         f.especialidadesSeleccionadas &&
         f.especialidadesSeleccionadas.length > 0
       ) {
         f.especialidadesSeleccionadas.forEach((id: number) => {
           if (id > 0) {
-            // Especialidad existente (ID positivo)
             especialidades.push(String(id));
           } else {
-            // Especialidad nueva (ID negativo temporal)
             const especialidadNueva = this.especialidadOptions.find(
               (esp) => esp.id === id,
             );
@@ -487,6 +471,6 @@ export class AltasAdmin implements OnInit, OnDestroy {
     }
 
     this.tipoUsuario = null;
-    this.altaExitosa.emit(); // o navegá si preferís redirect
+    this.altaExitosa.emit();
   }
 }

@@ -1,5 +1,4 @@
 <div class="flex h-full w-full gap-4 p-1">
-  <!-- Contenedor cards -->
   <div
     class="h-full min-w-0 overflow-auto rounded-2xl border border-white bg-crema p-6 pb-6 shadow-inner transition-all duration-700 ease-in-out"
     [style.width]="pacienteSeleccionado() ? '65%' : '100%'"
@@ -60,7 +59,6 @@
     }
   </div>
 
-  <!-- Panel historia clínica -->
   @if (pacienteSeleccionado()) {
   <div
     class="flex h-full w-full flex-col overflow-hidden rounded-2xl bg-white p-6 transition-all duration-700 ease-in-out md:w-[35%]"
@@ -76,7 +74,6 @@
       Historia clínica de {{ pacienteSeleccionado()?.paciente?.nombre }} {{
       pacienteSeleccionado()?.paciente?.apellido }}
     </h2>
-    <!-- Contenedor con scroll para los registros -->
     <div class="overflow-y-auto pr-2">
       @for (cita of pacienteSeleccionado()?.citas; track cita) {
       <div class="mb-4 rounded border border-gray-200 bg-gray-50 p-4">

@@ -47,27 +47,20 @@ export class Turnos {
       nombre: e.nombre,
       apellido: e.apellido,
       imagenPerfil: e.url_imagen_perfil,
-      emailVerificado: true, // vista_especialistas_full solo incluye validados
-      validadoAdmin: true, // vista ya filtra validado_admin = true
-      activo: true, // vista ya filtra activo = true
+      emailVerificado: true,
+      validadoAdmin: true,
+      activo: true,
     }));
   }
 
-  /**
-   * Obtiene solo los especialistas que tienen turnos disponibles
-   * Filtra automáticamente por validados y con disponibilidad real
-   */
   async obtenerEspecialistasConDisponibilidad(
     diasARevisar = 15,
   ): Promise<EspecialistaTurnos[]> {
-    // Obtenemos todos los especialistas
     const todosEspecialistas = await this.obtenerEspecialistas();
 
-    // Filtramos solo los que tienen turnos disponibles
     const especialistasConDisponibilidad: EspecialistaTurnos[] = [];
 
     for (const especialista of todosEspecialistas) {
-      // Solo verificamos los que ya están validados
       if (especialista.validadoAdmin === true) {
         const tieneDisponibilidad = await this.especialistaTieneDisponibilidad(
           especialista.id,
@@ -131,12 +124,6 @@ export class Turnos {
     );
   }
 
-  /**
-   * Obtiene solo las fechas que tienen al menos un horario disponible
-   * Procesa fechas en paralelo para máxima eficiencia
-   * ✨ Point 13: Early exit si no hay disponibilidad configurada
-   * ✨ Optimización: 1 query para todas las disponibilidades (en vez de 15)
-   */
   async obtenerFechasConHorariosDisponibles(
     idEspecialista: number,
     duracionMin: number,
@@ -144,13 +131,11 @@ export class Turnos {
     desdeFecha = new Date(),
     pacienteId?: number,
   ): Promise<string[]> {
-    // ✨ Optimización: Obtener TODAS las disponibilidades en 1 query
     const disponibilidades =
       await this.disponibilidadService.obtenerTodasDisponibilidades(
         idEspecialista,
       );
 
-    // ✨ Point 13: Early exit si no hay disponibilidades
     if (disponibilidades.size === 0) {
       return [];
     }
@@ -168,7 +153,7 @@ export class Turnos {
         idEspecialista,
         duracionMin,
         pacienteId,
-        disponibilidades, // ✨ Pasar disponibilidades para evitar query
+        disponibilidades,
       );
       return horarios.length > 0 ? fecha : null;
     });
@@ -177,15 +162,10 @@ export class Turnos {
     return resultados.filter((fecha): fecha is string => fecha !== null);
   }
 
-  /**
-   * Verifica si un especialista tiene al menos un turno disponible
-   * para alguna de sus especialidades en los próximos días
-   */
   async especialistaTieneDisponibilidad(
     idEspecialista: number,
     diasARevisar = 15,
   ): Promise<boolean> {
-    // Obtenemos las especialidades del especialista
     const especialidades =
       await this.obtenerEspecialidadesDeEspecialista(idEspecialista);
 
@@ -193,8 +173,6 @@ export class Turnos {
       return false;
     }
 
-    // Verificamos si tiene al menos una fecha con horarios disponibles
-    // para cualquiera de sus especialidades
     for (const especialidad of especialidades) {
       const fechasConHorarios = await this.obtenerFechasConHorariosDisponibles(
         idEspecialista,
@@ -211,24 +189,21 @@ export class Turnos {
   }
 
   async obtenerHorariosDisponibles(
-    fecha: string, // formato "YYYY-MM-DD"
+    fecha: string,
     especialistaId: number,
-    duracion: number, // en minutos
+    duracion: number,
     pacienteId?: number,
     disponibilidadesCache?: Map<
       number,
       { hora_inicio: string; hora_fin: string }
-    >, // ✨ Opcional: evita query si ya se obtuvo
+    >,
   ): Promise<string[]> {
-    // 1. Obtener disponibilidad (desde cache o query)
     const diaSemana = this.disponibilidadService.calcularDiaSemana(fecha);
     let disponibilidad: { hora_inicio: string; hora_fin: string } | null;
 
     if (disponibilidadesCache) {
-      // ✨ Lookup en memoria (sin query)
       disponibilidad = disponibilidadesCache.get(diaSemana) || null;
     } else {
-      // Query individual (compatibilidad con llamadas directas)
       disponibilidad =
         await this.disponibilidadService.obtenerDisponibilidadDia(
           especialistaId,
@@ -250,14 +225,12 @@ export class Turnos {
       hora_fin,
     );
 
-    // 2. ✨ Point 6: Obtener citas usando CitasService (query simplificado)
     const todasCitas = await this.citasService.obtenerCitasCombinadasDia(
       especialistaId,
       fecha,
       pacienteId,
     );
 
-    // 3. Separar citas del especialista y del paciente
     const citasEspecialista = todasCitas.filter(
       (c) => c.especialista_id === especialistaId || !c.especialista_id,
     );
@@ -265,11 +238,9 @@ export class Turnos {
       ? todasCitas.filter((c) => c.paciente_id === pacienteId)
       : [];
 
-    // 4. Construir bloques ocupados usando CitasService
     const bloquesOcupados =
       this.citasService.construirBloquesOcupados(citasEspecialista);
 
-    // 5. Calcular espacios libres reales
     const espaciosLibres: { inicio: Date; fin: Date }[] = [];
     let cursor = new Date(disponibilidadInicio);
 
@@ -291,7 +262,6 @@ export class Turnos {
       espaciosLibres.push({ inicio: cursor, fin: disponibilidadFin });
     }
 
-    // 6. Calcular turnos posibles dentro de los espacios libres
     const turnosDisponibles: string[] = [];
 
     for (const bloque of espaciosLibres) {
@@ -309,7 +279,6 @@ export class Turnos {
       }
     }
 
-    // 7. Filtrar turnos que solapen con las citas del paciente
     if (citasPaciente.length > 0) {
       const turnosFiltrados: string[] = [];
 
@@ -352,7 +321,6 @@ export class Turnos {
   }
 
   async darAltaCita(cita: CitaTurnos): Promise<RespuestaApi<CitaTurnos>> {
-    // ✨ Point 10: Delegamos a CitasService que tiene validación pre-insert
     return this.citasService.darAltaCita(cita);
   }
 
@@ -507,7 +475,6 @@ export class Turnos {
     cita: CitaCompletaTurnos,
     resenia: string,
   ): Promise<RespuestaApi<boolean>> {
-    // Validación especial: solo ACEPTADO puede pasar a COMPLETADO
     if (cita.estado !== EstadoCita.ACEPTADO) {
       return {
         success: false,
@@ -518,9 +485,9 @@ export class Turnos {
     return this.citasService.actualizarEstadoCita(
       cita.citaId,
       EstadoCita.COMPLETADO,
-      [], // Ya validamos arriba
+      [],
       cita.estado as EstadoCita,
-      "", // No se usa porque validamos arriba
+      "",
       "Turno completado exitosamente.",
       { resenia },
     );
@@ -543,7 +510,6 @@ export class Turnos {
       };
     }
 
-    // Insertar en registros_medicos
     const { error: errorRegistro } = await Supabase.from(
       TABLA.REGISTROS_MEDICOS,
     ).insert({
@@ -562,7 +528,6 @@ export class Turnos {
       };
     }
 
-    // Insertar datos médicos dinámicos (batch insert)
     const dinamicosFormateados = datosDinamicos.map((dato) => ({
       cita_id: registro.citaId,
       clave: dato.clave,
@@ -587,9 +552,6 @@ export class Turnos {
     };
   }
 
-  /**
-   * Obtiene los próximos N turnos ordenados cronológicamente
-   */
   obtenerProximosTurnos(
     citas: CitaCompletaTurnos[],
     cantidad: 3,
@@ -607,9 +569,6 @@ export class Turnos {
       .slice(0, cantidad);
   }
 
-  /**
-   * Calcula el resumen de actividad del usuario
-   */
   calcularResumenActividad(citas: CitaCompletaTurnos[]): {
     turnosPendientes: number;
     turnosHoy: number;
@@ -633,7 +592,6 @@ export class Turnos {
       59,
     );
 
-    // Turnos pendientes (solicitados o aceptados, futuros)
     const turnosPendientes = citas.filter((c) => {
       const fechaCita = new Date(c.fechaHora);
       return (
@@ -642,7 +600,6 @@ export class Turnos {
       );
     }).length;
 
-    // Turnos hoy (no cancelados ni rechazados)
     const turnosHoy = citas.filter((c) => {
       const fechaCita = new Date(c.fechaHora);
       return (
@@ -653,7 +610,6 @@ export class Turnos {
       );
     }).length;
 
-    // Turnos este mes (no cancelados ni rechazados)
     const turnosMes = citas.filter((c) => {
       const fechaCita = new Date(c.fechaHora);
       return (
@@ -664,7 +620,6 @@ export class Turnos {
       );
     }).length;
 
-    // Última actividad (último turno realizado)
     const citasRealizadas = citas
       .filter((c) => c.estado === EstadoCita.REALIZADO)
       .sort(

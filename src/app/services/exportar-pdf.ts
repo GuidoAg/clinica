@@ -174,7 +174,6 @@ export class ExportarPdf {
     nombreArchivo = "documento",
     logoPath = "assets/logo_negro_48.png",
   ) {
-    // Lazy loading: cargar jsPDF solo cuando se necesite
     const { default: jsPDF } = await import("jspdf");
 
     const doc = new jsPDF();

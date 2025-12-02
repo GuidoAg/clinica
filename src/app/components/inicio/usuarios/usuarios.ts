@@ -79,7 +79,7 @@ export class Usuarios implements OnInit, OnDestroy {
   }
 
   async onAltaExitosa() {
-    await this.recargarUsuarios(); // vuelve a consultar las listas
-    this.cerrarPopupAltas(); // cierra el popup
+    await this.recargarUsuarios();
+    this.cerrarPopupAltas();
   }
 }

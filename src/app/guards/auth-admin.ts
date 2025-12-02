@@ -10,8 +10,6 @@ export class AdminGuard implements CanActivate {
   private auth = inject(AuthSupabase);
 
   canActivate(): Observable<boolean> {
-    return this.auth.user$.pipe(
-      map((user) => user?.rol === "admin"), // Devuelve true si es admin, sino false
-    );
+    return this.auth.user$.pipe(map((user) => user?.rol === "admin"));
   }
 }

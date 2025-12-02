@@ -4,7 +4,6 @@
       class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
     >
       <div class="mx-auto max-w-4xl space-y-8 p-4">
-        <!-- Paso 1: Profesionales -->
         @if (especialistas().length) {
         <div>
           <h2 class="mb-4 text-center text-xl font-semibold">
@@ -38,11 +37,7 @@
             próximos 15 días.
           </p>
         </div>
-        }
-
-        <!-- Paso 2: Especialidades -->
-        <!-- Paso 2: Especialidades -->
-        @if (especialistaSeleccionado()) {
+        } @if (especialistaSeleccionado()) {
         <div>
           <h2 class="mb-4 text-center text-xl font-semibold">
             ---- Seleccioná una especialidad ----
@@ -72,10 +67,7 @@
           </p>
           }
         </div>
-        }
-
-        <!-- Paso 3: Fechas disponibles -->
-        @if (especialidadSeleccionada()) {
+        } @if (especialidadSeleccionada()) {
         <div>
           <h2 class="mb-4 text-center text-xl font-semibold">
             ---- Seleccioná un día ----
@@ -96,10 +88,7 @@
           <p class="mt-4 text-center text-red-500">No hay días disponibles.</p>
           }
         </div>
-        }
-
-        <!-- Paso 4: Horarios disponibles -->
-        @if (fechaSeleccionada() ) {
+        } @if (fechaSeleccionada() ) {
         <div>
           <h2 class="mb-4 text-center text-xl font-semibold">
             ---- Seleccioná un horario ----
@@ -122,10 +111,7 @@
           </p>
           }
         </div>
-        }
-
-        <!-- Confirmación visual simple -->
-        @if (horaSelecionada()) {
+        } @if (horaSelecionada()) {
         <div class="mt-8 text-center">
           <p class="text-sm text-gray-600">
             Seleccionaste:

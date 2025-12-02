@@ -16,9 +16,6 @@ interface DisponibilidadDB {
 export class Disponibilidad {
   private diasTotales = 7;
 
-  /**
-   * Trae la disponibilidad actual del especialista
-   */
   async obtenerDisponibilidades(
     perfilId: number,
   ): Promise<DisponibilidadVisual[]> {
@@ -58,9 +55,6 @@ export class Disponibilidad {
     return dias;
   }
 
-  /**
-   * Guarda las disponibilidades (upsert)
-   */
   async upsertDisponibilidades(
     perfilId: number,
     lista: DisponibilidadVisual[],
@@ -70,7 +64,7 @@ export class Disponibilidad {
       dia_semana: d.dia,
       hora_inicio: d.horaDesde,
       hora_fin: d.horaHasta,
-      habilitado: d.habilitado, // incluir habilitado explícitamente
+      habilitado: d.habilitado,
     }));
 
     const { error } = await Supabase.from(TABLA.DISPONIBILIDADES).upsert(rows, {

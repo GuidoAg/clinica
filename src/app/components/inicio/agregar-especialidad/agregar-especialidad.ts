@@ -13,6 +13,7 @@ import { Especialidad } from "../../../models/SupaBase/Especialidad";
 import { AuthSupabase } from "../../../services/auth-supabase";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Supabase } from "../../../supabase";
+import { TABLA } from "../../../constantes";
 import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
 
 @Component({
@@ -80,7 +81,7 @@ export class AgregarEspecialidad implements OnInit {
       const especialidadId = resultado.data;
 
       const { error } = await Supabase.from(
-        "especialista_especialidades",
+        TABLA.ESPECIALISTA_ESPECIALIDADES,
       ).insert({
         perfil_id: this.perfilId,
         especialidad_id: especialidadId,

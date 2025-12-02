@@ -21,7 +21,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   styleUrl: "./horarios.css",
 })
 export class Horarios implements OnInit {
-  @Input() perfilId!: number; // Recibimos el id desde el padre
+  @Input() perfilId!: number;
 
   @Output() cerrar = new EventEmitter<void>();
 
@@ -96,7 +96,6 @@ export class Horarios implements OnInit {
       return;
     }
 
-    // Validar horarios antes de guardar
     if (!this.validarHorarios()) {
       return;
     }

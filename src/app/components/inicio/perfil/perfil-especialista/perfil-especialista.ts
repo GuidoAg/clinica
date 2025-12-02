@@ -49,7 +49,6 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
         this.usuarioActual = null;
         return;
       }
-      // Asegurar que id sea número
       usuario.id =
         typeof usuario.id === "string" ? Number(usuario.id) : usuario.id;
 
@@ -121,7 +120,6 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
           panelClass: ["bg-green-600", "text-white"],
         },
       );
-      // Actualizar usuario completo para sincronizar datos
       await this.authSupabase.recargarUsuario();
     } else {
       this.snackBar.open(
@@ -187,10 +185,8 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // Recargar usuario para sincronizar cambios en UI
     await this.authSupabase.recargarUsuario();
 
-    // Actualizar localmente (opcional, ya que el subscribe actualizará también)
     this.usuarioActual = this.authSupabase.getCurrentUser();
 
     this.snackBar.open("Especialidad agregada con éxito", "Cerrar", {

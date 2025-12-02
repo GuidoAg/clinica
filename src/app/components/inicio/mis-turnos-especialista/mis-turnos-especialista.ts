@@ -61,10 +61,8 @@ export class MisTurnosEspecialista implements OnInit, OnDestroy {
     this.usuario$ = this.authSupabase.user$;
   }
 
-  // Filtro
   private _filtroValor = signal("");
 
-  // getter y setter para bindear con ngModel
   get filtroValorModel(): string {
     return this._filtroValor();
   }
@@ -82,7 +80,7 @@ export class MisTurnosEspecialista implements OnInit, OnDestroy {
       usuario.id =
         typeof usuario.id === "string" ? Number(usuario.id) : usuario.id;
       this.usuarioActual = usuario;
-      this.cargarCitas(); // llamada aquí
+      this.cargarCitas();
     });
   }
 
@@ -112,7 +110,6 @@ export class MisTurnosEspecialista implements OnInit, OnDestroy {
     this.filaExpandida.set(this.filaExpandida() === citaId ? null : citaId);
   }
 
-  // Computed para devolver la lista filtrada
   get citasFiltradas(): CitaCompletaTurnos[] {
     return filtrarCitas(this.citas(), this._filtroValor());
   }

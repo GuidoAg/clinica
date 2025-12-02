@@ -124,13 +124,11 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
       this.usuarioActual = usuario;
     });
 
-    // Cargar datos en paralelo para mayor velocidad
     const [todosEspecialistas, pacientesData] = await Promise.all([
       this.turnosService.obtenerEspecialistas(),
       this.usuariosService.obtenerPacientesVerificados(),
     ]);
 
-    // Filtrar solo especialistas validados y activos
     const especialistasValidados = todosEspecialistas.filter(
       (e) => e.validadoAdmin === true && e.activo === true,
     );
@@ -178,13 +176,12 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     this.horariosDisponibles.set([]);
     this.cargando.set(true);
 
-    // Obtener fechas disponibles de forma eficiente
     const fechas = await this.turnosService.obtenerFechasConHorariosDisponibles(
       this.especialistaSeleccionado()!.id,
       es.duracion,
       15,
       new Date(),
-      this.pacienteSeleccionado()?.id, // 🆕 Pasar ID del paciente
+      this.pacienteSeleccionado()?.id,
     );
     this.fechasDisponibles.set(fechas);
     this.diasBuscados.set(true);
@@ -200,7 +197,7 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
       fecha,
       this.especialistaSeleccionado()!.id,
       this.especialidadSeleccionada()!.duracion,
-      this.pacienteSeleccionado()?.id, // 🆕 Pasar ID del paciente para validar solapamientos
+      this.pacienteSeleccionado()?.id,
     );
     this.horariosDisponibles.set(horarios);
     this.horasBuscadas.set(true);
@@ -216,7 +213,7 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     const hora = this.horaSelecionada();
     const especialista = this.especialistaSeleccionado();
     const especialidad = this.especialidadSeleccionada();
-    const paciente = this.pacienteSeleccionado(); // 🆕 ahora se usa el paciente seleccionado
+    const paciente = this.pacienteSeleccionado();
 
     if (!fecha || !hora || !especialista || !especialidad || !paciente) {
       console.error("Datos incompletos para agendar la cita");
@@ -228,7 +225,7 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
     const cita: CitaTurnos = {
       fechaHora: miFechaHora,
       duracionMin: especialidad.duracion,
-      pacienteId: paciente.id, // 🆕 importante
+      pacienteId: paciente.id,
       especialistaId: especialista.id,
       especialidadId: especialidad.id,
       estado: EstadoCita.SOLICITADO,
@@ -246,14 +243,12 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
           panelClass: ["bg-green-600", "text-white"],
         });
 
-        // Resetear flujo
         this.pacienteSeleccionado.set(null);
         this.especialistaSeleccionado.set(null);
         this.especialidadSeleccionada.set(null);
         this.fechaSeleccionada.set(null);
         this.horaSelecionada.set(null);
       } else {
-        // Mostrar mensaje específico del error
         const mensaje =
           resultado.errorCode === "horario_no_disponible"
             ? "El horario seleccionado ya no está disponible. Por favor, selecciona otro horario."
@@ -264,7 +259,6 @@ export class SolicitarTurnoAdmin implements OnInit, OnDestroy {
           panelClass: ["bg-red-600", "text-white"],
         });
 
-        // Recargar horarios disponibles si el error es por conflicto
         if (resultado.errorCode === "horario_no_disponible") {
           this.horaSelecionada.set(null);
           this.cargando.set(true);

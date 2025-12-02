@@ -2,7 +2,6 @@
   <div
     class="h-full w-full overflow-auto rounded-2xl border border-white bg-[color:var(--color-crema)] p-6 shadow-inner"
   >
-    <!-- Filtro -->
     <div class="mb-4 flex flex-wrap items-center gap-3">
       <label
         for="filtro"
@@ -27,7 +26,6 @@
         Limpiar
       </button>
 
-      <!-- Botón Acciones alineado a la derecha -->
       <div class="ml-auto">
         @if (mostrarPopupAcciones && citaSeleccionada()) {
         <app-acciones-admin
@@ -39,7 +37,6 @@
       </div>
     </div>
 
-    <!-- Tabla -->
     <table class="min-w-full border-collapse border border-gray-300 text-sm">
       <thead>
         <tr
@@ -111,7 +108,6 @@
             </button>
           </td>
         </tr>
-        <!-- Fila expandida con datos dinámicos -->
         @if (filaExpandida() === cita.citaId) {
         <tr>
           <td

@@ -1,14 +1,3 @@
-/**
- * Rangos de validación para medidas médicas
- * Los límites son generosos para cubrir casos especiales pero evitan valores imposibles
- *
- * Referencias médicas:
- * - Altura: Recién nacidos prematuros pueden medir desde 40cm, adultos muy altos hasta 250cm
- * - Peso: Prematuros pueden pesar desde 0.5kg, casos de obesidad extrema hasta 300kg
- * - Temperatura: Hipotermia severa desde 32°C, hipertermia severa hasta 43°C (límites de supervivencia)
- * - Presión arterial: Valores extremos pero médicamente posibles
- */
-
 export interface RangoValidacion {
   min: number;
   max: number;
@@ -16,47 +5,24 @@ export interface RangoValidacion {
 }
 
 export const RANGOS_MEDICOS = {
-  /**
-   * Altura en centímetros
-   * Min: 40 cm (recién nacidos prematuros)
-   * Max: 250 cm (personas excepcionalmente altas)
-   */
   altura: {
     min: 40,
     max: 250,
     unidad: "cm",
   } as RangoValidacion,
 
-  /**
-   * Peso en kilogramos
-   * Min: 0.5 kg (recién nacidos prematuros)
-   * Max: 300 kg (casos de obesidad extrema)
-   */
   peso: {
     min: 0.5,
     max: 300,
     unidad: "kg",
   } as RangoValidacion,
 
-  /**
-   * Temperatura corporal en grados Celsius
-   * Min: 32°C (hipotermia severa, límite de supervivencia)
-   * Max: 43°C (hipertermia severa, límite de supervivencia)
-   */
   temperatura: {
     min: 32,
     max: 43,
     unidad: "°C",
   } as RangoValidacion,
 
-  /**
-   * Presión arterial (sistólica/diastólica)
-   * Formato esperado: "120/80" o similar
-   * Min sistólica: 50 mmHg
-   * Max sistólica: 250 mmHg
-   * Min diastólica: 30 mmHg
-   * Max diastólica: 180 mmHg
-   */
   presion: {
     sistolica: { min: 50, max: 250 },
     diastolica: { min: 30, max: 180 },
@@ -64,9 +30,6 @@ export const RANGOS_MEDICOS = {
   },
 };
 
-/**
- * Valida si un valor está dentro del rango permitido
- */
 export function validarRango(
   valor: number | null | undefined,
   rango: RangoValidacion,
@@ -92,10 +55,6 @@ export function validarRango(
   return { valido: true, mensaje: "" };
 }
 
-/**
- * Valida el formato y valores de presión arterial
- * Acepta formatos: "120/80", "120 / 80", "120-80"
- */
 export function validarPresionArterial(presion: string | null | undefined): {
   valido: boolean;
   mensaje: string;
@@ -104,7 +63,6 @@ export function validarPresionArterial(presion: string | null | undefined): {
     return { valido: false, mensaje: "La presión arterial es requerida" };
   }
 
-  // Regex para validar formato: acepta "/" o "-" como separador, con o sin espacios
   const regex = /^(\d+)\s*[/-]\s*(\d+)$/;
   const match = presion.trim().match(regex);
 
@@ -118,7 +76,6 @@ export function validarPresionArterial(presion: string | null | undefined): {
   const sistolica = parseInt(match[1], 10);
   const diastolica = parseInt(match[2], 10);
 
-  // Validar rango sistólica
   if (
     sistolica < RANGOS_MEDICOS.presion.sistolica.min ||
     sistolica > RANGOS_MEDICOS.presion.sistolica.max
@@ -129,7 +86,6 @@ export function validarPresionArterial(presion: string | null | undefined): {
     };
   }
 
-  // Validar rango diastólica
   if (
     diastolica < RANGOS_MEDICOS.presion.diastolica.min ||
     diastolica > RANGOS_MEDICOS.presion.diastolica.max
@@ -140,7 +96,6 @@ export function validarPresionArterial(presion: string | null | undefined): {
     };
   }
 
-  // Validar que la sistólica sea mayor que la diastólica
   if (sistolica <= diastolica) {
     return {
       valido: false,
@@ -151,9 +106,6 @@ export function validarPresionArterial(presion: string | null | undefined): {
   return { valido: true, mensaje: "" };
 }
 
-/**
- * Valida todos los campos médicos de un registro
- */
 export function validarRegistroMedico(registro: {
   alturaCm: number | null;
   pesoKg: number | null;

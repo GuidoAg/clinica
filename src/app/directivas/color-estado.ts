@@ -36,13 +36,11 @@ export class ColorEstado implements OnChanges {
   }
 
   private aplicarClases(): void {
-    // Remover clases anteriores
     this.clasesAplicadas.forEach((clase) => {
       this.renderer.removeClass(this.el.nativeElement, clase);
     });
     this.clasesAplicadas = [];
 
-    // Aplicar nuevas clases
     const estado = this.appColorEstado?.toLowerCase();
     const clases = this.estadoClaseMap[estado] ?? "bg-gray-100 text-gray-700";
 

@@ -23,9 +23,6 @@ import {
 
 @Injectable({ providedIn: "root" })
 export class Estadisticas {
-  /**
-   * Log de ingresos al sistema
-   */
   async obtenerLogIngresos(): Promise<Ingreso[]> {
     const { data: ingresos, error } = await Supabase.from(
       TABLA.REGISTRO_INGRESOS,
@@ -70,9 +67,6 @@ export class Estadisticas {
     });
   }
 
-  /**
-   * Cantidad de turnos por especialidad
-   */
   async obtenerTurnosPorEspecialidad(): Promise<TurnosPorEspecialidad[]> {
     const { data: citas, error } = await Supabase.from(TABLA.CITAS).select(
       "especialidad_id",
@@ -121,9 +115,6 @@ export class Estadisticas {
     });
   }
 
-  /**
-   * Cantidad de turnos por día
-   */
   async obtenerTurnosPorDia(): Promise<TurnosPorDia[]> {
     const { data, error } = await Supabase.from(TABLA.CITAS).select(
       "fecha_hora",
@@ -151,16 +142,12 @@ export class Estadisticas {
       .sort((a, b) => a.fecha.localeCompare(b.fecha));
   }
 
-  /**
-   * Turnos solicitados por médico en un rango (o historial completo si no hay rango)
-   */
   async obtenerTurnosPorMedico(
     desde: string,
     hasta: string,
   ): Promise<TurnosPorMedico[]> {
     let query = Supabase.from(TABLA.CITAS).select("especialista_id");
 
-    // Solo aplicar filtros si se proporcionan fechas
     if (desde && hasta) {
       query = query.gte("fecha_hora", desde).lte("fecha_hora", hasta);
     }
@@ -210,9 +197,6 @@ export class Estadisticas {
     });
   }
 
-  /**
-   * Turnos finalizados por médico en un rango (o historial completo si no hay rango)
-   */
   async obtenerTurnosFinalizadosPorMedico(
     desde: string,
     hasta: string,
@@ -221,7 +205,6 @@ export class Estadisticas {
       .select("especialista_id, estado")
       .eq("estado", EstadoCita.COMPLETADO);
 
-    // Solo aplicar filtros si se proporcionan fechas
     if (desde && hasta) {
       query = query.gte("fecha_hora", desde).lte("fecha_hora", hasta);
     }
@@ -271,30 +254,19 @@ export class Estadisticas {
     });
   }
 
-  /**
-   * Obtener ingresos de especialistas de los últimos 60 días, agrupados por día
-   */
   async obtenerIngresosEspecialistas60Dias(): Promise<TrendLineData> {
     return this.obtenerIngresosPorRol("especialista");
   }
 
-  /**
-   * Obtener ingresos de pacientes de los últimos 60 días, agrupados por día
-   */
   async obtenerIngresosPacientes60Dias(): Promise<TrendLineData> {
     return this.obtenerIngresosPorRol("paciente");
   }
 
-  /**
-   * Método privado para obtener ingresos por rol
-   */
   private async obtenerIngresosPorRol(rol: string): Promise<TrendLineData> {
-    // Calcular fecha de hace 60 días
     const hace60Dias = new Date();
     hace60Dias.setDate(hace60Dias.getDate() - 60);
     const fechaInicio = hace60Dias.toISOString();
 
-    // Obtener ingresos de los últimos 60 días
     const { data: ingresos, error } = await Supabase.from(
       TABLA.REGISTRO_INGRESOS,
     )
@@ -310,7 +282,6 @@ export class Estadisticas {
       return { datos: [], maxY: 40 };
     }
 
-    // Obtener los perfiles para filtrar por rol
     const perfilIds = [
       ...new Set(ingresos.map((i) => i.perfil_id).filter(Boolean)),
     ];
@@ -336,23 +307,19 @@ export class Estadisticas {
 
     const perfilesRol = new Set(perfiles.map((p) => p.id));
 
-    // Filtrar ingresos solo del rol específico
     const ingresosFiltrados = ingresos.filter((i) =>
       perfilesRol.has(i.perfil_id),
     );
 
-    // Agrupar por día
     const agrupadoPorDia = new Map<string, number>();
 
     for (const ingreso of ingresosFiltrados) {
       const fecha = new Date(ingreso.fecha_ingreso);
-      // Formatear como "YYYY-MM-DD"
       const diaKey = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}-${String(fecha.getDate()).padStart(2, "0")}`;
 
       agrupadoPorDia.set(diaKey, (agrupadoPorDia.get(diaKey) ?? 0) + 1);
     }
 
-    // Convertir a array y ordenar
     const datos: IngresosPorHora[] = Array.from(agrupadoPorDia.entries()).map(
       ([fecha_hora, cantidad]) => ({
         fecha_hora,
@@ -360,7 +327,6 @@ export class Estadisticas {
       }),
     );
 
-    // Calcular maxY dinámico - redondear hacia arriba al próximo múltiplo de 5
     const maxCantidad = Math.max(...datos.map((d) => d.cantidad), 0);
     const maxY = maxCantidad === 0 ? 40 : Math.ceil((maxCantidad + 1) / 5) * 5;
 

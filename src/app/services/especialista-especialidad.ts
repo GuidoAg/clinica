@@ -1,13 +1,11 @@
 import { Injectable } from "@angular/core";
 import { Supabase } from "../supabase";
+import { TABLA } from "../constantes";
 
 @Injectable({
   providedIn: "root",
 })
 export class EspecialistaEspecialidad {
-  /**
-   * Trae las especialidades asignadas a un especialista con su duración
-   */
   async obtenerEspecialidades(perfilId: number): Promise<
     {
       id: number;
@@ -16,7 +14,9 @@ export class EspecialistaEspecialidad {
       duracion?: number;
     }[]
   > {
-    const { data, error } = await Supabase.from("especialista_especialidades")
+    const { data, error } = await Supabase.from(
+      TABLA.ESPECIALISTA_ESPECIALIDADES,
+    )
       .select(
         `
         especialidad_id:especialidad_id,
@@ -38,7 +38,6 @@ export class EspecialistaEspecialidad {
       return [];
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (data || []).map((row: any) => ({
       id: row.especialidades.id,
       nombre: row.especialidades.nombre,
@@ -47,15 +46,14 @@ export class EspecialistaEspecialidad {
     }));
   }
 
-  /**
-   * Actualiza o inserta la duración de una especialidad para un especialista
-   */
   async actualizarDuracion(
     especialidadId: number,
     perfilId: number,
     duracion: number,
   ): Promise<boolean> {
-    const { error } = await Supabase.from("especialista_especialidades").upsert(
+    const { error } = await Supabase.from(
+      TABLA.ESPECIALISTA_ESPECIALIDADES,
+    ).upsert(
       [
         {
           especialidad_id: especialidadId,
@@ -78,7 +76,9 @@ export class EspecialistaEspecialidad {
     perfilId: number,
     especialidadId: number,
   ): Promise<boolean> {
-    const { error } = await Supabase.from("especialista_especialidades").upsert(
+    const { error } = await Supabase.from(
+      TABLA.ESPECIALISTA_ESPECIALIDADES,
+    ).upsert(
       [
         {
           perfil_id: perfilId,

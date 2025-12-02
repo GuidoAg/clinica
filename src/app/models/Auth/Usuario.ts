@@ -7,15 +7,13 @@ export interface Usuario {
   dni: string;
   urlImagenPerfil?: string;
   emailVerificado: boolean;
-  rol: 'admin' | 'paciente' | 'especialista';
+  rol: "admin" | "paciente" | "especialista";
 
   email: string;
 
-  // Paciente
   obraSocial?: string;
   urlImagenFondo?: string;
 
-  // Especialista
   especialidades?: {
     id: number;
     nombre: string;

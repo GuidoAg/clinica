@@ -1,4 +1,3 @@
-<!-- Fondo difuminado y clic para cerrar -->
 <div
   class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
   tabindex="0"
@@ -15,7 +14,6 @@
   role="dialog"
   aria-modal="true"
 >
-  <!-- Vista principal de botones -->
   @if (!mostrarFormularioCancelar && !mostrarFormularioRechazar &&
   !mostrarFormularioAceptar && !mostrarFormularioFinalizar &&
   !mostrarFormularioResenia) {
@@ -64,10 +62,7 @@
     </button>
     }
   </div>
-  }
-
-  <!-- Formulario para cancelar turno -->
-  @if (mostrarFormularioCancelar) {
+  } @if (mostrarFormularioCancelar) {
   <div class="flex flex-col gap-3">
     <textarea
       [(ngModel)]="comentarioCancelar"
@@ -93,10 +88,7 @@
       </button>
     </div>
   </div>
-  }
-
-  <!-- Formulario para rechazar turno -->
-  @if (mostrarFormularioRechazar) {
+  } @if (mostrarFormularioRechazar) {
   <div class="flex flex-col gap-3">
     <textarea
       [(ngModel)]="comentarioRechazar"
@@ -122,10 +114,7 @@
       </button>
     </div>
   </div>
-  }
-
-  <!-- Formulario para aceptar turno -->
-  @if (mostrarFormularioAceptar) {
+  } @if (mostrarFormularioAceptar) {
   <div class="flex flex-col gap-3">
     <div class="flex justify-end gap-3">
       <button
@@ -144,10 +133,7 @@
       </button>
     </div>
   </div>
-  }
-
-  <!-- Formulario para finalizar turno -->
-  @if (mostrarFormularioFinalizar) {
+  } @if (mostrarFormularioFinalizar) {
   <div class="flex flex-col gap-3">
     <textarea
       [(ngModel)]="reseniaFinalizar"
@@ -173,10 +159,7 @@
       </button>
     </div>
   </div>
-  }
-
-  <!-- Vista para mostrar reseña -->
-  @if (mostrarFormularioResenia) {
+  } @if (mostrarFormularioResenia) {
   <div class="flex flex-col items-center gap-4 text-center">
     <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
       Reseña
@@ -191,17 +174,13 @@
       Volver
     </button>
   </div>
-  }
-
-  <!-- Formulario de Historia Clínica -->
-  @if (mostrarFormularioHistoriaClinica) {
+  } @if (mostrarFormularioHistoriaClinica) {
   <div class="flex flex-col gap-4">
     <h3
       class="text-center text-xl font-bold text-[color:var(--color-azul-oscuro)]"
     >
       Cargar historia clínica
     </h3>
-    <!-- Datos estáticos -->
     <div class="grid grid-cols-2 gap-4">
       <div>
         <label for="altura" class="mb-1 block text-sm font-medium text-gray-700"
@@ -302,9 +281,7 @@
         }
       </div>
     </div>
-    <!-- Datos dinámicos -->
     <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-      <!-- Texto -->
       <div class="flex flex-col gap-4">
         @for (dato of datosTexto; track dato; let i = $index) {
         <div class="grid grid-cols-2 gap-2">
@@ -337,9 +314,7 @@
         </div>
         }
       </div>
-      <!-- Controles especiales -->
       <div class="mt-6 flex flex-col gap-6">
-        <!-- Slider -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label for="clave-slider" class="text-sm font-medium text-gray-700"
@@ -368,7 +343,6 @@
             />
           </div>
         </div>
-        <!-- Número -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label for="clave-numero" class="text-sm font-medium text-gray-700"
@@ -397,7 +371,6 @@
             />
           </div>
         </div>
-        <!-- Booleano -->
         <div class="grid grid-cols-2 items-center gap-4">
           <div>
             <label for="clave-boolean" class="text-sm font-medium text-gray-700"

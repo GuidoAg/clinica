@@ -80,7 +80,6 @@ export class Register implements OnInit, OnDestroy {
   private registerState = inject(RegisterStateService);
 
   ngOnInit(): void {
-    // Construcción del form
     this.registroForm = this.fb.group(
       {
         nombre: [
@@ -123,7 +122,6 @@ export class Register implements OnInit, OnDestroy {
       },
     );
 
-    // Suscribirse al reset desde el navbar
     this.subReset = this.registerState.reset$.subscribe(() => {
       this.resetearFormulario();
     });
@@ -143,12 +141,10 @@ export class Register implements OnInit, OnDestroy {
 
     if (!this.registroForm) return;
 
-    // Si es especialista, cargar las especialidades
     if (tipo === "especialista") {
       try {
         this.loading.show();
         this.especialidadOptions = await this.auth.obtenerEspecialidades();
-        // Limpiar selecciones previas
         this.especialidadesSeleccionadas.clear();
       } catch (error) {
         console.error("Error al obtener especialidades:", error);
@@ -172,7 +168,6 @@ export class Register implements OnInit, OnDestroy {
     } else {
       this.registroForm.get("obraSocial")?.clearValidators();
       this.registroForm.get("imagenFondo")?.clearValidators();
-      // Validador personalizado: debe tener al menos 1 especialidad
       this.registroForm
         .get("especialidadesSeleccionadas")
         ?.setValidators([this.alMenosUnaEspecialidadValidator()]);
@@ -231,10 +226,8 @@ export class Register implements OnInit, OnDestroy {
       return;
     }
 
-    // Normalizar el nombre
     const nombreNormalizado = this.normalizarNombre(nombreEspecialidad);
 
-    // Verificar si ya existe una especialidad con ese nombre
     const existeEspecialidad = this.especialidadOptions.some(
       (esp) => esp.nombre.toLowerCase() === nombreNormalizado.toLowerCase(),
     );
@@ -248,27 +241,22 @@ export class Register implements OnInit, OnDestroy {
       return;
     }
 
-    // Crear un ID temporal negativo para distinguir nuevas especialidades
     const nuevoId = -(this.especialidadOptions.length + 1);
     const nuevaEspecialidad: Especialidad = {
       id: nuevoId,
       nombre: nombreNormalizado,
     };
 
-    // Agregar al array local
     this.especialidadOptions.push(nuevaEspecialidad);
 
-    // Auto-seleccionar la nueva especialidad
     this.especialidadesSeleccionadas.add(nuevoId);
     this.actualizarEspecialidadesEnForm();
 
-    // Limpiar el campo y ocultar
     if (nuevaEspControl) {
       nuevaEspControl.setValue("");
     }
     this.mostrarCampoOtraEspecialidad = false;
 
-    // Mostrar confirmación
     this.snackBar.open(
       `Especialidad "${nombreNormalizado}" agregada y seleccionada.`,
       "Cerrar",
@@ -347,7 +335,7 @@ export class Register implements OnInit, OnDestroy {
   async registrar(): Promise<void> {
     if (this.registroForm.invalid || !this.tipoUsuario) return;
 
-    this.loading.show(); // <--- spinner on
+    this.loading.show();
     try {
       if (this.tipoUsuario === "paciente") {
         await this.handleRegistroPaciente();
@@ -396,20 +384,16 @@ export class Register implements OnInit, OnDestroy {
       const f = this.registroForm.value;
       const imgPerfil = await fileToBase64(f.imagenPerfil as File);
 
-      // Construir array de especialidades
       const especialidades: string[] = [];
 
-      // Agregar especialidades seleccionadas
       if (
         f.especialidadesSeleccionadas &&
         f.especialidadesSeleccionadas.length > 0
       ) {
         f.especialidadesSeleccionadas.forEach((id: number) => {
           if (id > 0) {
-            // Especialidad existente (ID positivo)
             especialidades.push(String(id));
           } else {
-            // Especialidad nueva (ID negativo temporal)
             const especialidadNueva = this.especialidadOptions.find(
               (esp) => esp.id === id,
             );
@@ -465,7 +449,6 @@ export class Register implements OnInit, OnDestroy {
   }
 
   private resetearFormulario(): void {
-    // Resetear a la selección de tipo de usuario
     this.tipoUsuario = null;
     this.especialidadesSeleccionadas.clear();
     this.captchaEsValido = false;
@@ -473,12 +456,10 @@ export class Register implements OnInit, OnDestroy {
     this.desplegableEspecialidadesAbierto = false;
     this.registroForm.reset();
 
-    // Eliminar especialidades temporales (IDs negativos)
     this.especialidadOptions = this.especialidadOptions.filter(
       (esp) => esp.id > 0,
     );
 
-    // Scroll suave al inicio
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 }

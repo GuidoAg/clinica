@@ -10,6 +10,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 import { EstadoCita } from "../../../enums/EstadoCita";
 import { Supabase } from "../../../supabase";
+import { TABLA } from "../../../constantes";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 interface ResumenActividad {
@@ -53,13 +54,11 @@ export class Entrada implements OnInit, OnDestroy {
     if (this.usuarioActual) {
       await this.cargarDatos();
 
-      // Suscribirse a cambios en tiempo real en la tabla citas
       this.suscribirseACambiosCitas();
     }
   }
 
   ngOnDestroy(): void {
-    // Limpiar la suscripción de Realtime cuando el componente se destruya
     if (this.realtimeChannel) {
       Supabase.removeChannel(this.realtimeChannel);
     }
@@ -78,16 +77,15 @@ export class Entrada implements OnInit, OnDestroy {
       .on(
         "postgres_changes",
         {
-          event: "*", // Escuchar INSERT, UPDATE, DELETE
+          event: "*",
           schema: "public",
-          table: "citas",
+          table: TABLA.CITAS,
           filter:
             rol === "paciente"
               ? `paciente_id=eq.${userId}`
               : `especialista_id=eq.${userId}`,
         },
         () => {
-          // Recargar datos cuando hay cambios
           this.cargarDatos();
         },
       )
@@ -102,7 +100,6 @@ export class Entrada implements OnInit, OnDestroy {
     try {
       let todasLasCitas: CitaCompletaTurnos[] = [];
 
-      // Obtener citas según el rol (reutilizando métodos existentes)
       if (this.usuarioActual.rol === "paciente") {
         todasLasCitas = await this.turnosService.obtenerCitasPaciente(
           this.usuarioActual.id,
@@ -113,7 +110,6 @@ export class Entrada implements OnInit, OnDestroy {
         );
       }
 
-      // Usar métodos del servicio para procesar datos
       this.proximosTurnos.set(
         this.turnosService.obtenerProximosTurnos(todasLasCitas, 3),
       );
@@ -171,7 +167,6 @@ export class Entrada implements OnInit, OnDestroy {
   }
 
   navegarA(ruta: string): void {
-    // No mostrar spinner para mis-turnos-especialista
     if (
       ruta !== "mis-turnos-especialista" &&
       ruta !== "pacientes" &&
