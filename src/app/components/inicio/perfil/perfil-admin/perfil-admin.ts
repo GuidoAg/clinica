@@ -24,7 +24,7 @@ export class PerfilAdmin implements OnInit, AfterViewInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.usuario = await firstValueFrom(this.usuario$);
+    const usuario = await firstValueFrom(this.usuario$);
 
     if (usuario) {
       console.log("Usuario cargado en ngOnInit:", usuario.urlImagenFondo);
