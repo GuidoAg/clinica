@@ -20,11 +20,11 @@ export const TABLA = {
   REGISTROS_MEDICOS: "registros_medicos",
   DATOS_MEDICOS_DINAMICOS: "datos_medicos_dinamicos",
 
-  ENCUESTA: "encuesta",
-
   REGISTRO_INGRESOS: "registro_ingresos",
 
   CAPTCHA: "captcha",
+
+  ENCUESTAS_PACIENTES: "encuestas_pacientes",
 } as const;
 
 export const QUERY_VISTA_PERFILES = {

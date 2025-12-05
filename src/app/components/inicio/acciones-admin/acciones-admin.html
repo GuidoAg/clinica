@@ -13,23 +13,50 @@
   role="dialog"
   aria-modal="true"
 >
-  @if (!mostrarFormularioCancelar && !mostrarFormularioResenia) {
+  @if (!mostrarFormularioCancelar && !mostrarFormularioResenia &&
+  !mostrarVistaComentarioPaciente && !mostrarVistaComentarioEspecialista &&
+  !mostrarVistaEncuesta) {
   <div class="flex flex-col gap-3">
-    @if (puedeCancelar) {
+    @if (verificandoEncuesta()) {
+    <div class="flex items-center justify-center py-4">
+      <div class="text-sm text-gray-500">Cargando opciones...</div>
+    </div>
+    } @else { @if (puedeCancelar) {
     <button
       (click)="mostrarFormularioCancelar = true"
       class="rounded-lg bg-gray-500 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-gray-800"
     >
       Cancelar turno
     </button>
+    } @if (puedeVerComentarioPaciente) {
+    <button
+      (click)="verComentarioPaciente()"
+      class="rounded-lg bg-cyan-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-cyan-700"
+    >
+      Ver comentario paciente
+    </button>
+    } @if (puedeVerComentarioEspecialista) {
+    <button
+      (click)="verComentarioEspecialista()"
+      class="rounded-lg bg-amber-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-amber-700"
+    >
+      Ver comentario especialista
+    </button>
     } @if (puedeVerResenia) {
     <button
       (click)="verResenia()"
       class="rounded-lg bg-pink-400 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-pink-700"
     >
-      Ver reseña
+      Ver reseña especialista
     </button>
-    }
+    } @if (puedeVerEncuesta) {
+    <button
+      (click)="verEncuesta()"
+      class="rounded-lg bg-teal-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-teal-700"
+    >
+      Ver encuesta paciente
+    </button>
+    } }
   </div>
   } @if (mostrarFormularioCancelar) {
   <div class="flex flex-col gap-3">
@@ -60,13 +87,141 @@
   } @if (mostrarFormularioResenia) {
   <div class="flex flex-col items-center gap-4 text-center">
     <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
-      Reseña
+      Reseña del Especialista
     </h3>
     <p class="px-2 text-gray-700 italic">
       {{ cita.resenia || 'No se ha dejado una reseña para este turno.' }}
     </p>
     <button
       (click)="volverDesdeVistaResenia()"
+      class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
+    >
+      Volver
+    </button>
+  </div>
+  } @if (mostrarVistaComentarioPaciente) {
+  <div class="flex flex-col items-center gap-4 text-center">
+    <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
+      Comentario del Paciente
+    </h3>
+
+    <p class="px-2 text-gray-700 italic">{{ cita.comentarioPaciente }}</p>
+
+    <button
+      (click)="volverDesdeVistaComentarioPaciente()"
+      class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
+    >
+      Volver
+    </button>
+  </div>
+  } @if (mostrarVistaComentarioEspecialista) {
+  <div class="flex flex-col items-center gap-4 text-center">
+    <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
+      Comentario del Especialista
+    </h3>
+
+    <p class="px-2 text-gray-700 italic">{{ cita.comentarioEspecialista }}</p>
+
+    <button
+      (click)="volverDesdeVistaComentarioEspecialista()"
+      class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
+    >
+      Volver
+    </button>
+  </div>
+  } @if (mostrarVistaEncuesta && encuestaExistente) {
+  <div class="flex max-h-[70vh] flex-col gap-4 overflow-y-auto">
+    <h3
+      class="text-center text-xl font-bold text-[color:var(--color-azul-oscuro)]"
+    >
+      Encuesta de Satisfacción del Paciente
+    </h3>
+
+    <div class="space-y-4">
+      <div class="rounded-lg bg-gray-50 p-4">
+        <p
+          class="mb-2 text-sm font-semibold text-[color:var(--color-azul-oscuro)]"
+        >
+          1. ¿Cómo fue tu experiencia en la cita?
+        </p>
+        <p class="text-sm text-gray-700 italic">
+          {{ encuestaExistente.textBox || 'Sin respuesta' }}
+        </p>
+      </div>
+
+      <div class="rounded-lg bg-gray-50 p-4">
+        <p
+          class="mb-2 text-sm font-semibold text-[color:var(--color-azul-oscuro)]"
+        >
+          2. ¿Qué calificación le darías a la atención recibida?
+        </p>
+        <div class="flex items-center gap-1">
+          @for (estrella of [1, 2, 3, 4, 5]; track estrella) {
+          <span
+            class="text-2xl"
+            [class.text-yellow-400]="estrella <= (encuestaExistente.estrellas || 0)"
+            [class.text-gray-300]="estrella > (encuestaExistente.estrellas || 0)"
+          >
+            ★
+          </span>
+          }
+          <span class="ml-2 text-sm text-gray-600">
+            {{ encuestaExistente.estrellas }} de 5
+          </span>
+        </div>
+      </div>
+
+      <div class="rounded-lg bg-gray-50 p-4">
+        <p
+          class="mb-2 text-sm font-semibold text-[color:var(--color-azul-oscuro)]"
+        >
+          3. ¿Cómo calificarías tu satisfacción general?
+        </p>
+        <p class="text-sm text-gray-700">
+          {{ obtenerEtiquetaRadio(encuestaExistente.radioButton) }}
+        </p>
+      </div>
+
+      <div class="rounded-lg bg-gray-50 p-4">
+        <p
+          class="mb-2 text-sm font-semibold text-[color:var(--color-azul-oscuro)]"
+        >
+          4. ¿Qué aspectos destacarías de la atención?
+        </p>
+        <div class="flex flex-wrap gap-2">
+          @for (aspecto of obtenerEtiquetasCheckbox(encuestaExistente.checkBox);
+          track aspecto) {
+          <span
+            class="rounded-full bg-[color:var(--color-azul-oscuro)] px-3 py-1 text-xs text-white"
+          >
+            {{ aspecto }}
+          </span>
+          }
+        </div>
+      </div>
+
+      <div class="rounded-lg bg-gray-50 p-4">
+        <p
+          class="mb-2 text-sm font-semibold text-[color:var(--color-azul-oscuro)]"
+        >
+          5. ¿Qué probabilidad hay de que recomiendes este servicio?
+        </p>
+        <div class="flex items-center gap-3">
+          <div class="h-2 flex-1 rounded-full bg-gray-200">
+            <div
+              class="h-2 rounded-full bg-[color:var(--color-azul-oscuro)]"
+              [style.width.%]="encuestaExistente.rango || 0"
+            ></div>
+          </div>
+          <span class="text-lg font-bold text-[color:var(--color-azul-oscuro)]">
+            {{ encuestaExistente.rango }}/100
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <button
+      (click)="volverDesdeVistaEncuesta()"
       class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
     >
       Volver

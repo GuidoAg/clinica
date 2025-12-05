@@ -1,0 +1,169 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+>
+  <div
+    appClickFueraPopup
+    (clickFuera)="cerrarModal()"
+    (click)="$event.stopPropagation()"
+    (mousedown)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+    class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-8 shadow-lg"
+    tabindex="0"
+    role="dialog"
+    aria-modal="true"
+  >
+    <h2 class="mb-6 text-center text-2xl font-bold text-azul-oscuro">
+      Encuesta de Satisfacción
+    </h2>
+
+    <p class="mb-6 text-center text-sm text-gray-600">
+      Tu opinión es muy importante para nosotros. Por favor, tomá un momento
+      para completar esta encuesta sobre tu experiencia.
+    </p>
+
+    <form
+      (ngSubmit)="enviarEncuesta(); $event.stopPropagation()"
+      class="space-y-6"
+    >
+      <!-- Pregunta 1: Experiencia general (textarea) -->
+      <div class="space-y-2">
+        <label
+          for="experiencia"
+          class="block text-sm font-semibold text-azul-oscuro"
+        >
+          1. ¿Cómo fue tu experiencia en la cita?
+          <span class="text-red-500">*</span>
+        </label>
+        <textarea
+          id="experiencia"
+          [(ngModel)]="experienciaGeneral"
+          name="experiencia"
+          rows="4"
+          placeholder="Contanos sobre tu experiencia durante la consulta..."
+          class="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm focus:ring-2 focus:ring-azul-oscuro focus:outline-none"
+        ></textarea>
+      </div>
+
+      <!-- Pregunta 2: Calificación en estrellas -->
+      <div class="space-y-2">
+        <div class="block text-sm font-semibold text-azul-oscuro">
+          2. ¿Qué calificación le darías a la atención recibida?
+          <span class="text-red-500">*</span>
+        </div>
+        <div class="flex items-center gap-2">
+          @for (estrella of [1, 2, 3, 4, 5]; track estrella) {
+          <button
+            type="button"
+            (click)="setCalificacion(estrella); $event.stopPropagation()"
+            (mouseenter)="setHover(estrella)"
+            (mouseleave)="setHover(0)"
+            class="text-4xl transition-transform hover:scale-110 focus:outline-none"
+            [class.text-yellow-400]="estrella <= (estrellasHover || calificacionEstrellas)"
+            [class.text-gray-300]="estrella > (estrellasHover || calificacionEstrellas)"
+          >
+            ★
+          </button>
+          } @if (calificacionEstrellas > 0) {
+          <span class="ml-2 text-sm text-gray-600">
+            {{ calificacionEstrellas }} de 5
+          </span>
+          }
+        </div>
+      </div>
+
+      <!-- Pregunta 3: Radio buttons -->
+      <div class="space-y-2">
+        <div class="block text-sm font-semibold text-azul-oscuro">
+          3. ¿Cómo calificarías tu satisfacción general?
+          <span class="text-red-500">*</span>
+        </div>
+        <div class="space-y-2">
+          @for (opcion of opcionesRadio; track opcion.valor) {
+          <label
+            class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 hover:bg-gray-50"
+          >
+            <input
+              type="radio"
+              [(ngModel)]="seleccionRadio"
+              [value]="opcion.valor"
+              name="satisfaccion"
+              class="h-4 w-4 accent-azul-oscuro"
+            />
+            <span class="text-sm text-gray-700">{{ opcion.etiqueta }}</span>
+          </label>
+          }
+        </div>
+      </div>
+
+      <!-- Pregunta 4: Checkboxes -->
+      <div class="space-y-2">
+        <div class="block text-sm font-semibold text-azul-oscuro">
+          4. ¿Qué aspectos destacarías de la atención? (podés seleccionar
+          varios)
+          <span class="text-red-500">*</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          @for (opcion of opcionesCheckbox; track opcion.valor) {
+          <label
+            class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 hover:bg-gray-50"
+          >
+            <input
+              type="checkbox"
+              [(ngModel)]="opcion.seleccionado"
+              [name]="'checkbox-' + opcion.valor"
+              class="h-4 w-4 accent-azul-oscuro"
+            />
+            <span class="text-sm text-gray-700">{{ opcion.etiqueta }}</span>
+          </label>
+          }
+        </div>
+      </div>
+
+      <!-- Pregunta 5: Rango -->
+      <div class="space-y-2">
+        <label for="rango" class="block text-sm font-semibold text-azul-oscuro">
+          5. ¿Qué probabilidad hay de que recomiendes este servicio? (1-100)
+          <span class="text-red-500">*</span>
+        </label>
+        <div class="space-y-3">
+          <input
+            id="rango"
+            type="range"
+            [(ngModel)]="valorRango"
+            name="rango"
+            min="1"
+            max="100"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-azul-oscuro"
+          />
+          <div class="flex items-center justify-between text-xs text-gray-500">
+            <span>Poco probable</span>
+            <span class="text-lg font-bold text-azul-oscuro"
+              >{{ valorRango }}</span
+            >
+            <span>Muy probable</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="flex items-center justify-end gap-3 border-t pt-4">
+        <button
+          type="button"
+          (click)="cerrarModal(); $event.stopPropagation()"
+          [disabled]="cargando()"
+          class="rounded-lg border border-gray-300 bg-white px-6 py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-100 disabled:opacity-50"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="cargando()"
+          class="rounded-lg bg-azul-oscuro px-6 py-2 text-sm font-semibold text-white shadow hover:bg-azul-oscuro/90 disabled:opacity-50"
+        >
+          {{ cargando() ? 'Enviando...' : 'Enviar Encuesta' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

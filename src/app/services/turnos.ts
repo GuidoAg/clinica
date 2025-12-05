@@ -6,7 +6,6 @@ import { CitaTurnos } from "../models/Turnos/CitaTurnos";
 import { RespuestaApi } from "../models/RespuestaApi";
 import { DatoDinamicoTurnos } from "../models/Turnos/DatoDinamicoTurnos";
 import { CitaCompletaTurnos } from "../models/Turnos/CitaCompletaTurnos";
-import { EncuestaTurnos } from "../models/Turnos/EncuestaTurnos";
 import { RegistroMedicoTurnos } from "../models/Turnos/RegistroMedicoTurnos";
 import { EstadoCita } from "../enums/EstadoCita";
 import { DisponibilidadService } from "./disponibilidad.service";
@@ -491,52 +490,6 @@ export class Turnos {
       this.invalidarCacheDisponibilidad(cita.especialistaId);
     }
     return resultado;
-  }
-
-  async cargarEncuesta(
-    cita: CitaCompletaTurnos,
-    encuesta: EncuestaTurnos,
-  ): Promise<RespuestaApi<boolean>> {
-    if (cita.estado !== EstadoCita.COMPLETADO) {
-      return {
-        success: false,
-        message: "El turno debe ser realizado para poder cargar encuesta.",
-      };
-    }
-
-    if (!cita.resenia || cita.resenia.trim() === "") {
-      return {
-        success: false,
-        message:
-          "El especialista debe cargar una reseña antes de poder cargar una encuesta",
-      };
-    }
-
-    const { data, error } = await Supabase.from(TABLA.ENCUESTA)
-      .insert({
-        id: cita.citaId,
-        pregunta1: encuesta.pregunta1,
-        pregunta2: encuesta.pregunta2,
-        pregunta3: encuesta.pregunta3,
-        nombre: encuesta.nombre,
-        telefono: encuesta.telefono,
-      })
-      .select()
-      .maybeSingle();
-
-    if (error || !data) {
-      return {
-        success: false,
-        message: "No se pudo registrar la encuesta",
-        errorCode: error?.code ?? "insert_error",
-      };
-    }
-
-    return {
-      success: true,
-      message: "Encuesta registrada exitosamente.",
-      data: true,
-    };
   }
 
   async cargarComentarioAtencion(

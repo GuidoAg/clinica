@@ -24,6 +24,7 @@ import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
 
 @Component({
   selector: "app-acciones-especialista",
+  standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, ClickFueraPopup],
   templateUrl: "./acciones-especialista.html",
   styleUrl: "./acciones-especialista.css",
@@ -52,6 +53,8 @@ export class AccionesEspecialista {
   mostrarFormularioFinalizar = false;
   mostrarFormularioResenia = false;
   mostrarFormularioHistoriaClinica = false;
+  mostrarVistaComentarioPaciente = false;
+  mostrarVistaComentarioEspecialista = false;
 
   comentarioCancelar = "";
   comentarioRechazar = "";
@@ -68,7 +71,9 @@ export class AccionesEspecialista {
       !this.mostrarFormularioFinalizar &&
       !this.mostrarFormularioRechazar &&
       !this.mostrarFormularioHistoriaClinica &&
-      !this.mostrarFormularioResenia
+      !this.mostrarFormularioResenia &&
+      !this.mostrarVistaComentarioPaciente &&
+      !this.mostrarVistaComentarioEspecialista
     );
   }
 
@@ -83,7 +88,9 @@ export class AccionesEspecialista {
       !this.mostrarFormularioFinalizar &&
       !this.mostrarFormularioRechazar &&
       !this.mostrarFormularioHistoriaClinica &&
-      !this.mostrarFormularioResenia
+      !this.mostrarFormularioResenia &&
+      !this.mostrarVistaComentarioPaciente &&
+      !this.mostrarVistaComentarioEspecialista
     );
   }
 
@@ -98,7 +105,9 @@ export class AccionesEspecialista {
       !this.mostrarFormularioFinalizar &&
       !this.mostrarFormularioRechazar &&
       !this.mostrarFormularioHistoriaClinica &&
-      !this.mostrarFormularioResenia
+      !this.mostrarFormularioResenia &&
+      !this.mostrarVistaComentarioPaciente &&
+      !this.mostrarVistaComentarioEspecialista
     );
   }
 
@@ -110,7 +119,9 @@ export class AccionesEspecialista {
       !this.mostrarFormularioFinalizar &&
       !this.mostrarFormularioRechazar &&
       !this.mostrarFormularioHistoriaClinica &&
-      !this.mostrarFormularioResenia
+      !this.mostrarFormularioResenia &&
+      !this.mostrarVistaComentarioPaciente &&
+      !this.mostrarVistaComentarioEspecialista
     );
   }
 
@@ -123,12 +134,15 @@ export class AccionesEspecialista {
       !this.mostrarFormularioFinalizar &&
       !this.mostrarFormularioRechazar &&
       !this.mostrarFormularioResenia &&
-      !this.mostrarFormularioHistoriaClinica
+      !this.mostrarFormularioHistoriaClinica &&
+      !this.mostrarVistaComentarioPaciente &&
+      !this.mostrarVistaComentarioEspecialista
     );
   }
 
   get puedeVerResenia() {
     return (
+      this.cita.estado === EstadoCita.COMPLETADO &&
       !!this.cita.resenia &&
       this.cita.resenia.trim().length > 0 &&
       !this.mostrarFormularioCancelar &&
@@ -136,7 +150,45 @@ export class AccionesEspecialista {
       !this.mostrarFormularioFinalizar &&
       !this.mostrarFormularioRechazar &&
       !this.mostrarFormularioResenia &&
-      !this.mostrarFormularioHistoriaClinica
+      !this.mostrarFormularioHistoriaClinica &&
+      !this.mostrarVistaComentarioPaciente &&
+      !this.mostrarVistaComentarioEspecialista
+    );
+  }
+
+  get puedeVerComentarioPaciente() {
+    // Puede ver comentario del paciente si este canceló o calificó la atención
+    return (
+      (this.cita.estado === EstadoCita.CANCELADO ||
+        this.cita.estado === EstadoCita.COMPLETADO) &&
+      !!this.cita.comentarioPaciente &&
+      this.cita.comentarioPaciente.trim().length > 0 &&
+      !this.mostrarFormularioCancelar &&
+      !this.mostrarFormularioAceptar &&
+      !this.mostrarFormularioFinalizar &&
+      !this.mostrarFormularioRechazar &&
+      !this.mostrarFormularioResenia &&
+      !this.mostrarFormularioHistoriaClinica &&
+      !this.mostrarVistaComentarioPaciente &&
+      !this.mostrarVistaComentarioEspecialista
+    );
+  }
+
+  get puedeVerComentarioEspecialista() {
+    // Puede ver su comentario si canceló o rechazó el turno
+    return (
+      (this.cita.estado === EstadoCita.CANCELADO ||
+        this.cita.estado === EstadoCita.RECHAZADO) &&
+      !!this.cita.comentarioEspecialista &&
+      this.cita.comentarioEspecialista.trim().length > 0 &&
+      !this.mostrarFormularioCancelar &&
+      !this.mostrarFormularioAceptar &&
+      !this.mostrarFormularioFinalizar &&
+      !this.mostrarFormularioRechazar &&
+      !this.mostrarFormularioResenia &&
+      !this.mostrarFormularioHistoriaClinica &&
+      !this.mostrarVistaComentarioPaciente &&
+      !this.mostrarVistaComentarioEspecialista
     );
   }
 
@@ -293,6 +345,22 @@ export class AccionesEspecialista {
 
   volverDesdeVistaResenia() {
     this.mostrarFormularioResenia = false;
+  }
+
+  verComentarioPaciente() {
+    this.mostrarVistaComentarioPaciente = true;
+  }
+
+  volverDesdeVistaComentarioPaciente() {
+    this.mostrarVistaComentarioPaciente = false;
+  }
+
+  verComentarioEspecialista() {
+    this.mostrarVistaComentarioEspecialista = true;
+  }
+
+  volverDesdeVistaComentarioEspecialista() {
+    this.mostrarVistaComentarioEspecialista = false;
   }
 
   cancelarHistoriaClinica() {

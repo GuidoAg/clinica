@@ -27,9 +27,10 @@
       </button>
 
       <div class="ml-auto">
-        @if (mostrarPopupAcciones && citaSeleccionada()) {
+        @if (mostrarPopupAcciones && citaSeleccionada() && usuarioActual) {
         <app-acciones-paciente
           [cita]="citaSeleccionada()!"
+          [pacienteId]="usuarioActual.id"
           (cerrar)="cerrarPopupAcciones()"
           (accionRealizada)="accionDesdeModal()"
         ></app-acciones-paciente>

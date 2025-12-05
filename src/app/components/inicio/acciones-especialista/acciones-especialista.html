@@ -16,7 +16,8 @@
 >
   @if (!mostrarFormularioCancelar && !mostrarFormularioRechazar &&
   !mostrarFormularioAceptar && !mostrarFormularioFinalizar &&
-  !mostrarFormularioResenia) {
+  !mostrarFormularioResenia && !mostrarVistaComentarioPaciente &&
+  !mostrarVistaComentarioEspecialista) {
   <div class="flex flex-col gap-3">
     @if (puedeCancelar) {
     <button
@@ -46,12 +47,26 @@
     >
       Finalizar turno
     </button>
+    } @if (puedeVerComentarioPaciente) {
+    <button
+      (click)="verComentarioPaciente()"
+      class="rounded-lg bg-cyan-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-cyan-700"
+    >
+      Ver comentario paciente
+    </button>
+    } @if (puedeVerComentarioEspecialista) {
+    <button
+      (click)="verComentarioEspecialista()"
+      class="rounded-lg bg-amber-600 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-amber-700"
+    >
+      Ver mi comentario
+    </button>
     } @if (puedeVerResenia) {
     <button
       (click)="verResenia()"
       class="rounded-lg bg-pink-400 px-4 py-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-pink-700"
     >
-      Ver reseña
+      Ver mi reseña
     </button>
     } @if (puedeCargarHistoriaClinica) {
     <button
@@ -425,6 +440,36 @@
         Guardar historia clínica
       </button>
     </div>
+  </div>
+  } @if (mostrarVistaComentarioPaciente) {
+  <div class="flex flex-col items-center gap-4 text-center">
+    <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
+      Comentario del Paciente
+    </h3>
+
+    <p class="px-2 text-gray-700 italic">{{ cita.comentarioPaciente }}</p>
+
+    <button
+      (click)="volverDesdeVistaComentarioPaciente()"
+      class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
+    >
+      Volver
+    </button>
+  </div>
+  } @if (mostrarVistaComentarioEspecialista) {
+  <div class="flex flex-col items-center gap-4 text-center">
+    <h3 class="text-xl font-bold text-[color:var(--color-azul-oscuro)]">
+      Mi Comentario
+    </h3>
+
+    <p class="px-2 text-gray-700 italic">{{ cita.comentarioEspecialista }}</p>
+
+    <button
+      (click)="volverDesdeVistaComentarioEspecialista()"
+      class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-400"
+    >
+      Volver
+    </button>
   </div>
   }
 </div>

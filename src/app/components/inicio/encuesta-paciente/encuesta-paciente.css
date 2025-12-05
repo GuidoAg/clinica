@@ -1,0 +1,35 @@
+/* Estilos personalizados para el componente de encuesta */
+
+/* Estilo personalizado para el input de rango */
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-azul-oscuro);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-azul-oscuro);
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Animación suave para las estrellas */
+button[type="button"] {
+  transition: all 0.2s ease-in-out;
+}

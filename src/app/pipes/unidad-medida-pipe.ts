@@ -15,6 +15,14 @@ export class UnidadMedidaPipe implements PipeTransform {
       return "";
     }
 
+    // Convertir a número para comparar
+    const numValue = typeof value === "string" ? parseFloat(value) : value;
+
+    // Si el valor es 0, retornar cadena vacía
+    if (numValue === 0 || isNaN(numValue)) {
+      return "";
+    }
+
     const unidades: Record<TipoUnidad, string> = {
       altura: "cm",
       peso: "kg",
