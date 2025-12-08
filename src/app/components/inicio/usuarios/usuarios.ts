@@ -7,6 +7,11 @@ import { AltasAdmin } from "../altas-admin/altas-admin";
 import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 import { TrackImage } from "../../../directivas/track-image";
 import { LoadingWrapper } from "../../loading-wrapper/loading-wrapper";
+import { ExportarExcel } from "../../../services/exportar-excel";
+import { formatearUsuariosParaExcel } from "../../../helpers/exportar-usuarios";
+import { formatearTurnosPacienteParaExcel } from "../../../helpers/exportar-turnos-paciente";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Turnos } from "../../../services/turnos";
 
 @Component({
   selector: "app-usuarios",
@@ -31,6 +36,9 @@ export class Usuarios implements OnInit, OnDestroy {
   constructor(
     private usuariosService: UsuariosService,
     private loading: LoadingOverlayService,
+    private exportarExcel: ExportarExcel,
+    private snackBar: MatSnackBar,
+    private turnosService: Turnos,
   ) {}
 
   ngOnInit(): void {
@@ -81,5 +89,103 @@ export class Usuarios implements OnInit, OnDestroy {
   async onAltaExitosa() {
     await this.recargarUsuarios();
     this.cerrarPopupAltas();
+  }
+
+  async exportarUsuariosAExcel() {
+    try {
+      // Obtener todos los usuarios juntos
+      const todosLosUsuarios = [
+        ...this.pacientes,
+        ...this.especialistas,
+        ...this.administradores,
+      ];
+
+      if (todosLosUsuarios.length === 0) {
+        this.snackBar.open("No hay usuarios para exportar.", "Cerrar", {
+          duration: 3000,
+        });
+        return;
+      }
+
+      // Ordenar por rol (admin -> especialista -> paciente)
+      const ordenRoles: Record<string, number> = {
+        admin: 1,
+        especialista: 2,
+        paciente: 3,
+      };
+
+      todosLosUsuarios.sort((a, b) => {
+        return ordenRoles[a.rol] - ordenRoles[b.rol];
+      });
+
+      // Formatear datos para Excel
+      const datosFormateados = formatearUsuariosParaExcel(todosLosUsuarios);
+
+      // Exportar a Excel
+      await this.exportarExcel.exportarAExcel(datosFormateados, {
+        titulo: "Listado de Usuarios",
+        nombreArchivo: "usuarios_completo",
+        nombreHoja: "Usuarios",
+        incluirFecha: true,
+      });
+
+      this.snackBar.open(
+        `${todosLosUsuarios.length} usuarios exportados exitosamente.`,
+        "Cerrar",
+        {
+          duration: 3000,
+        },
+      );
+    } catch (error) {
+      console.error("Error al exportar usuarios:", error);
+      this.snackBar.open("Error al exportar usuarios a Excel.", "Cerrar", {
+        duration: 4000,
+      });
+    }
+  }
+
+  async exportarTurnosPaciente(paciente: Usuario, event: Event) {
+    // Evitar que se propague el evento y se seleccione el usuario
+    event.stopPropagation();
+
+    try {
+      // Obtener todos los turnos del paciente
+      const turnos = await this.turnosService.obtenerCitasPaciente(paciente.id);
+
+      if (turnos.length === 0) {
+        this.snackBar.open(
+          `${paciente.nombre} ${paciente.apellido} no tiene turnos registrados.`,
+          "Cerrar",
+          {
+            duration: 3000,
+          },
+        );
+        return;
+      }
+
+      // Formatear datos para Excel
+      const datosFormateados = formatearTurnosPacienteParaExcel(turnos);
+
+      // Exportar a Excel
+      await this.exportarExcel.exportarAExcel(datosFormateados, {
+        titulo: `Historial de Turnos - ${paciente.nombre} ${paciente.apellido}`,
+        nombreArchivo: `turnos_${paciente.nombre}_${paciente.apellido}`,
+        nombreHoja: "Turnos",
+        incluirFecha: true,
+      });
+
+      this.snackBar.open(
+        `${turnos.length} turnos exportados exitosamente.`,
+        "Cerrar",
+        {
+          duration: 3000,
+        },
+      );
+    } catch (error) {
+      console.error("Error al exportar turnos del paciente:", error);
+      this.snackBar.open("Error al exportar turnos del paciente.", "Cerrar", {
+        duration: 4000,
+      });
+    }
   }
 }
