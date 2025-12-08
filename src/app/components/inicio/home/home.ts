@@ -7,12 +7,15 @@ import {
   WritableSignal,
 } from "@angular/core";
 import { LoadingOverlayService } from "../../../services/loading-overlay-service";
+import { Estadisticas } from "../../../services/estadisticas";
 import { TurnosPorDiaChart } from "../../charts/turnos-por-dia-chart/turnos-por-dia-chart";
 import { TurnosPorEspecialidadChart } from "../../charts/turnos-por-especialidad-chart/turnos-por-especialidad-chart";
 import { TurnosPorMedicoChart } from "../../charts/turnos-por-medico-chart/turnos-por-medico-chart";
 import { TurnosFinalizadosPorMedicoChart } from "../../charts/turnos-finalizados-chart/turnos-finalizados-chart";
 import { IngresosEspecialistasChart } from "../../charts/ingresos-especialistas-chart/ingresos-especialistas-chart";
 import { IngresosPacientesChart } from "../../charts/ingresos-pacientes-chart/ingresos-pacientes-chart";
+import { PacientesPorEspecialidadChart } from "../../charts/pacientes-por-especialidad-chart/pacientes-por-especialidad-chart";
+import { MedicosPorEspecialidadChart } from "../../charts/medicos-por-especialidad-chart/medicos-por-especialidad-chart";
 
 interface FechaRango {
   desde: string;
@@ -29,11 +32,14 @@ interface FechaRango {
     TurnosFinalizadosPorMedicoChart,
     IngresosEspecialistasChart,
     IngresosPacientesChart,
+    PacientesPorEspecialidadChart,
+    MedicosPorEspecialidadChart,
   ],
   templateUrl: "./home.html",
 })
 export class Home implements AfterViewInit {
   private loading = inject(LoadingOverlayService);
+  private estadisticas = inject(Estadisticas);
 
   rangoTurnosPorMedico: WritableSignal<FechaRango> = signal({
     desde: "2024-01-01",
@@ -59,6 +65,10 @@ export class Home implements AfterViewInit {
   private async cargarDatos() {
     this.loading.show();
     try {
+      // Precargar todos los datos en una sola operación
+      await this.estadisticas.precargarDatosEstadisticas();
+
+      // Los gráficos ahora usarán los datos cacheados
       await Promise.all([
         this.cargarTurnosPorMedico(),
         this.cargarTurnosFinalizados(),

@@ -10,6 +10,16 @@ export interface TurnosPorEspecialidad {
   cantidad: number;
 }
 
+export interface PacientesPorEspecialidad {
+  especialidad: string;
+  cantidad: number;
+}
+
+export interface MedicosPorEspecialidad {
+  especialidad: string;
+  cantidad: number;
+}
+
 export interface TurnosPorDia {
   fecha: string;
   cantidad: number;

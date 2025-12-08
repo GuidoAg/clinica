@@ -131,14 +131,14 @@
     <div class="mt-6 flex gap-3">
       <button
         (click)="cerrarModalDescarga()"
-        class="flex-1 rounded-lg border-2 border-gray-300 bg-white px-4 py-3 font-semibold text-gray-700 transition-all hover:bg-gray-100"
+        class="flex-1 rounded-lg border-2 border-gray-300 bg-white px-4 py-3 font-semibold text-gray-700 transition-all hover:scale-105 hover:border-gray-400 hover:bg-gray-100 hover:shadow-md active:scale-95"
       >
         Cancelar
       </button>
       <button
         (click)="descargarHistoriaClinica()"
         [disabled]="especialidadSeleccionada === undefined"
-        class="bg-azul flex-1 rounded-lg px-4 py-3 font-semibold text-white transition-all hover:bg-azul-oscuro disabled:cursor-not-allowed disabled:bg-gray-400"
+        class="hover:bg-azul flex-1 rounded-lg bg-azul-oscuro px-4 py-3 font-semibold text-white shadow-md transition-all hover:scale-105 hover:shadow-xl active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:scale-100"
       >
         Descargar PDF
       </button>

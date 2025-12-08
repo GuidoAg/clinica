@@ -3,19 +3,16 @@ import { Supabase } from "../supabase";
 import { EstadoCita } from "../enums/EstadoCita";
 import {
   TABLA,
-  QUERY_PERFILES,
   QUERY_ESPECIALIDADES,
   QUERY_REGISTRO_INGRESOS,
-  QUERY_CITAS,
 } from "../constantes";
 
-interface CitaFechaDB {
-  fecha_hora: string;
-}
 import {
   TurnosPorDia,
   TurnosPorMedico,
   TurnosPorEspecialidad,
+  PacientesPorEspecialidad,
+  MedicosPorEspecialidad,
   Ingreso,
   TrendLineData,
   IngresosPorHora,
@@ -23,41 +20,143 @@ import {
 
 @Injectable({ providedIn: "root" })
 export class Estadisticas {
-  async obtenerLogIngresos(): Promise<Ingreso[]> {
-    const { data: ingresos, error } = await Supabase.from(
-      TABLA.REGISTRO_INGRESOS,
-    )
-      .select(QUERY_REGISTRO_INGRESOS.BASICO)
-      .order("fecha_ingreso", { ascending: false });
+  // Cache de datos precargados
+  private datosCache?: {
+    citas: {
+      especialidad_id: number | null;
+      paciente_id: number | null;
+      especialista_id: number | null;
+      estado: string;
+      fecha_hora: string;
+    }[];
+    especialidades: { id: number; nombre: string }[];
+    relacionesEspecialistas: {
+      especialidad_id: number | null;
+      perfil_id: number | null;
+    }[];
+    perfilesMedicos: { id: number; nombre: string; apellido: string }[];
+    perfilesCompletos: {
+      id: number;
+      nombre: string;
+      apellido: string;
+      rol: string;
+    }[];
+  };
+  private datosCacheTimestamp?: number;
+  private readonly CACHE_DURATION_MS = 3 * 60 * 1000;
 
-    if (error || !ingresos) {
-      console.error(
-        "[Supabase] Error al obtener log de ingresos:",
-        error?.message,
-      );
-      return [];
+  /**
+   * Precarga todos los datos necesarios para las estadísticas en una sola consulta por tabla.
+   * Esto optimiza el rendimiento al reducir múltiples llamadas a la base de datos.
+   */
+  async precargarDatosEstadisticas(): Promise<void> {
+    const ahora = Date.now();
+
+    // Usar cache si es válido
+    if (
+      this.datosCache &&
+      this.datosCacheTimestamp &&
+      ahora - this.datosCacheTimestamp < this.CACHE_DURATION_MS
+    ) {
+      return;
     }
 
-    const perfilIds = [
-      ...new Set(ingresos.map((i) => i.perfil_id).filter(Boolean)),
+    // Hacer todas las consultas en paralelo
+    const [
+      citasResult,
+      especialidadesResult,
+      relacionesResult,
+      perfilesResult,
+    ] = await Promise.all([
+      Supabase.from(TABLA.CITAS).select(
+        "especialidad_id, paciente_id, especialista_id, estado, fecha_hora",
+      ),
+      Supabase.from(TABLA.ESPECIALIDADES).select(QUERY_ESPECIALIDADES.BASICO),
+      Supabase.from(TABLA.ESPECIALISTA_ESPECIALIDADES).select(
+        "especialidad_id, perfil_id",
+      ),
+      Supabase.from(TABLA.PERFILES).select("id, nombre, apellido, rol"),
+    ]);
+
+    if (citasResult.error || !citasResult.data) {
+      console.error(
+        "[Supabase] Error al precargar citas:",
+        citasResult.error?.message,
+      );
+      return;
+    }
+
+    if (especialidadesResult.error || !especialidadesResult.data) {
+      console.error(
+        "[Supabase] Error al precargar especialidades:",
+        especialidadesResult.error?.message,
+      );
+      return;
+    }
+
+    if (relacionesResult.error || !relacionesResult.data) {
+      console.error(
+        "[Supabase] Error al precargar relaciones especialistas:",
+        relacionesResult.error?.message,
+      );
+      return;
+    }
+
+    if (perfilesResult.error || !perfilesResult.data) {
+      console.error(
+        "[Supabase] Error al precargar perfiles:",
+        perfilesResult.error?.message,
+      );
+      return;
+    }
+
+    // Filtrar solo los especialistas para perfilesMedicos
+    const especialistaIds: number[] = [
+      ...new Set(
+        citasResult.data
+          .map((c) => c.especialista_id)
+          .filter((id): id is number => id !== null),
+      ),
     ];
 
-    const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      TABLA.PERFILES,
-    )
-      .select(QUERY_PERFILES.IDENTIFICACION)
-      .in("id", perfilIds);
+    const perfilesMedicos = perfilesResult.data.filter((p) =>
+      especialistaIds.includes(p.id),
+    );
 
-    if (errorPerfiles || !perfiles) {
+    // Guardar en cache
+    this.datosCache = {
+      citas: citasResult.data,
+      especialidades: especialidadesResult.data,
+      relacionesEspecialistas: relacionesResult.data,
+      perfilesMedicos,
+      perfilesCompletos: perfilesResult.data,
+    };
+    this.datosCacheTimestamp = ahora;
+  }
+
+  private async obtenerDatosCache() {
+    await this.precargarDatosEstadisticas();
+    return this.datosCache!;
+  }
+
+  async obtenerLogIngresos(): Promise<Ingreso[]> {
+    const [ingresosResult, datos] = await Promise.all([
+      Supabase.from(TABLA.REGISTRO_INGRESOS)
+        .select(QUERY_REGISTRO_INGRESOS.BASICO)
+        .order("fecha_ingreso", { ascending: false }),
+      this.obtenerDatosCache(),
+    ]);
+
+    if (ingresosResult.error || !ingresosResult.data) {
       console.error(
-        "[Supabase] Error al obtener perfiles:",
-        errorPerfiles?.message,
+        "[Supabase] Error al obtener log de ingresos:",
+        ingresosResult.error?.message,
       );
       return [];
     }
 
-    return ingresos.map((i) => {
-      const perfil = perfiles.find((p) => p.id === i.perfil_id);
+    return ingresosResult.data.map((i) => {
+      const perfil = datos.perfilesCompletos.find((p) => p.id === i.perfil_id);
       return {
         fecha: i.fecha_ingreso,
         nombre: perfil?.nombre ?? "Desconocido",
@@ -68,37 +167,18 @@ export class Estadisticas {
   }
 
   async obtenerTurnosPorEspecialidad(): Promise<TurnosPorEspecialidad[]> {
-    const { data: citas, error } = await Supabase.from(TABLA.CITAS).select(
-      "especialidad_id",
-    );
+    const datos = await this.obtenerDatosCache();
 
-    if (error || !citas) {
-      console.error(
-        "[Supabase] Error al obtener turnos por especialidad:",
-        error?.message,
-      );
-      return [];
-    }
-
-    const ids = [
-      ...new Set(citas.map((c) => c.especialidad_id).filter(Boolean)),
+    const ids: number[] = [
+      ...new Set(
+        datos.citas
+          .map((c) => c.especialidad_id)
+          .filter((id): id is number => id !== null),
+      ),
     ];
-    const { data: especialidades, error: errorEsp } = await Supabase.from(
-      TABLA.ESPECIALIDADES,
-    )
-      .select(QUERY_ESPECIALIDADES.BASICO)
-      .in("id", ids);
-
-    if (errorEsp || !especialidades) {
-      console.error(
-        "[Supabase] Error al obtener especialidades:",
-        errorEsp?.message,
-      );
-      return [];
-    }
 
     const contador = new Map<number, number>();
-    for (const cita of citas) {
+    for (const cita of datos.citas) {
       if (!cita.especialidad_id) continue;
       contador.set(
         cita.especialidad_id,
@@ -107,7 +187,7 @@ export class Estadisticas {
     }
 
     return ids.map((id) => {
-      const especialidad = especialidades.find((e) => e.id === id);
+      const especialidad = datos.especialidades.find((e) => e.id === id);
       return {
         especialidad: especialidad?.nombre ?? "Sin especialidad",
         cantidad: contador.get(id) ?? 0,
@@ -115,21 +195,77 @@ export class Estadisticas {
     });
   }
 
-  async obtenerTurnosPorDia(): Promise<TurnosPorDia[]> {
-    const { data, error } = await Supabase.from(TABLA.CITAS).select(
-      "fecha_hora",
-    );
+  async obtenerPacientesPorEspecialidad(): Promise<PacientesPorEspecialidad[]> {
+    const datos = await this.obtenerDatosCache();
 
-    if (error || !data) {
-      console.error(
-        "[Supabase] Error al obtener turnos por día:",
-        error?.message,
-      );
-      return [];
+    const especialidadIds: number[] = [
+      ...new Set(
+        datos.citas
+          .map((c) => c.especialidad_id)
+          .filter((id): id is number => id !== null),
+      ),
+    ];
+
+    // Agrupar pacientes únicos por especialidad
+    const pacientesPorEspecialidad = new Map<number, Set<number>>();
+    for (const cita of datos.citas) {
+      if (!cita.especialidad_id || !cita.paciente_id) continue;
+
+      if (!pacientesPorEspecialidad.has(cita.especialidad_id)) {
+        pacientesPorEspecialidad.set(cita.especialidad_id, new Set());
+      }
+      pacientesPorEspecialidad.get(cita.especialidad_id)!.add(cita.paciente_id);
     }
 
+    return especialidadIds.map((id) => {
+      const especialidad = datos.especialidades.find((e) => e.id === id);
+      const pacientesUnicos = pacientesPorEspecialidad.get(id)?.size ?? 0;
+      return {
+        especialidad: especialidad?.nombre ?? "Sin especialidad",
+        cantidad: pacientesUnicos,
+      };
+    });
+  }
+
+  async obtenerMedicosPorEspecialidad(): Promise<MedicosPorEspecialidad[]> {
+    const datos = await this.obtenerDatosCache();
+
+    const especialidadIds: number[] = [
+      ...new Set(
+        datos.relacionesEspecialistas
+          .map((r) => r.especialidad_id)
+          .filter((id): id is number => id !== null),
+      ),
+    ];
+
+    // Contar médicos únicos por especialidad
+    const medicosPorEspecialidad = new Map<number, Set<number>>();
+    for (const relacion of datos.relacionesEspecialistas) {
+      if (!relacion.especialidad_id || !relacion.perfil_id) continue;
+
+      if (!medicosPorEspecialidad.has(relacion.especialidad_id)) {
+        medicosPorEspecialidad.set(relacion.especialidad_id, new Set());
+      }
+      medicosPorEspecialidad
+        .get(relacion.especialidad_id)!
+        .add(relacion.perfil_id);
+    }
+
+    return especialidadIds.map((id) => {
+      const especialidad = datos.especialidades.find((e) => e.id === id);
+      const medicosUnicos = medicosPorEspecialidad.get(id)?.size ?? 0;
+      return {
+        especialidad: especialidad?.nombre ?? "Sin especialidad",
+        cantidad: medicosUnicos,
+      };
+    });
+  }
+
+  async obtenerTurnosPorDia(): Promise<TurnosPorDia[]> {
+    const datos = await this.obtenerDatosCache();
+
     const agrupado = new Map<string, number>();
-    for (const cita of data as CitaFechaDB[]) {
+    for (const cita of datos.citas) {
       const fecha = new Date(cita.fecha_hora).toISOString().split("T")[0];
       agrupado.set(fecha, (agrupado.get(fecha) ?? 0) + 1);
     }
@@ -146,98 +282,68 @@ export class Estadisticas {
     desde: string,
     hasta: string,
   ): Promise<TurnosPorMedico[]> {
-    let query = Supabase.from(TABLA.CITAS).select("especialista_id");
+    const datos = await this.obtenerDatosCache();
 
-    if (desde && hasta) {
-      query = query.gte("fecha_hora", desde).lte("fecha_hora", hasta);
-    }
-
-    const { data: citas, error } = await query;
-
-    if (error || !citas) {
-      console.error(
-        "[Supabase] Error al obtener turnos por médico:",
-        error?.message,
-      );
-      return [];
-    }
-
-    const ids = [
-      ...new Set(citas.map((c) => c.especialista_id).filter(Boolean)),
-    ];
-    const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      TABLA.PERFILES,
-    )
-      .select(QUERY_PERFILES.NOMBRE_COMPLETO)
-      .in("id", ids);
-
-    if (errorPerfiles || !perfiles) {
-      console.error(
-        "[Supabase] Error al obtener perfiles:",
-        errorPerfiles?.message,
-      );
-      return [];
-    }
-
-    const contador = new Map<number, number>();
-    for (const cita of citas) {
-      if (!cita.especialista_id) continue;
-      contador.set(
-        cita.especialista_id,
-        (contador.get(cita.especialista_id) ?? 0) + 1,
-      );
-    }
-
-    return ids.map((id) => {
-      const perfil = perfiles.find((p) => p.id === id);
-      return {
-        nombre: perfil ? `${perfil.nombre} ${perfil.apellido}` : "Desconocido",
-        cantidad: contador.get(id) ?? 0,
-      };
+    // Filtrar por rango de fechas
+    const citasFiltradas = datos.citas.filter((c) => {
+      if (!desde || !hasta) return true;
+      const fechaCita = new Date(c.fecha_hora);
+      return fechaCita >= new Date(desde) && fechaCita <= new Date(hasta);
     });
+
+    return this.procesarTurnosPorMedico(
+      citasFiltradas,
+      datos.perfilesMedicos,
+      null,
+    );
   }
 
   async obtenerTurnosFinalizadosPorMedico(
     desde: string,
     hasta: string,
   ): Promise<TurnosPorMedico[]> {
-    let query = Supabase.from(TABLA.CITAS)
-      .select("especialista_id, estado")
-      .eq("estado", EstadoCita.COMPLETADO);
+    const datos = await this.obtenerDatosCache();
 
-    if (desde && hasta) {
-      query = query.gte("fecha_hora", desde).lte("fecha_hora", hasta);
-    }
+    // Filtrar por rango de fechas y estado
+    const citasFiltradas = datos.citas.filter((c) => {
+      const enRango =
+        !desde ||
+        !hasta ||
+        (new Date(c.fecha_hora) >= new Date(desde) &&
+          new Date(c.fecha_hora) <= new Date(hasta));
+      return enRango && c.estado === EstadoCita.COMPLETADO;
+    });
 
-    const { data: citas, error } = await query;
+    return this.procesarTurnosPorMedico(
+      citasFiltradas,
+      datos.perfilesMedicos,
+      null,
+    );
+  }
 
-    if (error || !citas) {
-      console.error(
-        "[Supabase] Error al obtener turnos finalizados por médico:",
-        error?.message,
-      );
-      return [];
-    }
+  private procesarTurnosPorMedico(
+    citas: { especialista_id: number | null; estado?: string }[],
+    perfiles: { id: number; nombre: string; apellido: string }[],
+    estadoFiltro: string | null,
+  ): TurnosPorMedico[] {
+    const citasFiltradas = estadoFiltro
+      ? citas.filter((c) => c.estado === estadoFiltro)
+      : citas;
 
-    const ids = [
-      ...new Set(citas.map((c) => c.especialista_id).filter(Boolean)),
+    const ids: number[] = [
+      ...new Set(
+        citasFiltradas
+          .map((c) => c.especialista_id)
+          .filter((id): id is number => id !== null),
+      ),
     ];
-    const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      TABLA.PERFILES,
-    )
-      .select(QUERY_PERFILES.NOMBRE_COMPLETO)
-      .in("id", ids);
 
-    if (errorPerfiles || !perfiles) {
-      console.error(
-        "[Supabase] Error al obtener perfiles:",
-        errorPerfiles?.message,
-      );
+    if (ids.length === 0) {
       return [];
     }
 
     const contador = new Map<number, number>();
-    for (const cita of citas) {
+    for (const cita of citasFiltradas) {
       if (!cita.especialista_id) continue;
       contador.set(
         cita.especialista_id,
@@ -267,47 +373,27 @@ export class Estadisticas {
     hace60Dias.setDate(hace60Dias.getDate() - 60);
     const fechaInicio = hace60Dias.toISOString();
 
-    const { data: ingresos, error } = await Supabase.from(
-      TABLA.REGISTRO_INGRESOS,
-    )
-      .select(QUERY_REGISTRO_INGRESOS.BASICO)
-      .gte("fecha_ingreso", fechaInicio)
-      .order("fecha_ingreso", { ascending: true });
+    const [ingresosResult, datos] = await Promise.all([
+      Supabase.from(TABLA.REGISTRO_INGRESOS)
+        .select(QUERY_REGISTRO_INGRESOS.BASICO)
+        .gte("fecha_ingreso", fechaInicio)
+        .order("fecha_ingreso", { ascending: true }),
+      this.obtenerDatosCache(),
+    ]);
 
-    if (error || !ingresos) {
+    if (ingresosResult.error || !ingresosResult.data) {
       console.error(
         `[Supabase] Error al obtener ingresos de ${rol}:`,
-        error?.message,
+        ingresosResult.error?.message,
       );
       return { datos: [], maxY: 40 };
     }
 
-    const perfilIds = [
-      ...new Set(ingresos.map((i) => i.perfil_id).filter(Boolean)),
-    ];
+    const perfilesRol = new Set(
+      datos.perfilesCompletos.filter((p) => p.rol === rol).map((p) => p.id),
+    );
 
-    if (perfilIds.length === 0) {
-      return { datos: [], maxY: 40 };
-    }
-
-    const { data: perfiles, error: errorPerfiles } = await Supabase.from(
-      TABLA.PERFILES,
-    )
-      .select("id, rol")
-      .in("id", perfilIds)
-      .eq("rol", rol);
-
-    if (errorPerfiles || !perfiles) {
-      console.error(
-        `[Supabase] Error al obtener perfiles de ${rol}:`,
-        errorPerfiles?.message,
-      );
-      return { datos: [], maxY: 40 };
-    }
-
-    const perfilesRol = new Set(perfiles.map((p) => p.id));
-
-    const ingresosFiltrados = ingresos.filter((i) =>
+    const ingresosFiltrados = ingresosResult.data.filter((i) =>
       perfilesRol.has(i.perfil_id),
     );
 
@@ -320,16 +406,16 @@ export class Estadisticas {
       agrupadoPorDia.set(diaKey, (agrupadoPorDia.get(diaKey) ?? 0) + 1);
     }
 
-    const datos: IngresosPorHora[] = Array.from(agrupadoPorDia.entries()).map(
-      ([fecha_hora, cantidad]) => ({
-        fecha_hora,
-        cantidad,
-      }),
-    );
+    const datosResultado: IngresosPorHora[] = Array.from(
+      agrupadoPorDia.entries(),
+    ).map(([fecha_hora, cantidad]) => ({
+      fecha_hora,
+      cantidad,
+    }));
 
-    const maxCantidad = Math.max(...datos.map((d) => d.cantidad), 0);
+    const maxCantidad = Math.max(...datosResultado.map((d) => d.cantidad), 0);
     const maxY = maxCantidad === 0 ? 40 : Math.ceil((maxCantidad + 1) / 5) * 5;
 
-    return { datos, maxY };
+    return { datos: datosResultado, maxY };
   }
 }
