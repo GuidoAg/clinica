@@ -9,7 +9,7 @@ import {
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { Disponibilidad } from "../../../services/disponibilidad";
+import { Disponibilidad } from "../../../services/disponibilidad-config";
 import { DisponibilidadVisual } from "../../../models/disponibilidadVisual";
 import { ClickFueraPopup } from "../../../directivas/click-fuera-popup";
 import { MatSnackBar } from "@angular/material/snack-bar";

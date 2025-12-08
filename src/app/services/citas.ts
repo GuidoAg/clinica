@@ -5,7 +5,7 @@ import { CitaTurnos } from "../models/Turnos/CitaTurnos";
 import { RespuestaApi } from "../models/RespuestaApi";
 import { CitaCompletaTurnos } from "../models/Turnos/CitaCompletaTurnos";
 import { DatoDinamicoTurnos } from "../models/Turnos/DatoDinamicoTurnos";
-import { DisponibilidadService } from "./disponibilidad.service";
+import { DisponibilidadService } from "./horarios-disponibles";
 import {
   TABLA,
   QUERY_CITAS,

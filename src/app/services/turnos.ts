@@ -8,8 +8,8 @@ import { DatoDinamicoTurnos } from "../models/Turnos/DatoDinamicoTurnos";
 import { CitaCompletaTurnos } from "../models/Turnos/CitaCompletaTurnos";
 import { RegistroMedicoTurnos } from "../models/Turnos/RegistroMedicoTurnos";
 import { EstadoCita } from "../enums/EstadoCita";
-import { DisponibilidadService } from "./disponibilidad.service";
-import { CitasService } from "./citas.service";
+import { DisponibilidadService } from "./horarios-disponibles";
+import { CitasService } from "./citas";
 import { TABLA, QUERY_VISTA_ESPECIALISTAS_FULL } from "../constantes";
 
 export interface DiasDisponibles {

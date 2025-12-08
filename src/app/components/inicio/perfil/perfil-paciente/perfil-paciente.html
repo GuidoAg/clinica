@@ -3,7 +3,15 @@
   <div
     class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
   >
-    <h1 class="mb-6 text-4xl font-bold text-azul-oscuro">Mi Perfil</h1>
+    <div class="mb-6 flex items-center justify-between">
+      <h1 class="text-4xl font-bold text-azul-oscuro">Mi Perfil</h1>
+      <button
+        (click)="abrirModalDescarga()"
+        class="hover:bg-azul rounded-lg bg-azul-oscuro px-6 py-3 font-semibold text-white shadow-lg transition-all hover:scale-105"
+      >
+        📄 Descargar Historia Clínica
+      </button>
+    </div>
     <div class="mb-6 flex items-center">
       <img
         [src]="usuario.urlImagenFondo || 'assets/imagenes/banerWelcomePage.webp'"
@@ -34,4 +42,107 @@
     </div>
   </div>
 </div>
-}
+
+<!-- Modal de selección de descarga -->
+@if (mostrarModalDescarga) {
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+  role="dialog"
+  aria-modal="true"
+  tabindex="-1"
+  (click)="cerrarModalDescarga()"
+  (keydown.escape)="cerrarModalDescarga()"
+>
+  <div
+    class="w-full max-w-lg rounded-xl bg-white p-8 shadow-2xl"
+    role="document"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+  >
+    <h2 class="mb-6 text-2xl font-bold text-azul-oscuro">
+      Descargar Historia Clínica
+    </h2>
+
+    <p class="mb-4 text-gray-600">
+      Selecciona qué deseas incluir en tu historia clínica:
+    </p>
+
+    <!-- Opción: Todo el historial -->
+    <div
+      role="button"
+      tabindex="0"
+      (click)="seleccionarEspecialidad(null)"
+      (keydown.enter)="seleccionarEspecialidad(null)"
+      (keydown.space)="seleccionarEspecialidad(null); $event.preventDefault()"
+      [class.border-azul]="especialidadSeleccionada === null"
+      [class.bg-azul-claro]="especialidadSeleccionada === null"
+      class="hover:border-azul mb-3 cursor-pointer rounded-lg border-2 border-gray-300 p-4 transition-all hover:bg-azul-claro"
+    >
+      <div class="flex items-center">
+        <input
+          type="radio"
+          name="especialidad"
+          [checked]="especialidadSeleccionada === null"
+          class="mr-3 h-5 w-5"
+        />
+        <div>
+          <p class="font-semibold text-azul-oscuro">Historia Completa</p>
+          <p class="text-sm text-gray-600">
+            Todas las especialidades ({{ citas.length }} consultas)
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Opciones por especialidad -->
+    @if (especialidades.length > 0) {
+    <p class="mt-4 mb-2 text-sm font-semibold text-gray-700">
+      O filtrar por especialidad:
+    </p>
+    } @for (especialidad of especialidades; track especialidad) {
+    <div
+      role="button"
+      tabindex="0"
+      (click)="seleccionarEspecialidad(especialidad)"
+      (keydown.enter)="seleccionarEspecialidad(especialidad)"
+      (keydown.space)="seleccionarEspecialidad(especialidad); $event.preventDefault()"
+      [class.border-azul]="especialidadSeleccionada === especialidad"
+      [class.bg-azul-claro]="especialidadSeleccionada === especialidad"
+      class="hover:border-azul mb-3 cursor-pointer rounded-lg border-2 border-gray-300 p-4 transition-all hover:bg-azul-claro"
+    >
+      <div class="flex items-center">
+        <input
+          type="radio"
+          name="especialidad"
+          [checked]="especialidadSeleccionada === especialidad"
+          class="mr-3 h-5 w-5"
+        />
+        <div>
+          <p class="font-semibold text-azul-oscuro">{{ especialidad }}</p>
+          <p class="text-sm text-gray-600">
+            {{ contarCitasPorEspecialidad(especialidad) }} consultas
+          </p>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Botones de acción -->
+    <div class="mt-6 flex gap-3">
+      <button
+        (click)="cerrarModalDescarga()"
+        class="flex-1 rounded-lg border-2 border-gray-300 bg-white px-4 py-3 font-semibold text-gray-700 transition-all hover:bg-gray-100"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="descargarHistoriaClinica()"
+        [disabled]="especialidadSeleccionada === undefined"
+        class="bg-azul flex-1 rounded-lg px-4 py-3 font-semibold text-white transition-all hover:bg-azul-oscuro disabled:cursor-not-allowed disabled:bg-gray-400"
+      >
+        Descargar PDF
+      </button>
+    </div>
+  </div>
+</div>
+} }
