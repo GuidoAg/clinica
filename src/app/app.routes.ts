@@ -162,6 +162,14 @@ export const routes: Routes = [
           ),
         canActivate: [AdminGuard],
       },
+      {
+        path: "encuestas",
+        loadComponent: () =>
+          import("./components/inicio/encuestas/encuestas").then(
+            (m) => m.Encuestas,
+          ),
+        canActivate: [AdminGuard],
+      },
     ],
   },
 ];

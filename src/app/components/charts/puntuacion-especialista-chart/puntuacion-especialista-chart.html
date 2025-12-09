@@ -1,0 +1,38 @@
+<div class="h-full w-full rounded-xl bg-white p-6 shadow-lg">
+  @if (cargando()) {
+  <div class="flex h-full items-center justify-center">
+    <div class="text-center">
+      <div
+        class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-azul-oscuro border-t-transparent"
+      ></div>
+      <p class="mt-2 text-sm text-gray-600">Cargando gráfico...</p>
+    </div>
+  </div>
+  } @else if (datos.length === 0) {
+  <div class="flex h-full items-center justify-center">
+    <p class="text-gray-500">No hay datos disponibles</p>
+  </div>
+  } @else {
+  <div style="height: calc(100% - 60px)">
+    <canvas #chartCanvas></canvas>
+  </div>
+  <div class="mt-4 grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
+    <div class="flex items-center gap-2">
+      <div class="h-3 w-3 rounded bg-green-500"></div>
+      <span class="text-gray-600">Excelente (4.5+)</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="h-3 w-3 rounded bg-yellow-500"></div>
+      <span class="text-gray-600">Bueno (3.5-4.4)</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="h-3 w-3 rounded bg-orange-500"></div>
+      <span class="text-gray-600">Regular (2.5-3.4)</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="h-3 w-3 rounded bg-red-500"></div>
+      <span class="text-gray-600">Bajo (&lt;2.5)</span>
+    </div>
+  </div>
+  }
+</div>

@@ -228,13 +228,14 @@
     }
   },
   "homeNavbar": {
-    "cerrarSesion": "Log Out",
+    "cerrarSesion": "Logout",
     "home": "Home",
     "misTurnos": "My Appointments",
     "turnos": "Appointments",
     "pacientes": "Patients",
     "solicitarTurno": "Request Appointment",
     "miPerfil": "My Profile",
-    "usuarios": "Users"
+    "usuarios": "Users",
+    "encuestas": "Surveys"
   }
 }
