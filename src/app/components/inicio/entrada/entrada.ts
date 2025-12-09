@@ -140,7 +140,6 @@ export class Entrada implements OnInit, OnDestroy {
       [EstadoCita.ACEPTADO]: "bg-green-100 text-green-800",
       [EstadoCita.RECHAZADO]: "bg-red-100 text-red-800",
       [EstadoCita.CANCELADO]: "bg-gray-100 text-gray-800",
-      [EstadoCita.REALIZADO]: "bg-blue-100 text-blue-800",
       [EstadoCita.COMPLETADO]: "bg-blue-100 text-blue-800",
     };
     return clases[estado] || "bg-gray-100 text-gray-800";

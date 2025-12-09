@@ -13,6 +13,8 @@ import {
   TurnosPorEspecialidad,
   PacientesPorEspecialidad,
   MedicosPorEspecialidad,
+  CitasPorEstado,
+  Paciente,
   Ingreso,
   TrendLineData,
   IngresosPorHora,
@@ -246,6 +248,7 @@ export class Estadisticas {
       if (!medicosPorEspecialidad.has(relacion.especialidad_id)) {
         medicosPorEspecialidad.set(relacion.especialidad_id, new Set());
       }
+
       medicosPorEspecialidad
         .get(relacion.especialidad_id)!
         .add(relacion.perfil_id);
@@ -259,6 +262,52 @@ export class Estadisticas {
         cantidad: medicosUnicos,
       };
     });
+  }
+
+  async obtenerCitasPorEstado(pacienteId?: number): Promise<CitasPorEstado[]> {
+    const datos = await this.obtenerDatosCache();
+
+    const citasFiltradas = pacienteId
+      ? datos.citas.filter((c) => c.paciente_id === pacienteId)
+      : datos.citas;
+
+    const contadorEstados = new Map<string, number>();
+    for (const cita of citasFiltradas) {
+      if (cita.estado) {
+        contadorEstados.set(
+          cita.estado,
+          (contadorEstados.get(cita.estado) ?? 0) + 1,
+        );
+      }
+    }
+
+    return Object.values(EstadoCita).map((estado) => ({
+      estado,
+      cantidad: contadorEstados.get(estado) ?? 0,
+    }));
+  }
+
+  async obtenerPacientes(): Promise<Paciente[]> {
+    const datos = await this.obtenerDatosCache();
+
+    const pacienteIds = new Set(
+      datos.citas
+        .map((c) => c.paciente_id)
+        .filter((id): id is number => id !== null),
+    );
+
+    return Array.from(pacienteIds)
+      .map((id) => {
+        const perfil = datos.perfilesCompletos.find((p) => p.id === id);
+        if (!perfil) return null;
+        return {
+          id,
+          nombre: perfil.nombre ?? "",
+          apellido: perfil.apellido ?? "",
+        };
+      })
+      .filter((p): p is Paciente => p !== null)
+      .sort((a, b) => a.apellido.localeCompare(b.apellido));
   }
 
   async obtenerTurnosPorDia(): Promise<TurnosPorDia[]> {

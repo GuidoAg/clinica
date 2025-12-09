@@ -38,12 +38,21 @@ export class EspecialistaEspecialidad {
       return [];
     }
 
-    return (data || []).map((row: any) => ({
-      id: row.especialidades.id,
-      nombre: row.especialidades.nombre,
-      urlIcono: row.especialidades.url_icono ?? undefined,
-      duracion: row.duracion,
-    }));
+    return (data || []).map(
+      (row: {
+        especialidades: {
+          id: number;
+          nombre: string;
+          url_icono: string | null;
+        }[];
+        duracion: number;
+      }) => ({
+        id: row.especialidades[0].id,
+        nombre: row.especialidades[0].nombre,
+        urlIcono: row.especialidades[0].url_icono ?? undefined,
+        duracion: row.duracion,
+      }),
+    );
   }
 
   async actualizarDuracion(

@@ -3,6 +3,5 @@ export enum EstadoCita {
   ACEPTADO = "aceptado",
   RECHAZADO = "rechazado",
   CANCELADO = "cancelado",
-  REALIZADO = "realizado",
   COMPLETADO = "completado",
 }

@@ -246,7 +246,6 @@ export class CitasService {
       .in("estado", [
         EstadoCita.SOLICITADO,
         EstadoCita.ACEPTADO,
-        EstadoCita.REALIZADO,
         EstadoCita.COMPLETADO,
       ])
       .gte("fecha_hora", inicioDia.toISOString())
@@ -275,7 +274,7 @@ export class CitasService {
     const { data, error } = await Supabase.from(TABLA.CITAS)
       .select(QUERY_CITAS.FECHA_DURACION_PARTICIPANTES)
       .or(
-        `and(especialista_id.eq.${especialistaId},estado.neq.${EstadoCita.CANCELADO},estado.neq.${EstadoCita.RECHAZADO}),and(paciente_id.eq.${pacienteId},estado.in.(${EstadoCita.SOLICITADO},${EstadoCita.ACEPTADO},${EstadoCita.REALIZADO},${EstadoCita.COMPLETADO}))`,
+        `and(especialista_id.eq.${especialistaId},estado.neq.${EstadoCita.CANCELADO},estado.neq.${EstadoCita.RECHAZADO}),and(paciente_id.eq.${pacienteId},estado.in.(${EstadoCita.SOLICITADO},${EstadoCita.ACEPTADO},${EstadoCita.COMPLETADO}))`,
       )
       .gte("fecha_hora", inicioDia.toISOString())
       .lte("fecha_hora", finDia.toISOString());

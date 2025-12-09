@@ -482,7 +482,7 @@ export class Turnos {
       EstadoCita.CANCELADO,
       [EstadoCita.COMPLETADO],
       cita.estado as EstadoCita,
-      "No se puede cancelar un turno ya realizado.",
+      "No se puede cancelar un turno ya completado.",
       "Turno cancelado exitosamente.",
       { comentario_paciente: comentario },
     );
@@ -500,7 +500,7 @@ export class Turnos {
       return {
         success: false,
         message:
-          "El turno debe ser realizado para poder calificar la atencion.",
+          "El turno debe ser completado para poder calificar la atencion.",
       };
     }
 
@@ -534,7 +534,7 @@ export class Turnos {
       EstadoCita.CANCELADO,
       [EstadoCita.COMPLETADO, EstadoCita.ACEPTADO, EstadoCita.RECHAZADO],
       cita.estado as EstadoCita,
-      "No se puede cancelar un turno ya realizado, aceptado o rechazado.",
+      "No se puede cancelar un turno ya completado, aceptado o rechazado.",
       "Turno cancelado exitosamente.",
       { comentario_especialista: comentario },
     );
@@ -553,7 +553,7 @@ export class Turnos {
       EstadoCita.RECHAZADO,
       [EstadoCita.COMPLETADO, EstadoCita.ACEPTADO, EstadoCita.CANCELADO],
       cita.estado as EstadoCita,
-      "No se puede rechazar un turno ya realizado, aceptado o cancelado.",
+      "No se puede rechazar un turno ya completado, aceptado o cancelado.",
       "Turno rechazado exitosamente.",
       { comentario_especialista: comentario },
     );
@@ -567,7 +567,7 @@ export class Turnos {
       EstadoCita.ACEPTADO,
       [EstadoCita.COMPLETADO, EstadoCita.RECHAZADO, EstadoCita.CANCELADO],
       cita.estado as EstadoCita,
-      "No se puede aceptar un turno ya realizado, rechazado o cancelado.",
+      "No se puede aceptar un turno ya completado, rechazado o cancelado.",
       "Turno aceptado exitosamente.",
     );
   }
@@ -721,16 +721,16 @@ export class Turnos {
       );
     }).length;
 
-    const citasRealizadas = citas
-      .filter((c) => c.estado === EstadoCita.REALIZADO)
+    const citasCompletadas = citas
+      .filter((c) => c.estado === EstadoCita.COMPLETADO)
       .sort(
         (a, b) =>
           new Date(b.fechaHora).getTime() - new Date(a.fechaHora).getTime(),
       );
 
     const ultimaActividad =
-      citasRealizadas.length > 0
-        ? new Date(citasRealizadas[0].fechaHora)
+      citasCompletadas.length > 0
+        ? new Date(citasCompletadas[0].fechaHora)
         : null;
 
     return {

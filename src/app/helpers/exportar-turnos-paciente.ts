@@ -56,7 +56,6 @@ function formatearEstado(estado: string): string {
     aceptado: "Aceptado",
     rechazado: "Rechazado",
     cancelado: "Cancelado",
-    realizado: "Realizado",
     completado: "Completado",
   };
   return estados[estado.toLowerCase()] || estado;

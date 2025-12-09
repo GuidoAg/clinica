@@ -30,6 +30,17 @@ export interface TurnosPorMedico {
   cantidad: number;
 }
 
+export interface CitasPorEstado {
+  estado: string;
+  cantidad: number;
+}
+
+export interface Paciente {
+  id: number;
+  nombre: string;
+  apellido: string;
+}
+
 export interface IngresosPorHora {
   fecha_hora: string;
   cantidad: number;
