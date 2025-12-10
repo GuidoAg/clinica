@@ -85,35 +85,35 @@
       <nav class="flex flex-col space-y-6 font-bold">
         <button
           class="text-left hover:text-lg hover:text-white"
-          (click)="navigate('')"
+          (click)="clickHome()"
         >
           {{ 'homeNavbar.home' | transloco }}
         </button>
         @if (usuarioActual?.rol === 'paciente') {
         <button
           class="text-left hover:text-lg hover:text-white"
-          (click)="navigate('mis-turnos-paciente')"
+          (click)="clickMisTurnosPaciente()"
         >
           {{ 'homeNavbar.misTurnos' | transloco }}
         </button>
         } @if (usuarioActual?.rol === 'especialista') {
         <button
           class="text-left hover:text-lg hover:text-white"
-          (click)="navigate('mis-turnos-especialista')"
+          (click)="clickMisTurnosEspecialista()"
         >
           {{ 'homeNavbar.misTurnos' | transloco }}
         </button>
         } @if (usuarioActual?.rol === 'admin') {
         <button
           class="text-left hover:text-lg hover:text-white"
-          (click)="navigate('tabla-turnos')"
+          (click)="clickTablaTurnos()"
         >
           {{ 'homeNavbar.turnos' | transloco }}
         </button>
         } @if (usuarioActual?.rol === 'especialista') {
         <button
           class="text-left hover:text-lg hover:text-white"
-          (click)="navigate('pacientes')"
+          (click)="clickPacientes()"
         >
           {{ 'homeNavbar.pacientes' | transloco }}
         </button>
@@ -147,7 +147,7 @@
         </button>
         <button
           class="text-left hover:text-lg hover:text-white"
-          (click)="navigate('encuestas')"
+          (click)="clickEncuestas()"
         >
           {{ 'homeNavbar.encuestas' | transloco }}
         </button>

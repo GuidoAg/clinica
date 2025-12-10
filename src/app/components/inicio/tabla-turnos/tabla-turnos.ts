@@ -11,6 +11,7 @@ import { AccionesAdmin } from "../acciones-admin/acciones-admin";
 import { ColorEstado } from "../../../directivas/color-estado";
 import { filtrarCitas } from "../../../helpers/filtrar-citas";
 import { UnidadMedidaPipe } from "../../../pipes/unidad-medida-pipe";
+import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 
 @Component({
   selector: "app-tabla-turnos",
@@ -58,6 +59,7 @@ export class TablaTurnos implements OnInit, OnDestroy {
   constructor(
     private turnosService: Turnos,
     private authSupabase: AuthSupabase,
+    private loading: LoadingOverlayService,
   ) {
     this.usuario$ = this.authSupabase.user$;
   }
@@ -102,6 +104,7 @@ export class TablaTurnos implements OnInit, OnDestroy {
       console.error("Error al obtener citas", e);
     } finally {
       this.cargando.set(false);
+      this.loading.hide();
     }
   }
 

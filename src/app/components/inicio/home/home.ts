@@ -1,11 +1,13 @@
 import {
   Component,
   AfterViewInit,
+  OnInit,
   ViewChild,
   inject,
   signal,
   WritableSignal,
 } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 import { Estadisticas } from "../../../services/estadisticas";
 import { TurnosPorDiaChart } from "../../charts/turnos-por-dia-chart/turnos-por-dia-chart";
@@ -27,6 +29,7 @@ interface FechaRango {
   selector: "app-home",
   standalone: true,
   imports: [
+    CommonModule,
     TurnosPorDiaChart,
     TurnosPorEspecialidadChart,
     TurnosPorMedicoChart,
@@ -39,9 +42,11 @@ interface FechaRango {
   ],
   templateUrl: "./home.html",
 })
-export class Home implements AfterViewInit {
+export class Home implements OnInit, AfterViewInit {
   private loading = inject(LoadingOverlayService);
   private estadisticas = inject(Estadisticas);
+
+  datosCargados = signal(false);
 
   rangoTurnosPorMedico: WritableSignal<FechaRango> = signal({
     desde: "2024-01-01",
@@ -60,17 +65,31 @@ export class Home implements AfterViewInit {
   @ViewChild(TurnosFinalizadosPorMedicoChart)
   turnosFinalizadosChart?: TurnosFinalizadosPorMedicoChart;
 
-  ngAfterViewInit(): void {
-    this.cargarDatos();
+  ngOnInit() {
+    // Iniciar carga de datos inmediatamente
+    this.loading.show();
+    this.cargarDatosIniciales();
   }
 
-  private async cargarDatos() {
-    this.loading.show();
+  private async cargarDatosIniciales() {
     try {
-      // Precargar todos los datos en una sola operación
       await this.estadisticas.precargarDatosEstadisticas();
+      this.datosCargados.set(true);
+      // Esperar un tick para que los ViewChild estén disponibles después de renderizar
+      setTimeout(() => this.cargarChartsConRangos(), 0);
+    } catch (error) {
+      console.error("Error precargando datos:", error);
+      this.datosCargados.set(true); // Mostrar UI aunque falle
+      this.loading.hide();
+    }
+  }
 
-      // Los gráficos ahora usarán los datos cacheados
+  ngAfterViewInit(): void {
+    // Ya no necesitamos hacer nada aquí, se maneja en cargarDatosIniciales
+  }
+
+  private async cargarChartsConRangos() {
+    try {
       await Promise.all([
         this.cargarTurnosPorMedico(),
         this.cargarTurnosFinalizados(),

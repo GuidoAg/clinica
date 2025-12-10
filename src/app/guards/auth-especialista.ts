@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
-import { CanActivate } from "@angular/router";
-import { Observable, map } from "rxjs";
+import { CanActivate, Router } from "@angular/router";
+import { Observable, map, filter, take } from "rxjs";
 import { AuthSupabase } from "../services/auth-supabase";
 
 @Injectable({
@@ -8,8 +8,19 @@ import { AuthSupabase } from "../services/auth-supabase";
 })
 export class EspecialistaGuard implements CanActivate {
   private auth = inject(AuthSupabase);
+  private router = inject(Router);
 
   canActivate(): Observable<boolean> {
-    return this.auth.user$.pipe(map((user) => user?.rol === "especialista"));
+    return this.auth.user$.pipe(
+      filter((user) => user !== undefined),
+      take(1),
+      map((user) => {
+        if (user?.rol === "especialista") {
+          return true;
+        }
+        this.router.navigate(["/home"]);
+        return false;
+      }),
+    );
   }
 }

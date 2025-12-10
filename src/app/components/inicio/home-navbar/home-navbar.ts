@@ -131,6 +131,78 @@ export class HomeNavbar implements OnInit {
     this.router.navigate(["/welcome-page"]);
   }
 
+  clickHome() {
+    if (!this.usuarioActual) return;
+    this.loadin.show();
+
+    if (this.router.url === "/home") {
+      this.loadin.hide();
+      return;
+    }
+
+    this.router.navigate(["/home"]);
+  }
+
+  clickMisTurnosPaciente() {
+    if (!this.usuarioActual) return;
+    this.loadin.show();
+
+    if (this.router.url === "/home/mis-turnos-paciente") {
+      this.loadin.hide();
+      return;
+    }
+
+    this.router.navigate(["/home/mis-turnos-paciente"]);
+  }
+
+  clickMisTurnosEspecialista() {
+    if (!this.usuarioActual) return;
+    this.loadin.show();
+
+    if (this.router.url === "/home/mis-turnos-especialista") {
+      this.loadin.hide();
+      return;
+    }
+
+    this.router.navigate(["/home/mis-turnos-especialista"]);
+  }
+
+  clickTablaTurnos() {
+    if (!this.usuarioActual) return;
+    this.loadin.show();
+
+    if (this.router.url === "/home/tabla-turnos") {
+      this.loadin.hide();
+      return;
+    }
+
+    this.router.navigate(["/home/tabla-turnos"]);
+  }
+
+  clickPacientes() {
+    if (!this.usuarioActual) return;
+    this.loadin.show();
+
+    if (this.router.url === "/home/pacientes") {
+      this.loadin.hide();
+      return;
+    }
+
+    this.router.navigate(["/home/pacientes"]);
+  }
+
+  clickEncuestas() {
+    if (!this.usuarioActual) return;
+    this.loadin.show();
+
+    if (this.router.url === "/home/encuestas") {
+      this.loadin.hide();
+      return;
+    }
+
+    this.router.navigate(["/home/encuestas"]);
+  }
+
   navigate(ruta: string) {
     this.router.navigate([`/home/${ruta}`]);
   }

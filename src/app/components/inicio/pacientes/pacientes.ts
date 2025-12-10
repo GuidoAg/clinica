@@ -11,6 +11,7 @@ import { UsuariosService } from "../../../services/usuarios";
 import { trigger, transition, style, animate } from "@angular/animations";
 import { UnidadMedidaPipe } from "../../../pipes/unidad-medida-pipe";
 import { EstadoCita } from "../../../enums/EstadoCita";
+import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 
 interface PacienteConCitas {
   paciente: Usuario;
@@ -56,6 +57,7 @@ export class Pacientes implements OnInit, OnDestroy {
     private turnosService: Turnos,
     private authSupabase: AuthSupabase,
     private usuariosService: UsuariosService,
+    private loading: LoadingOverlayService,
   ) {
     this.usuario$ = this.authSupabase.user$;
   }
@@ -129,6 +131,7 @@ export class Pacientes implements OnInit, OnDestroy {
       this.pacientesConCitas = [];
     } finally {
       this.cargando.set(false);
+      this.loading.hide();
     }
   }
 

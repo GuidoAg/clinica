@@ -11,6 +11,7 @@ import { AccionesEspecialista } from "../acciones-especialista/acciones-especial
 import { ColorEstado } from "../../../directivas/color-estado";
 import { filtrarCitas } from "../../../helpers/filtrar-citas";
 import { UnidadMedidaPipe } from "../../../pipes/unidad-medida-pipe";
+import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 
 @Component({
   selector: "app-mis-turnos-especialista",
@@ -57,6 +58,7 @@ export class MisTurnosEspecialista implements OnInit, OnDestroy {
   constructor(
     private turnosService: Turnos,
     private authSupabase: AuthSupabase,
+    private loading: LoadingOverlayService,
   ) {
     this.usuario$ = this.authSupabase.user$;
   }
@@ -103,6 +105,7 @@ export class MisTurnosEspecialista implements OnInit, OnDestroy {
       console.error("Error al obtener citas", e);
     } finally {
       this.cargando.set(false);
+      this.loading.hide();
     }
   }
 

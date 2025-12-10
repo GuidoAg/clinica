@@ -1,0 +1,1 @@
+import{U as r,f as t}from"./chunk-JXJDPNLJ.js";var o=class e{resetSubject=new t;reset$=this.resetSubject.asObservable();triggerReset(){this.resetSubject.next()}static \u0275fac=function(i){return new(i||e)};static \u0275prov=r({token:e,factory:e.\u0275fac,providedIn:"root"})};export{o as a};
