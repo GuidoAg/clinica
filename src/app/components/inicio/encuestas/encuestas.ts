@@ -4,6 +4,7 @@ import { EncuestasService } from "../../../services/encuestas";
 import type { EstadisticasEncuestas } from "../../../models/Encuestas/modeloEncuestas";
 import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 import { PuntuacionEspecialistaChartComponent } from "../../charts/puntuacion-especialista-chart/puntuacion-especialista-chart";
+import { exportarEncuestasPdf } from "../../../helpers/exportar-encuestas-pdf";
 
 // Constantes para mapeo de etiquetas
 const ETIQUETAS_RADIO: Record<string, string> = {
@@ -84,5 +85,22 @@ export class Encuestas implements OnInit {
 
   generarEstrellas(cantidad: number): string {
     return "⭐".repeat(cantidad);
+  }
+
+  async exportarEncuestasPdf() {
+    const stats = this.estadisticas();
+    if (!stats) {
+      console.error("No hay estadísticas disponibles para exportar");
+      return;
+    }
+
+    this.loading.show();
+    try {
+      await exportarEncuestasPdf(stats);
+    } catch (error) {
+      console.error("Error al exportar PDF:", error);
+    } finally {
+      this.loading.hide();
+    }
   }
 }

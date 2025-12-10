@@ -78,6 +78,7 @@ export class PuntuacionEspecialistaChartComponent
         indexAxis: "y",
         responsive: true,
         maintainAspectRatio: false,
+        devicePixelRatio: 2, // Mayor resolución para mejor calidad en PDF
         plugins: {
           legend: {
             display: false,
@@ -85,7 +86,7 @@ export class PuntuacionEspecialistaChartComponent
           title: {
             display: true,
             text: "Puntuación Promedio por Especialista",
-            font: { size: 16, weight: "bold" },
+            font: { size: 18, weight: "bold" },
             padding: { top: 10, bottom: 20 },
           },
           tooltip: {
@@ -94,7 +95,7 @@ export class PuntuacionEspecialistaChartComponent
                 const index = context.dataIndex;
                 const dato = datosTop[index];
                 return [
-                  `Promedio: ${dato.promedioEstrellas.toFixed(1)} ⭐`,
+                  `Promedio: ${dato.promedioEstrellas.toFixed(1)} estrellas`,
                   `Valoración: ${dato.promedioRango.toFixed(0)}/100`,
                   `Encuestas: ${dato.totalEncuestas}`,
                 ];
@@ -109,12 +110,19 @@ export class PuntuacionEspecialistaChartComponent
             title: {
               display: true,
               text: "Estrellas",
+              font: { size: 14, weight: "bold" },
+            },
+            ticks: {
+              font: { size: 12 },
             },
             grid: {
               color: "rgba(0, 0, 0, 0.05)",
             },
           },
           y: {
+            ticks: {
+              font: { size: 12 },
+            },
             grid: {
               display: false,
             },

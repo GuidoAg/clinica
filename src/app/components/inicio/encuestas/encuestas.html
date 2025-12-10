@@ -2,13 +2,35 @@
   <div
     class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
   >
-    <div class="mb-8">
-      <h1 class="mb-2 text-4xl font-bold text-azul-oscuro">
-        Análisis de Encuestas
-      </h1>
-      <p class="text-gray-600">
-        Resumen y análisis de satisfacción de pacientes
-      </p>
+    <div class="mb-8 flex items-center justify-between">
+      <div>
+        <h1 class="mb-2 text-4xl font-bold text-azul-oscuro">
+          Análisis de Encuestas
+        </h1>
+        <p class="text-gray-600">
+          Resumen y análisis de satisfacción de pacientes
+        </p>
+      </div>
+      <button
+        (click)="exportarEncuestasPdf()"
+        class="flex items-center gap-2 rounded-lg bg-red-500 px-6 py-3 text-sm font-medium text-white shadow-md transition-all hover:bg-red-700 hover:shadow-lg active:scale-95"
+        [disabled]="!estadisticas()"
+      >
+        <svg
+          class="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+        Exportar PDF
+      </button>
     </div>
 
     @if (estadisticas()) {
