@@ -1,4 +1,4 @@
-# 🏥 Clínica - Sistema de Gestión Médica
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/1ec1a68a-b01d-4413-bd9d-5735028d0e4d" />![favicon](https://github.com/user-attachments/assets/c3fe4dea-0b5e-4f0f-a5cd-20b6f7494e28)# 🏥 Centro Medico Insua - Sistema de Gestión Médica
 
 <div align="center">
 
@@ -8,9 +8,18 @@
 
 </div>
 
+![Upl<svg width="800" height="993" viewBox="0 0 800 993" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M420.5 806C411.196 846.586 424.5 904 424.5 904L372 794.5L342.5 538.5C342.5 538.5 339.861 467.449 349.5 423.5C361.046 370.858 373.259 341.11 403.5 296.5C442.306 239.254 481.356 221.393 536 179C584.826 141.12 617.374 126.991 666.5 89.5C709.806 56.4505 773.5 0 773.5 0C773.5 0 804.277 152.004 799 250C795.34 317.956 796.025 358.714 771 422C751.445 471.452 734.942 497.983 700.5 538.5C677.958 565.018 662.328 577.238 636 600C583.867 645.07 537 661.5 492 702C456.365 734.071 431.213 759.271 420.5 806Z" fill="#456549"/>
+<path d="M390.5 749.5C383.764 782.403 390.5 835.5 390.5 835.5L356 759V662C356 662 367.029 595.766 382.5 556C405.367 497.225 425.759 465.829 468 419C506.336 376.5 554.5 345.5 599.5 313C649.035 277.225 680.5 239 680.5 239C680.5 239 679.523 279.367 676.5 304C672.266 338.503 669.457 356.547 657 389C641.099 430.426 627.907 452.912 599.5 487C537 562 492 584 444 646C416.146 681.978 399.625 704.925 390.5 749.5Z" fill="#96CEA3"/>
+<circle cx="344.5" cy="137.5" r="89.5" fill="#0C4B60"/>
+<path d="M119.5 268.001C74.2918 254.471 0 256 0 256C0 256 93.5 293.499 140.5 335C196.652 384.582 218.296 423.107 251 490.5C299.528 590.5 290.5 690 306.5 743.001C327.472 812.473 363.493 876.479 412.5 930C450.884 971.919 509.5 993.001 509.5 993.001C509.5 993.001 450.116 937.94 425 896.5C385.6 831.493 377.57 787.911 368 712.501C355.5 614 362.178 568.5 326.5 482.501C302.607 424.907 286.185 387.996 242 344C201.299 303.473 174.525 284.468 119.5 268.001Z" fill="#0C4B60"/>
+</svg>
+oading favicon.svg…]()
+
+
 ## 📋 Descripción
 
-Clínica es una aplicación web integral para la gestión de turnos médicos que conecta pacientes, especialistas y administradores en una plataforma única. El sistema permite solicitar turnos, gestionar historias clínicas, y administrar usuarios de manera eficiente y segura.
+Centro Medico Insua es una aplicación web integral para la gestión de turnos médicos que conecta pacientes, especialistas y administradores en una plataforma única. El sistema permite solicitar turnos, gestionar historias clínicas, y administrar usuarios de manera eficiente y segura.
 
 ### 🌐 Acceso a la aplicación
 
@@ -20,11 +29,28 @@ Puedes acceder a la aplicación en el siguiente enlace:
 
 ---
 
-## 👤 Welcome
+## 🚀 Acceso al Sistema
 
-Pagina inicial
+### 🎯 Welcome Page
+Página de bienvenida que presenta el sistema y permite a los usuarios navegar hacia el registro o inicio de sesión.
 
-<img width="1869" height="2040" alt="image" src="https://github.com/user-attachments/assets/747806c3-19ed-49f0-9f2b-6900547a5189" />
+<img width="1869" height="2040" alt="image" src="https://github.com/user-attachments/assets/259fc691-c920-4d94-8526-affbd9fc2c05" />
+
+---
+
+### 🔐 Login
+Sistema de autenticación seguro donde los usuarios ingresan con sus credenciales según su rol (Paciente, Especialista o Administrador).
+
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/51135c9d-dc7c-415d-9e13-4b6932f3966f" />
+
+---
+
+### 📝 Registro
+Formulario de registro para nuevos usuarios, con validaciones y captcha de seguridad. Los especialistas requieren aprobación del administrador.
+
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/58f24f52-8772-42b5-977b-47645652c401" />
+
+<img width="1869" height="1616" alt="image" src="https://github.com/user-attachments/assets/fad1971a-8821-49af-ae79-5b36845bfbd9" />
 
 ---
 
@@ -37,28 +63,32 @@ Los pacientes pueden gestionar sus turnos médicos, consultar su historial y act
 #### 🏠 Inicio
 Vista principal donde el paciente puede ver un resumen de su actividad y acceder rápidamente a las funciones principales.
 
-![Inicio Paciente](ruta/a/screenshot-inicio-paciente.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/09cb24ff-3dac-4956-9fba-b4f299873232" />
 
 ---
 
 #### 📅 Mis Turnos
 Listado completo de turnos programados, pasados y futuros, con opciones para cancelar o reprogramar.
 
-![Mis Turnos](ruta/a/screenshot-mis-turnos.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/7a71c9d2-29d5-44ca-83f6-a64bd247802e" />
 
 ---
 
 #### ➕ Solicitar Turno
 Interfaz para solicitar nuevos turnos médicos, seleccionando especialidad, profesional, fecha y horario disponible.
 
-![Solicitar Turno](ruta/a/screenshot-solicitar-turno.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/072f02eb-fc93-43cd-b31e-edebad0f15f0" />
 
 ---
 
 #### 👨‍⚕️ Mi Perfil
 Gestión de datos personales, información de contacto y configuración de la cuenta.
 
-![Mi Perfil Paciente](ruta/a/screenshot-perfil-paciente.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/892e8250-95ce-45d6-a388-859116205ae9" />
+
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/cb16ab7d-8b5d-44ef-96c0-1c2b3de4d5c6" />
+
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/d55be9a3-0036-4d62-8b64-5fabc778f8f7" />
 
 ---
 
@@ -71,28 +101,28 @@ Los especialistas tienen acceso a herramientas para gestionar sus consultas, rev
 #### 🏠 Inicio
 Dashboard con información relevante sobre turnos del día y notificaciones importantes.
 
-![Inicio Especialista](ruta/a/screenshot-inicio-especialista.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/715830e5-25a8-4c5c-8327-c568e5b97ba2" />
 
 ---
 
 #### 📅 Mis Turnos
 Visualización y gestión de la agenda de turnos, con opciones para confirmar, cancelar o completar consultas.
 
-![Mis Turnos Especialista](ruta/a/screenshot-turnos-especialista.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/3a33d19f-0b8a-4e2e-8806-223be1bb619f" />
 
 ---
 
 #### 🧑‍🤝‍🧑 Pacientes
 Lista de pacientes atendidos con acceso a historiales clínicos y datos relevantes para el seguimiento médico.
 
-![Pacientes](ruta/a/screenshot-pacientes.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/dce1b8c5-0bd3-4029-9c11-2733cf618502" />
 
 ---
 
 #### 👨‍⚕️ Mi Perfil
 Gestión de datos profesionales, especialidades, disponibilidad horaria y configuración de la cuenta.
 
-![Mi Perfil Especialista](ruta/a/screenshot-perfil-especialista.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/b00cad75-862f-4bcd-909a-bd0c92bae126" />
 
 ---
 
@@ -105,42 +135,50 @@ Los administradores tienen control total sobre el sistema, pudiendo gestionar us
 #### 🏠 Inicio
 Panel de control con estadísticas generales, métricas de uso y accesos rápidos a funciones administrativas.
 
-![Inicio Admin](ruta/a/screenshot-inicio-admin.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/b230cfdc-7645-4260-939c-04e30a99468d" />
+
+<img width="992" height="908" alt="image" src="https://github.com/user-attachments/assets/199930be-18aa-4b40-8581-1711f3d73b40" />
 
 ---
 
 #### 📅 Turnos
 Vista completa de todos los turnos del sistema con capacidad de gestión, modificación y seguimiento.
 
-![Turnos Admin](ruta/a/screenshot-turnos-admin.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/e02cfdeb-6337-445c-ba32-89b1989386d9" />
 
 ---
 
 #### ➕ Solicitar Turno
 Capacidad de crear turnos en nombre de los pacientes para agilizar el proceso de atención.
 
-![Solicitar Turno Admin](ruta/a/screenshot-solicitar-turno-admin.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/dd588cca-7665-44cb-90c7-6b056388bc0d" />
 
 ---
 
 #### 👨‍⚕️ Mi Perfil
 Gestión de datos del administrador y configuración del sistema.
 
-![Mi Perfil Admin](ruta/a/screenshot-perfil-admin.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/05ef6d04-a178-4409-954e-8704f97cf04b" />
 
 ---
 
 #### 👥 Usuarios
 Administración completa de usuarios: altas, bajas, modificaciones y habilitación de especialistas.
 
-![Usuarios](ruta/a/screenshot-usuarios.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/657bb1c8-aabf-4a9d-8733-89dd777fed6a" />
+
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/23d9aab6-8f27-4b57-b6aa-32de347c5d53" />
+
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/bff480a1-d185-42cd-b48e-b5e0d9f0ac97" />
 
 ---
 
 #### 📊 Encuestas
 Visualización y análisis de encuestas de satisfacción completadas por los pacientes.
 
-![Encuestas](ruta/a/screenshot-encuestas.png)
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/541adfe9-dea5-4510-be0b-3a95c30e9e86" />
+
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/69e41309-c5f2-4c98-ba07-b5f8b47c94af" />
 
 ---
 
