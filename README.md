@@ -8,7 +8,8 @@
 
 </div>
 
-<img width="800" height="993" alt="logo_png" src="https://github.com/user-attachments/assets/28bdb283-db7f-436e-a644-51de80c64dbc" />
+
+
 
 ## 📋 Descripción
 
