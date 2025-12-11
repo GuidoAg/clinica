@@ -15,11 +15,6 @@ export interface OpcionesExportacionExcel {
   providedIn: "root",
 })
 export class ExportarExcel {
-  /**
-   * Exporta datos a formato Excel (.xlsx)
-   * @param datos Array de objetos con los datos a exportar
-   * @param opciones Configuración de la exportación
-   */
   async exportarAExcel<T extends Record<string, unknown>>(
     datos: T[],
     opciones: OpcionesExportacionExcel,
@@ -92,7 +87,7 @@ export class ExportarExcel {
       datos.forEach((item, index) => {
         const row = headers.map((header) => {
           const valor = item[header];
-          // Manejar valores nulos o undefined
+          // Manejar valores nulos
           return valor ?? "";
         });
         const dataRow = worksheet.addRow(row);

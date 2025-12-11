@@ -35,6 +35,7 @@ export class TablaTurnos implements OnInit, OnDestroy {
   filaExpandida = signal<number | null>(null);
   cargando = signal(true);
   citaSeleccionada = signal<CitaCompletaTurnos | null>(null);
+  ordenamiento = signal<"fecha" | "estado" | null>("fecha");
 
   mostrarPopupAcciones = false;
 
@@ -113,7 +114,21 @@ export class TablaTurnos implements OnInit, OnDestroy {
   }
 
   get citasFiltradas(): CitaCompletaTurnos[] {
-    return filtrarCitas(this.citas(), this._filtroValor());
+    let resultado = filtrarCitas(this.citas(), this._filtroValor());
+
+    const orden = this.ordenamiento();
+    if (orden === "fecha") {
+      resultado = [...resultado].sort(
+        (a, b) =>
+          new Date(b.fechaHora).getTime() - new Date(a.fechaHora).getTime(),
+      );
+    } else if (orden === "estado") {
+      resultado = [...resultado].sort((a, b) =>
+        a.estado.localeCompare(b.estado),
+      );
+    }
+
+    return resultado;
   }
 
   limpiarFiltro() {
@@ -133,5 +148,13 @@ export class TablaTurnos implements OnInit, OnDestroy {
   accionDesdeModal() {
     this.cerrarPopupAcciones();
     this.cargarCitas();
+  }
+
+  ordenarPorFecha() {
+    this.ordenamiento.set("fecha");
+  }
+
+  ordenarPorEstado() {
+    this.ordenamiento.set("estado");
   }
 }

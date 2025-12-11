@@ -12,11 +12,12 @@ import { EstadoCita } from "../../../enums/EstadoCita";
 import { Supabase } from "../../../supabase";
 import { TABLA } from "../../../constantes";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { TranslocoModule } from "@jsverse/transloco";
 
 @Component({
   selector: "app-entrada",
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, TranslocoModule],
   templateUrl: "./entrada.html",
   styleUrl: "./entrada.css",
 })
@@ -53,9 +54,6 @@ export class Entrada implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Suscribe al componente a cambios en tiempo real en la tabla citas
-   */
   private suscribirseACambiosCitas(): void {
     if (!this.usuarioActual?.id) return;
 

@@ -5,6 +5,7 @@ import type { EstadisticasEncuestas } from "../../../models/Encuestas/modeloEncu
 import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 import { PuntuacionEspecialistaChartComponent } from "../../charts/puntuacion-especialista-chart/puntuacion-especialista-chart";
 import { exportarEncuestasPdf } from "../../../helpers/exportar-encuestas-pdf";
+import { TranslocoModule } from "@jsverse/transloco";
 
 // Constantes para mapeo de etiquetas
 const ETIQUETAS_RADIO: Record<string, string> = {
@@ -36,7 +37,11 @@ const ICONOS_TENDENCIA: Record<string, string> = {
 @Component({
   selector: "app-encuestas",
   standalone: true,
-  imports: [CommonModule, PuntuacionEspecialistaChartComponent],
+  imports: [
+    CommonModule,
+    PuntuacionEspecialistaChartComponent,
+    TranslocoModule,
+  ],
   templateUrl: "./encuestas.html",
   styleUrl: "./encuestas.css",
 })
@@ -81,6 +86,12 @@ export class Encuestas implements OnInit {
     if (promedio >= 3.5) return ICONOS_TENDENCIA["buena"];
     if (promedio >= 2.5) return ICONOS_TENDENCIA["regular"];
     return ICONOS_TENDENCIA["critica"];
+  }
+
+  obtenerClavesTendencia(): string[] {
+    const tendencia = this.estadisticas()?.tendenciaGeneral;
+    if (!tendencia) return [];
+    return tendencia.split("|");
   }
 
   generarEstrellas(cantidad: number): string {

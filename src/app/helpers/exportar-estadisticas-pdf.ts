@@ -1,42 +1,10 @@
-/**
- * @fileoverview Helper para exportar estadísticas médicas a PDF
- *
- * Este módulo proporciona funcionalidades para generar informes PDF profesionales
- * con gráficos estadísticos del sistema de gestión médica.
- *
- * @example
- * // Uso básico (obtiene automáticamente los canvas del DOM):
- * await exportarEstadisticasPdf();
- *
- * @example
- * // Uso con configuración personalizada:
- * await exportarEstadisticasPdf({
- *   nombreArchivo: 'estadisticas_marzo',
- *   tituloDocumento: 'INFORME MENSUAL',
- *   colorPrimario: [255, 0, 0]
- * });
- *
- * @example
- * // Uso con canvas específicos:
- * const misCanvas = [canvas1, canvas2, canvas3];
- * await exportarEstadisticasConCanvas(misCanvas, {
- *   subtituloDocumento: 'Reporte Trimestral'
- * });
- */
-
 import jsPDF from "jspdf";
 
-/**
- * Información descriptiva de un gráfico para el PDF
- */
 interface GraficoInfo {
   titulo: string;
   descripcion: string;
 }
 
-/**
- * Configuración para la exportación del PDF de estadísticas
- */
 export interface ConfiguracionPdfEstadisticas {
   nombreArchivo?: string;
   tituloDocumento?: string;
@@ -47,9 +15,6 @@ export interface ConfiguracionPdfEstadisticas {
   notaFinal?: string;
 }
 
-/**
- * Información predefinida de los gráficos de estadísticas
- */
 const GRAFICOS_ESTADISTICAS: GraficoInfo[] = [
   {
     titulo: "Distribución de Turnos por Día",
@@ -98,9 +63,6 @@ const GRAFICOS_ESTADISTICAS: GraficoInfo[] = [
   },
 ];
 
-/**
- * Clase para gestionar la creación del PDF de estadísticas
- */
 class GeneradorPdfEstadisticas {
   private pdf: jsPDF;
   private pageWidth: number;
@@ -134,9 +96,6 @@ class GeneradorPdfEstadisticas {
     };
   }
 
-  /**
-   * Agrega el encabezado de la página
-   */
   private agregarEncabezado(): void {
     const [r, g, b] = this.config.colorPrimario;
 
@@ -184,9 +143,6 @@ class GeneradorPdfEstadisticas {
     }
   }
 
-  /**
-   * Verifica si hay espacio suficiente en la página y crea una nueva si es necesario
-   */
   private verificarEspacio(alturaRequerida: number): boolean {
     if (this.yPosition + alturaRequerida > this.pageHeight - 20) {
       this.pdf.addPage();
@@ -198,9 +154,6 @@ class GeneradorPdfEstadisticas {
     return false;
   }
 
-  /**
-   * Agrega un gráfico al PDF
-   */
   private agregarGrafico(canvas: HTMLCanvasElement, info: GraficoInfo): void {
     const [r, g, b] = this.config.colorPrimario;
 
@@ -268,9 +221,6 @@ class GeneradorPdfEstadisticas {
     this.yPosition += 72 + 10;
   }
 
-  /**
-   * Agrega la nota final al documento
-   */
   private agregarNotaFinal(): void {
     const [r, g, b] = this.config.colorPrimario;
 
@@ -303,9 +253,6 @@ class GeneradorPdfEstadisticas {
     });
   }
 
-  /**
-   * Genera el PDF completo con todos los gráficos
-   */
   public generar(canvases: HTMLCanvasElement[]): void {
     // Primera página con encabezado
     this.agregarEncabezado();
@@ -324,9 +271,6 @@ class GeneradorPdfEstadisticas {
     this.agregarNotaFinal();
   }
 
-  /**
-   * Descarga el PDF generado
-   */
   public descargar(): void {
     const fechaArchivo = new Date().toISOString().split("T")[0];
     const nombreCompleto = `${this.config.nombreArchivo}_${fechaArchivo}.pdf`;
@@ -334,10 +278,6 @@ class GeneradorPdfEstadisticas {
   }
 }
 
-/**
- * Exporta las estadísticas a PDF obteniendo los gráficos del DOM
- * @param config Configuración personalizada para el PDF
- */
 export async function exportarEstadisticasPdf(
   config: ConfiguracionPdfEstadisticas = {},
 ): Promise<void> {
@@ -356,11 +296,6 @@ export async function exportarEstadisticasPdf(
   generador.descargar();
 }
 
-/**
- * Exporta estadísticas a PDF con canvas específicos
- * @param canvases Array de elementos canvas a incluir en el PDF
- * @param config Configuración personalizada para el PDF
- */
 export async function exportarEstadisticasConCanvas(
   canvases: HTMLCanvasElement[],
   config: ConfiguracionPdfEstadisticas = {},
@@ -374,10 +309,6 @@ export async function exportarEstadisticasConCanvas(
   generador.descargar();
 }
 
-/**
- * Obtiene la información predefinida de los gráficos
- * Útil para personalización o consulta
- */
 export function obtenerInfoGraficos(): GraficoInfo[] {
   return [...GRAFICOS_ESTADISTICAS];
 }

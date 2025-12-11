@@ -32,6 +32,7 @@ import { Especialidad } from "../../../models/SupaBase/Especialidad";
 import { Router } from "@angular/router";
 import { LoadingOverlayService } from "../../../services/loading-overlay-service";
 import { RegisterStateService } from "../../../services/register-state";
+import { TranslocoModule } from "@jsverse/transloco";
 
 import { MiCaptcha } from "../../mi-captcha/mi-captcha";
 
@@ -48,6 +49,7 @@ import { MiCaptcha } from "../../mi-captcha/mi-captcha";
     MatIconModule,
     MatCheckboxModule,
     MiCaptcha,
+    TranslocoModule,
   ],
   templateUrl: "./register.html",
   styleUrls: ["./register.css"],

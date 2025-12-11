@@ -2,12 +2,15 @@ import {
   Component,
   Input,
   OnInit,
+  OnDestroy,
   ViewChild,
   ElementRef,
   AfterViewInit,
   signal,
+  inject,
 } from "@angular/core";
 import { Chart, registerables } from "chart.js";
+import { TranslocoService } from "@jsverse/transloco";
 import type { PuntuacionEspecialista } from "../../../models/Encuestas/modeloEncuestas";
 
 Chart.register(...registerables);
@@ -19,24 +22,44 @@ Chart.register(...registerables);
   styleUrls: ["./puntuacion-especialista-chart.css"],
 })
 export class PuntuacionEspecialistaChartComponent
-  implements OnInit, AfterViewInit
+  implements OnInit, AfterViewInit, OnDestroy
 {
   @Input() datos: PuntuacionEspecialista[] = [];
   @ViewChild("chartCanvas") chartCanvas!: ElementRef<HTMLCanvasElement>;
 
+  private readonly translocoService = inject(TranslocoService);
   private chart?: Chart;
   cargando = signal<boolean>(true);
+  private langChangeSubscription?: ReturnType<typeof setTimeout>;
 
   ngOnInit(): void {
     this.cargando.set(this.datos.length === 0);
+
+    // Suscribirse a cambios de idioma
+    this.translocoService.langChanges$.subscribe(() => {
+      if (this.chart && this.datos.length > 0) {
+        setTimeout(() => this.renderizarGrafico(), 100);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.chart) {
+      this.chart.destroy();
+    }
   }
 
   ngAfterViewInit(): void {
     if (this.datos.length > 0) {
-      setTimeout(() => {
-        this.renderizarGrafico();
-        this.cargando.set(false);
-      }, 100);
+      // Esperar a que las traducciones estén cargadas
+      this.translocoService
+        .selectTranslate("encuestasPage.grafico.titulo")
+        .subscribe(() => {
+          setTimeout(() => {
+            this.renderizarGrafico();
+            this.cargando.set(false);
+          }, 100);
+        });
     }
   }
 
@@ -52,7 +75,6 @@ export class PuntuacionEspecialistaChartComponent
     // Obtener los datos limitados a top 10
     const datosTop = this.datos.slice(0, 10);
 
-    // Generar colores basados en la puntuación
     const colores = datosTop.map((dato) => {
       if (dato.promedioEstrellas >= 4.5) return "rgba(34, 197, 94, 0.8)"; // Verde
       if (dato.promedioEstrellas >= 3.5) return "rgba(234, 179, 8, 0.8)"; // Amarillo
@@ -66,7 +88,9 @@ export class PuntuacionEspecialistaChartComponent
         labels: datosTop.map((d) => d.especialista),
         datasets: [
           {
-            label: "Promedio de Estrellas",
+            label: this.translocoService.translate(
+              "encuestasPage.grafico.promedioEstrellas",
+            ),
             data: datosTop.map((d) => d.promedioEstrellas),
             backgroundColor: colores,
             borderColor: colores.map((c) => c.replace("0.8", "1")),
@@ -78,14 +102,16 @@ export class PuntuacionEspecialistaChartComponent
         indexAxis: "y",
         responsive: true,
         maintainAspectRatio: false,
-        devicePixelRatio: 2, // Mayor resolución para mejor calidad en PDF
+        devicePixelRatio: 2,
         plugins: {
           legend: {
             display: false,
           },
           title: {
             display: true,
-            text: "Puntuación Promedio por Especialista",
+            text: this.translocoService.translate(
+              "encuestasPage.grafico.titulo",
+            ),
             font: { size: 18, weight: "bold" },
             padding: { top: 10, bottom: 20 },
           },
@@ -95,9 +121,9 @@ export class PuntuacionEspecialistaChartComponent
                 const index = context.dataIndex;
                 const dato = datosTop[index];
                 return [
-                  `Promedio: ${dato.promedioEstrellas.toFixed(1)} estrellas`,
-                  `Valoración: ${dato.promedioRango.toFixed(0)}/100`,
-                  `Encuestas: ${dato.totalEncuestas}`,
+                  `${this.translocoService.translate("encuestasPage.grafico.promedio")}: ${dato.promedioEstrellas.toFixed(1)} ${this.translocoService.translate("encuestasPage.grafico.estrellas")}`,
+                  `${this.translocoService.translate("encuestasPage.grafico.valoracion")}: ${dato.promedioRango.toFixed(0)}/100`,
+                  `${this.translocoService.translate("encuestasPage.grafico.encuestas")}: ${dato.totalEncuestas}`,
                 ];
               },
             },
@@ -109,7 +135,9 @@ export class PuntuacionEspecialistaChartComponent
             max: 5,
             title: {
               display: true,
-              text: "Estrellas",
+              text: this.translocoService.translate(
+                "encuestasPage.grafico.ejeEstrellas",
+              ),
               font: { size: 14, weight: "bold" },
             },
             ticks: {

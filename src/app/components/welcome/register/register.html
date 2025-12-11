@@ -1,9 +1,13 @@
 <div class="min-h-screen bg-gray-200 pt-30 pb-60">
-  <h2 class="pb-1 text-center text-4xl font-bold text-azul-oscuro">Registro</h2>
+  <h2 class="pb-1 text-center text-4xl font-bold text-azul-oscuro">
+    {{ 'registerPage.titulo' | transloco }}
+  </h2>
 
   @if (!tipoUsuario && registroForm) {
   <div class="pt-16 pb-30 text-center">
-    <p class="mb-6 text-xl text-gray-700">¿Qué tipo de usuario sos?</p>
+    <p class="mb-6 text-xl text-gray-700">
+      {{ 'registerPage.tipoUsuario' | transloco }}
+    </p>
     <div class="flex flex-col items-center gap-6">
       <div
         class="w-[380px] cursor-pointer p-2 transition-transform hover:scale-105"
@@ -21,7 +25,9 @@
             class="h-55 w-full rounded-t-2xl object-cover"
           />
           <div class="p-4">
-            <h3 class="text-xl font-bold text-azul-oscuro">Paciente</h3>
+            <h3 class="text-xl font-bold text-azul-oscuro">
+              {{ 'registerPage.paciente' | transloco }}
+            </h3>
           </div>
         </div>
       </div>
@@ -41,7 +47,9 @@
             class="h-55 w-full rounded-t-2xl object-cover"
           />
           <div class="p-4">
-            <h3 class="text-xl font-bold text-azul-oscuro">Especialista</h3>
+            <h3 class="text-xl font-bold text-azul-oscuro">
+              {{ 'registerPage.especialista' | transloco }}
+            </h3>
           </div>
         </div>
       </div>
@@ -62,14 +70,20 @@
     'mat-form-field-invalid': registroForm.get('nombre')?.invalid && (registroForm.get('nombre')?.dirty || registroForm.get('nombre')?.touched)
   }"
       >
-        <mat-label>Nombre</mat-label>
+        <mat-label>{{ 'registerPage.campos.nombre' | transloco }}</mat-label>
         <input matInput formControlName="nombre" />
         @if (registroForm.get('nombre')?.hasError('required')) {
-        <mat-error>Campo obligatorio</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.campoObligatorio' | transloco }}</mat-error
+        >
         } @if (registroForm.get('nombre')?.hasError('minlength')) {
-        <mat-error>Mínimo 2 caracteres</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.minimo2Caracteres' | transloco }}</mat-error
+        >
         } @if (registroForm.get('nombre')?.hasError('pattern')) {
-        <mat-error>Solo letras</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.soloLetras' | transloco }}</mat-error
+        >
         }
       </mat-form-field>
       <mat-form-field
@@ -80,14 +94,20 @@
     'mat-form-field-invalid': registroForm.get('apellido')?.invalid && (registroForm.get('apellido')?.dirty || registroForm.get('apellido')?.touched)
   }"
       >
-        <mat-label>Apellido</mat-label>
+        <mat-label>{{ 'registerPage.campos.apellido' | transloco }}</mat-label>
         <input matInput formControlName="apellido" />
         @if (registroForm.get('apellido')?.hasError('required')) {
-        <mat-error>Campo obligatorio</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.campoObligatorio' | transloco }}</mat-error
+        >
         } @if (registroForm.get('apellido')?.hasError('minlength')) {
-        <mat-error>Mínimo 2 caracteres</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.minimo2Caracteres' | transloco }}</mat-error
+        >
         } @if (registroForm.get('apellido')?.hasError('pattern')) {
-        <mat-error>Solo letras</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.soloLetras' | transloco }}</mat-error
+        >
         }
       </mat-form-field>
       <mat-form-field
@@ -98,14 +118,16 @@
     'mat-form-field-invalid': registroForm.get('edad')?.invalid && (registroForm.get('edad')?.dirty || registroForm.get('edad')?.touched)
   }"
       >
-        <mat-label>Edad</mat-label>
+        <mat-label>{{ 'registerPage.campos.edad' | transloco }}</mat-label>
         <input matInput type="number" formControlName="edad" />
         @if (registroForm.get('edad')?.hasError('required')) {
-        <mat-error>Campo obligatorio</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.campoObligatorio' | transloco }}</mat-error
+        >
         } @if (registroForm.get('edad')?.hasError('min')) {
-        <mat-error>Mínimo 18</mat-error>
+        <mat-error>{{ 'registerPage.errores.minimo18' | transloco }}</mat-error>
         } @if (registroForm.get('edad')?.hasError('max')) {
-        <mat-error>Máximo 99</mat-error>
+        <mat-error>{{ 'registerPage.errores.maximo99' | transloco }}</mat-error>
         }
       </mat-form-field>
       <mat-form-field
@@ -116,12 +138,16 @@
     'mat-form-field-invalid': registroForm.get('dni')?.invalid && (registroForm.get('dni')?.dirty || registroForm.get('dni')?.touched)
   }"
       >
-        <mat-label>DNI</mat-label>
+        <mat-label>{{ 'registerPage.campos.dni' | transloco }}</mat-label>
         <input matInput formControlName="dni" />
         @if (registroForm.get('dni')?.hasError('required')) {
-        <mat-error>Campo obligatorio</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.campoObligatorio' | transloco }}</mat-error
+        >
         } @if (registroForm.get('dni')?.hasError('pattern')) {
-        <mat-error>Debe contener 8 dígitos</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.dni8Digitos' | transloco }}</mat-error
+        >
         }
       </mat-form-field>
       @if (tipoUsuario === 'paciente') {
@@ -133,14 +159,18 @@
     'mat-form-field-invalid': registroForm.get('obraSocial')?.invalid && (registroForm.get('obraSocial')?.dirty || registroForm.get('obraSocial')?.touched)
   }"
       >
-        <mat-label>Obra Social</mat-label>
+        <mat-label
+          >{{ 'registerPage.campos.obraSocial' | transloco }}</mat-label
+        >
         <mat-select formControlName="obraSocial">
           @for (obra of obraSocialOptions; track obra) {
           <mat-option [value]="obra">{{ obra }}</mat-option>
           }
         </mat-select>
         @if (registroForm.get('obraSocial')?.hasError('required')) {
-        <mat-error>Campo obligatorio</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.campoObligatorio' | transloco }}</mat-error
+        >
         }
       </mat-form-field>
       }
@@ -152,12 +182,16 @@
     'mat-form-field-invalid': registroForm.get('mail')?.invalid && (registroForm.get('mail')?.dirty || registroForm.get('mail')?.touched)
   }"
       >
-        <mat-label>Email</mat-label>
+        <mat-label>{{ 'registerPage.campos.email' | transloco }}</mat-label>
         <input matInput type="email" formControlName="mail" />
         @if (registroForm.get('mail')?.hasError('required')) {
-        <mat-error>Campo obligatorio</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.campoObligatorio' | transloco }}</mat-error
+        >
         } @if (registroForm.get('mail')?.hasError('email')) {
-        <mat-error>Email inválido</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.emailInvalido' | transloco }}</mat-error
+        >
         }
       </mat-form-field>
       <mat-form-field
@@ -168,18 +202,24 @@
     'mat-form-field-invalid': registroForm.get('password')?.invalid && (registroForm.get('password')?.dirty || registroForm.get('password')?.touched)
   }"
       >
-        <mat-label>Contraseña</mat-label>
+        <mat-label
+          >{{ 'registerPage.campos.contrasena' | transloco }}</mat-label
+        >
         <input matInput type="password" formControlName="password" />
         @if (registroForm.get('password')?.hasError('required')) {
-        <mat-error>Campo obligatorio</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.campoObligatorio' | transloco }}</mat-error
+        >
         } @if (registroForm.get('password')?.hasError('minlength')) {
-        <mat-error>Mínimo 7 caracteres</mat-error>
+        <mat-error
+          >{{ 'registerPage.errores.minimo7Caracteres' | transloco }}</mat-error
+        >
         }
       </mat-form-field>
       @if (tipoUsuario === 'especialista') {
       <div class="col-span-2">
         <div class="mb-1 text-sm font-medium text-azul-oscuro">
-          Especialidades (seleccioná al menos una)
+          {{ 'registerPage.campos.especialidades' | transloco }}
         </div>
         <div class="relative">
           <div
@@ -265,14 +305,14 @@
         (registroForm.get('especialidadesSeleccionadas')?.hasError('alMenosUna')
         && registroForm.get('especialidadesSeleccionadas')?.touched) {
         <div class="mt-1 text-sm text-red-600">
-          Debés seleccionar al menos una especialidad o agregar una nueva
+          {{ 'registerPage.errores.alMenosUnaEspecialidad' | transloco }}
         </div>
         }
       </div>
       }
       <div class="col-span-2 flex flex-col gap-2">
         <label for="fotoPerfil" class="font-semibold text-azul-oscuro"
-          >Foto Perfil</label
+          >{{ 'registerPage.campos.fotoPerfil' | transloco }}</label
         >
         <input
           id="fotoPerfil"
@@ -282,15 +322,19 @@
           accept="image/*"
         />
         @if (registroForm.get('imagenPerfil')?.hasError('required')) {
-        <mat-error> Debe seleccionar una imagen de perfil. </mat-error>
+        <mat-error>
+          {{ 'registerPage.errores.seleccionarImagenPerfil' | transloco }}
+        </mat-error>
         } @if (registroForm.get('imagen')?.hasError('invalidType')) {
-        <mat-error> Solo se permiten archivos .jpg o .png </mat-error>
+        <mat-error>
+          {{ 'registerPage.errores.soloJpgPng' | transloco }}
+        </mat-error>
         }
       </div>
       @if (tipoUsuario === 'paciente') {
       <div class="col-span-2 flex flex-col gap-2">
         <label for="fotoFondo" class="font-semibold text-azul-oscuro"
-          >Foto Fondo</label
+          >{{ 'registerPage.campos.fotoFondo' | transloco }}</label
         >
         <input
           id="fotoFondo"
@@ -300,9 +344,13 @@
           accept="image/*"
         />
         @if (registroForm.get('imagenFondo')?.hasError('required')) {
-        <mat-error> Debe seleccionar una imagen de fondo. </mat-error>
+        <mat-error>
+          {{ 'registerPage.errores.seleccionarImagenFondo' | transloco }}
+        </mat-error>
         } @if (registroForm.get('imagen')?.hasError('invalidType')) {
-        <mat-error> Solo se permiten archivos .jpg o .png </mat-error>
+        <mat-error>
+          {{ 'registerPage.errores.soloJpgPng' | transloco }}
+        </mat-error>
         }
       </div>
       }
@@ -314,7 +362,7 @@
           type="submit"
           class="flex items-center justify-center gap-2 rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
         >
-          <span>Registrarse</span>
+          <span>{{ 'registerPage.registrarse' | transloco }}</span>
         </button>
       </div>
       <div class="col-span-2 mt-1 flex justify-center">
@@ -324,13 +372,13 @@
           (click)="tipoUsuario = null"
           class="text-sm text-gray-600 underline"
         >
-          Cambiar tipo de usuario
+          {{ 'registerPage.cambiarTipoUsuario' | transloco }}
         </button>
       </div>
       <div class="col-span-2 mt-1 flex flex-col items-center">
         @if (registroForm.errors?.['captchaInvalido'] && registroForm.touched) {
         <div class="mb-2 text-center text-sm text-red-600">
-          Debe resolver correctamente el CAPTCHA.
+          {{ 'registerPage.errores.resolverCaptcha' | transloco }}
         </div>
         }
         <app-mi-captcha (captchaResuelto)="onCaptchaResuelto($event)" />

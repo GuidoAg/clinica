@@ -237,5 +237,40 @@
     "miPerfil": "Mi Perfil",
     "usuarios": "Usuarios",
     "encuestas": "Encuestas"
+  },
+  "encuestasPage": {
+    "titulo": "Análisis de Encuestas",
+    "subtitulo": "Resumen y análisis de satisfacción de pacientes",
+    "botonExportar": "Exportar PDF",
+    "metricas": {
+      "totalEncuestas": "Total Encuestas",
+      "promedioEstrellas": "Promedio Estrellas",
+      "valoracionGeneral": "Valoración General"
+    },
+    "apreciacionGeneral": "Apreciación General del Servicio",
+    "participacion": {
+      "titulo": "Participación en Encuestas",
+      "encuestasRespondidas": "Encuestas Respondidas",
+      "respuesta": "Respuesta",
+      "respondidas": "Respondidas",
+      "pendientes": "Pendientes",
+      "excelente": "Excelente participación",
+      "excelenteDesc": "La mayoría de los pacientes comparten su experiencia.",
+      "buena": "Buena participación",
+      "buenaDesc": "Más de la mitad de los pacientes responden.",
+      "moderada": "Participación moderada",
+      "moderadaDesc": "Considerar incentivar más respuestas.",
+      "baja": "Participación baja",
+      "bajaDesc": "Implementar estrategias para aumentar respuestas."
+    },
+    "distribucionCalificaciones": "Distribución de Calificaciones",
+    "evaluacionAtencion": "Evaluación de Atención",
+    "aspectosDestacados": "Aspectos Más Destacados por los Pacientes",
+    "comentariosPositivos": "Comentarios Positivos Destacados",
+    "comentariosCriticos": "Áreas de Mejora - Comentarios Críticos",
+    "noHayEncuestas": {
+      "titulo": "No hay encuestas disponibles",
+      "descripcion": "Los pacientes podrán completar encuestas después de sus consultas."
+    }
   }
 }

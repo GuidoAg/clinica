@@ -12,6 +12,7 @@ import { FormsModule } from "@angular/forms";
 import { EspecialistaEspecialidad } from "../../../../services/especialista-especialidad";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { AgregarEspecialidad } from "../../agregar-especialidad/agregar-especialidad";
+import { TranslocoModule } from "@jsverse/transloco";
 
 @Component({
   selector: "app-perfil-especialista",
@@ -22,6 +23,7 @@ import { AgregarEspecialidad } from "../../agregar-especialidad/agregar-especial
     Horarios,
     FormsModule,
     AgregarEspecialidad,
+    TranslocoModule,
   ],
   templateUrl: "./perfil-especialista.html",
   styleUrl: "./perfil-especialista.css",

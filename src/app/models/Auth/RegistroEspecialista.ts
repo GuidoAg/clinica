@@ -5,6 +5,6 @@ export interface RegistroEspecialista {
   dni: string;
   mail: string;
   contrasena: string;
-  especialidades: string[]; // Array de especialidades (nombres o IDs)
+  especialidades: string[];
   imagenPerfil: string;
 }

@@ -1,5 +1,7 @@
 <div class="bg-gray-200 pt-30 pb-130">
-  <h2 class="pb-1 text-center text-4xl font-bold text-azul-oscuro">Login</h2>
+  <h2 class="pb-1 text-center text-4xl font-bold text-azul-oscuro">
+    {{ 'loginPage.titulo' | transloco }}
+  </h2>
 
   @if (autoLogVisible) {
   <div class="absolute ml-5 flex w-32 flex-col items-start gap-4">
@@ -40,12 +42,16 @@
             (loginForm.get('mail')?.dirty || loginForm.get('mail')?.touched)
         }"
       >
-        <mat-label>Email</mat-label>
+        <mat-label>{{ 'loginPage.email' | transloco }}</mat-label>
         <input matInput type="email" formControlName="mail" #emailInput />
         @if (loginForm.get('mail')?.hasError('required')) {
-        <mat-error> Campo obligatorio </mat-error>
+        <mat-error>
+          {{ 'loginPage.errores.campoObligatorio' | transloco }}
+        </mat-error>
         } @if (loginForm.get('mail')?.hasError('email')) {
-        <mat-error> Email inválido </mat-error>
+        <mat-error>
+          {{ 'loginPage.errores.emailInvalido' | transloco }}
+        </mat-error>
         }
       </mat-form-field>
 
@@ -61,7 +67,7 @@
             (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)
         }"
       >
-        <mat-label>Contraseña</mat-label>
+        <mat-label>{{ 'loginPage.contrasena' | transloco }}</mat-label>
         <input
           matInput
           [type]="hidePassword ? 'password' : 'text'"
@@ -78,9 +84,13 @@
           >
         </button>
         @if (loginForm.get('password')?.hasError('required')) {
-        <mat-error> Campo obligatorio </mat-error>
+        <mat-error>
+          {{ 'loginPage.errores.campoObligatorio' | transloco }}
+        </mat-error>
         } @if (loginForm.get('password')?.hasError('minlength')) {
-        <mat-error> Mínimo 7 caracteres </mat-error>
+        <mat-error>
+          {{ 'loginPage.errores.minimo7Caracteres' | transloco }}
+        </mat-error>
         }
       </mat-form-field>
 
@@ -92,7 +102,7 @@
           type="submit"
           class="rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
         >
-          Login
+          {{ 'loginPage.login' | transloco }}
         </button>
         <button
           mat-raised-button
@@ -101,7 +111,7 @@
           (click)="toggleAutoLog()"
           class="rounded-full bg-verde-oscuro px-8 py-2 text-white shadow-lg"
         >
-          Auto Log
+          {{ 'loginPage.autoLog' | transloco }}
         </button>
       </div>
     </form>

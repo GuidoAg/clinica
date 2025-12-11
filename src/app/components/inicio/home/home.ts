@@ -19,6 +19,7 @@ import { PacientesPorEspecialidadChart } from "../../charts/pacientes-por-especi
 import { MedicosPorEspecialidadChart } from "../../charts/medicos-por-especialidad-chart/medicos-por-especialidad-chart";
 import { CitasPorEstadoChart } from "../../charts/citas-por-estado-chart/citas-por-estado-chart";
 import { exportarEstadisticasPdf } from "../../../helpers/exportar-estadisticas-pdf";
+import { TranslocoModule } from "@jsverse/transloco";
 
 interface FechaRango {
   desde: string;
@@ -39,6 +40,7 @@ interface FechaRango {
     PacientesPorEspecialidadChart,
     MedicosPorEspecialidadChart,
     CitasPorEstadoChart,
+    TranslocoModule,
   ],
   templateUrl: "./home.html",
 })
@@ -66,7 +68,6 @@ export class Home implements OnInit {
   turnosFinalizadosChart?: TurnosFinalizadosPorMedicoChart;
 
   ngOnInit() {
-    // Iniciar carga de datos inmediatamente
     this.loading.show();
     this.cargarDatosIniciales();
   }
@@ -79,7 +80,7 @@ export class Home implements OnInit {
       setTimeout(() => this.cargarChartsConRangos(), 0);
     } catch (error) {
       console.error("Error precargando datos:", error);
-      this.datosCargados.set(true); // Mostrar UI aunque falle
+      this.datosCargados.set(true);
       this.loading.hide();
     }
   }

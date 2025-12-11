@@ -21,9 +21,29 @@
       <button
         type="button"
         (click)="limpiarFiltro()"
-        class="rounded bg-[color:var(--color-azul-oscuro)] px-3 py-1 text-sm font-semibold text-white shadow transition-transform hover:scale-105 hover:bg-[color:var(--color-azul-claro)]"
+        class="mr-6 rounded bg-[color:var(--color-azul-oscuro)] px-3 py-1 text-sm font-semibold text-white shadow transition-transform hover:scale-105 hover:bg-[color:var(--color-azul-claro)]"
       >
-        Limpiar
+        Limpiar Filtros
+      </button>
+
+      <button
+        type="button"
+        (click)="ordenarPorFecha()"
+        [class.bg-green-600]="ordenamiento() === 'fecha'"
+        [class.bg-green-800]="ordenamiento() !== 'fecha'"
+        class="rounded px-3 py-1 text-sm font-semibold text-white shadow transition-transform hover:scale-105"
+      >
+        📅 Ordenar por Fecha
+      </button>
+
+      <button
+        type="button"
+        (click)="ordenarPorEstado()"
+        [class.bg-purple-600]="ordenamiento() === 'estado'"
+        [class.bg-purple-800]="ordenamiento() !== 'estado'"
+        class="rounded px-3 py-1 text-sm font-semibold text-white shadow transition-transform hover:scale-105"
+      >
+        🏷️ Ordenar por Estado
       </button>
 
       <div class="ml-auto">

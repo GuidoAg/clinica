@@ -212,7 +212,6 @@ export class CitasService {
     especialistaId: number,
     fecha: string,
   ): Promise<CitaHorarios[]> {
-    // Optimización: cálculo inline para evitar overhead
     const inicioDia = new Date(`${fecha}T00:00:00`);
     const finDia = new Date(`${fecha}T23:59:59`);
 
@@ -236,7 +235,6 @@ export class CitasService {
     pacienteId: number,
     fecha: string,
   ): Promise<CitaHorarios[]> {
-    // Optimización: cálculo inline para evitar overhead
     const inicioDia = new Date(`${fecha}T00:00:00`);
     const finDia = new Date(`${fecha}T23:59:59`);
 

@@ -40,10 +40,10 @@ export class AccionesPaciente implements OnInit {
   mostrarFormularioEncuesta = false;
   mostrarVistaEncuesta = false;
   mostrarVistaComentarioPaciente = false;
+  mostrarVistaComentarioEspecialista = false;
 
   encuestaExistente: EncuestaPacienteModel | null = null;
 
-  // Mapeo de valores a etiquetas
   private readonly opcionesRadioMap: Record<string, string> = {
     excelente: "Excelente",
     "muy-bueno": "Muy bueno",
@@ -143,6 +143,21 @@ export class AccionesPaciente implements OnInit {
       !this.mostrarFormularioCalificar &&
       !this.mostrarFormularioResenia &&
       !this.mostrarVistaEncuesta
+    );
+  }
+
+  get puedeVerComentarioEspecialista() {
+    // Puede ver comentario del especialista si este canceló o rechazó el turno
+    return (
+      (this.cita.estado === EstadoCita.CANCELADO ||
+        this.cita.estado === EstadoCita.RECHAZADO) &&
+      !!this.cita.comentarioEspecialista &&
+      this.cita.comentarioEspecialista.trim().length > 0 &&
+      !this.mostrarFormularioCancelar &&
+      !this.mostrarFormularioCalificar &&
+      !this.mostrarFormularioResenia &&
+      !this.mostrarVistaEncuesta &&
+      !this.mostrarVistaComentarioPaciente
     );
   }
 
@@ -254,6 +269,14 @@ export class AccionesPaciente implements OnInit {
 
   volverDesdeVistaComentarioPaciente() {
     this.mostrarVistaComentarioPaciente = false;
+  }
+
+  verComentarioEspecialista() {
+    this.mostrarVistaComentarioEspecialista = true;
+  }
+
+  volverDesdeVistaComentarioEspecialista() {
+    this.mostrarVistaComentarioEspecialista = false;
   }
 
   abrirEncuesta() {

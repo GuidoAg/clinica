@@ -237,5 +237,237 @@
     "miPerfil": "My Profile",
     "usuarios": "Users",
     "encuestas": "Surveys"
+  },
+  "homePage": {
+    "titulo": "Statistics Dashboard",
+    "subtitulo": "Real-time system analysis and metrics",
+    "botonExportar": "Export PDF",
+    "filtros": {
+      "desde": "From:",
+      "hasta": "To:",
+      "aplicar": "Apply Filter"
+    },
+    "graficos": {
+      "turnosPorDia": {
+        "titulo": "Appointments by Day",
+        "descripcion": "Daily appointment distribution"
+      },
+      "turnosPorEspecialidad": {
+        "titulo": "Appointments by Specialty",
+        "descripcion": "Distribution by medical area"
+      },
+      "turnosPorMedico": {
+        "titulo": "Appointments by Doctor",
+        "descripcion": "Workload per professional"
+      },
+      "turnosFinalizados": {
+        "titulo": "Completed Appointments by Doctor",
+        "descripcion": "Successfully completed consultations"
+      },
+      "ingresosEspecialistas": {
+        "titulo": "Income - Specialists",
+        "descripcion": "Last 60 days (by day)"
+      },
+      "ingresosPacientes": {
+        "titulo": "Income - Patients",
+        "descripcion": "Last 60 days (by day)"
+      },
+      "pacientesPorEspecialidad": {
+        "titulo": "Patients by Specialty",
+        "descripcion": "Unique patients with appointments"
+      },
+      "medicosPorEspecialidad": {
+        "titulo": "Doctors by Specialty",
+        "descripcion": "Medical staff distribution"
+      },
+      "citasPorEstado": {
+        "titulo": "Appointments by Status",
+        "descripcion": "Appointment distribution by current status"
+      }
+    }
+  },
+  "perfilAdmin": {
+    "titulo": "My Profile",
+    "nombre": "Name:",
+    "apellido": "Last Name:",
+    "edad": "Age:",
+    "dni": "ID:",
+    "email": "Email:"
+  },
+  "encuestasPage": {
+    "titulo": "Survey Analysis",
+    "subtitulo": "Summary and analysis of patient satisfaction",
+    "botonExportar": "Export PDF",
+    "metricas": {
+      "totalEncuestas": "Total Surveys",
+      "promedioEstrellas": "Average Stars",
+      "valoracionGeneral": "Overall Rating"
+    },
+    "apreciacionGeneral": "General Service Assessment",
+    "tendencias": {
+      "excelente": "Excellent: Patients are highly satisfied with the services. The average rating reflects an exceptional experience.",
+      "buena": "Good: Most patients report positive experiences. There are opportunities for improvement to achieve excellence.",
+      "regular": "Fair: Results show moderate satisfaction. It is recommended to review negative comments to identify urgent areas for improvement.",
+      "critica": "Critical: Satisfaction levels are low. It is essential to analyze comments and take immediate corrective actions.",
+      "rangoAlto": "The overall rating indicates that patients would recommend the services.",
+      "rangoMedio": "The overall rating is neutral, suggesting there are aspects that require attention.",
+      "rangoBajo": "The overall rating is low, indicating significant dissatisfaction that requires intervention."
+    },
+    "participacion": {
+      "titulo": "Survey Participation",
+      "encuestasRespondidas": "Surveys Answered",
+      "respuesta": "Response",
+      "respondidas": "Answered",
+      "pendientes": "Pending",
+      "excelente": "Excellent participation",
+      "excelenteDesc": "Most patients share their experience.",
+      "buena": "Good participation",
+      "buenaDesc": "More than half of the patients respond.",
+      "moderada": "Moderate participation",
+      "moderadaDesc": "Consider encouraging more responses.",
+      "baja": "Low participation",
+      "bajaDesc": "Implement strategies to increase responses."
+    },
+    "distribucionCalificaciones": "Rating Distribution",
+    "evaluacionAtencion": "Service Evaluation",
+    "grafico": {
+      "titulo": "Average Score by Specialist",
+      "promedioEstrellas": "Average Stars",
+      "promedio": "Average",
+      "estrellas": "stars",
+      "valoracion": "Rating",
+      "encuestas": "Surveys",
+      "ejeEstrellas": "Stars"
+    },
+    "aspectosDestacados": "Top Aspects Highlighted by Patients",
+    "comentariosPositivos": "Featured Positive Comments",
+    "comentariosCriticos": "Areas for Improvement - Critical Comments",
+    "noHayEncuestas": {
+      "titulo": "No surveys available",
+      "descripcion": "Patients will be able to complete surveys after their appointments."
+    }
+  },
+  "entradaPage": {
+    "bienvenida": "Welcome, {{nombre}}!",
+    "cargando": "Loading information...",
+    "proximosTurnos": "Upcoming Appointments",
+    "noTurnosPaciente": "You have no scheduled appointments",
+    "noTurnosEspecialista": "You have no pending appointments",
+    "solicitarTurno": "Request an appointment",
+    "verDetalles": "View Details",
+    "accionesRapidas": "Quick Actions",
+    "paciente": {
+      "solicitarTurno": "Request Appointment",
+      "solicitarTurnoDesc": "Schedule a new appointment",
+      "misTurnos": "My Appointments",
+      "misTurnosDesc": "View full history",
+      "miPerfil": "My Profile",
+      "miPerfilDesc": "Edit information",
+      "info1": "Remember to confirm your appointments 24 hours in advance",
+      "info2": "You can cancel appointments up to 12 hours before",
+      "info3": "Don't forget to complete the satisfaction surveys"
+    },
+    "especialista": {
+      "misTurnos": "My Appointments",
+      "misTurnosDesc": "View full schedule",
+      "misPacientes": "My Patients",
+      "misPacientesDesc": "View medical history",
+      "miPerfil": "My Profile",
+      "miPerfilDesc": "Configure schedules",
+      "info1": "Review your schedule daily",
+      "info2": "Complete the medical record for each consultation",
+      "info3": "Keep your availability updated"
+    },
+    "informacionImportante": "Important Information",
+    "necesitasAyuda": "Need Help?",
+    "necesitasAyudaDesc": "Our team is available to assist you with any questions or concerns."
+  },
+  "perfilEspecialista": {
+    "titulo": "My Profile",
+    "nombre": "Name:",
+    "apellido": "Last Name:",
+    "edad": "Age:",
+    "dni": "ID:",
+    "email": "Email:",
+    "activo": "Active:",
+    "definirHorarios": "Define schedules",
+    "agregarEspecialidad": "Add specialty",
+    "especialidades": "Specialties:",
+    "minutos": "min",
+    "guardar": "Save"
+  },
+  "perfilPaciente": {
+    "titulo": "My Profile",
+    "descargarHistoria": "Download Medical History",
+    "nombre": "Name:",
+    "apellido": "Last Name:",
+    "edad": "Age:",
+    "dni": "ID:",
+    "obraSocial": "Health Insurance:",
+    "noRegistrada": "Not registered",
+    "email": "Email:",
+    "modal": {
+      "titulo": "Download Medical History",
+      "descripcion": "Select what you want to include in your medical history:",
+      "historiaCompleta": "Complete History",
+      "todasEspecialidades": "All specialties ({{count}} appointments)",
+      "filtrarPorEspecialidad": "Or filter by specialty:",
+      "consultasCount": "{{count}} appointments",
+      "cancelar": "Cancel",
+      "descargarPdf": "Download PDF"
+    }
+  },
+  "registerPage": {
+    "titulo": "Register",
+    "tipoUsuario": "What type of user are you?",
+    "paciente": "Patient",
+    "especialista": "Specialist",
+    "campos": {
+      "nombre": "Name",
+      "apellido": "Last Name",
+      "edad": "Age",
+      "dni": "ID",
+      "obraSocial": "Health Insurance",
+      "email": "Email",
+      "contrasena": "Password",
+      "especialidades": "Specialties (select at least one)",
+      "fotoPerfil": "Profile Photo",
+      "fotoFondo": "Background Photo"
+    },
+    "errores": {
+      "campoObligatorio": "Required field",
+      "minimo2Caracteres": "Minimum 2 characters",
+      "minimo4Caracteres": "Minimum 4 characters",
+      "minimo7Caracteres": "Minimum 7 characters",
+      "soloLetras": "Letters only",
+      "soloLetrasEspacios": "Only letters and spaces allowed",
+      "minimo18": "Minimum 18",
+      "maximo99": "Maximum 99",
+      "dni8Digitos": "Must contain 8 digits",
+      "emailInvalido": "Invalid email",
+      "alMenosUnaEspecialidad": "You must select at least one specialty or add a new one",
+      "seleccionarImagenPerfil": "You must select a profile image.",
+      "seleccionarImagenFondo": "You must select a background image.",
+      "soloJpgPng": "Only .jpg or .png files are allowed",
+      "resolverCaptcha": "You must solve the CAPTCHA correctly."
+    },
+    "agregarNuevaEspecialidad": "Add new specialty",
+    "cancelar": "Cancel",
+    "nombreEspecialidad": "Specialty name",
+    "confirmarAgregar": "Confirm and add",
+    "registrarse": "Register",
+    "cambiarTipoUsuario": "Change user type"
+  },
+  "loginPage": {
+    "titulo": "Login",
+    "email": "Email",
+    "contrasena": "Password",
+    "login": "Login",
+    "autoLog": "Auto Log",
+    "errores": {
+      "campoObligatorio": "Required field",
+      "emailInvalido": "Invalid email",
+      "minimo7Caracteres": "Minimum 7 characters"
+    }
   }
 }

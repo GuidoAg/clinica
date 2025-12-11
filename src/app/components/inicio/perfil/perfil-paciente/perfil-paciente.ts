@@ -11,10 +11,11 @@ import {
   exportarHistoriaClinicaPdf,
   obtenerEspecialidadesUnicas,
 } from "../../../../helpers/exportar-historia-clinica";
+import { TranslocoModule } from "@jsverse/transloco";
 
 @Component({
   selector: "app-perfil-paciente",
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoModule],
   templateUrl: "./perfil-paciente.html",
   styleUrl: "./perfil-paciente.css",
 })
@@ -52,7 +53,6 @@ export class PerfilPaciente implements OnInit, AfterViewInit {
       this.loading.show();
       this.citas = await this.turnosService.obtenerCitasPaciente(usuarioId);
 
-      // Filtrar solo citas completadas para la historia clínica
       this.citas = this.citas.filter((cita) => cita.estado === "completado");
 
       this.especialidades = obtenerEspecialidadesUnicas(this.citas);

@@ -31,7 +31,6 @@ export class EncuestasService {
   }
 
   async obtenerEstadisticas(): Promise<EstadisticasEncuestas> {
-    // Consultas en paralelo para optimizar
     const [encuestas, citasResult] = await Promise.all([
       this.obtenerTodasEncuestas(),
       Supabase.from(TABLA.CITAS).select("id").eq("estado", "completado"),
@@ -73,7 +72,6 @@ export class EncuestasService {
     const tendenciaGeneral = this.generarTendenciaGeneral(
       promedios.estrellas,
       promedios.rango,
-      totalEncuestas,
     );
     const puntuacionPorEspecialista = this.calcularPuntuacionPorEspecialista(
       encuestas,
@@ -235,47 +233,28 @@ export class EncuestasService {
   private generarTendenciaGeneral(
     promedioEstrellas: number,
     promedioRango: number,
-    total: number,
   ): string {
     const partes: string[] = [];
 
-    // Evaluación de estrellas
     if (promedioEstrellas >= 4.5) {
-      partes.push(
-        "Excelente: Los pacientes están altamente satisfechos con los servicios. La calificación promedio refleja una experiencia excepcional.",
-      );
+      partes.push("encuestasPage.tendencias.excelente");
     } else if (promedioEstrellas >= 3.5) {
-      partes.push(
-        "Buena: La mayoría de los pacientes reportan experiencias positivas. Existen oportunidades de mejora para alcanzar la excelencia.",
-      );
+      partes.push("encuestasPage.tendencias.buena");
     } else if (promedioEstrellas >= 2.5) {
-      partes.push(
-        "Regular: Los resultados muestran una satisfacción moderada. Se recomienda revisar los comentarios negativos para identificar áreas de mejora urgentes.",
-      );
+      partes.push("encuestasPage.tendencias.regular");
     } else {
-      partes.push(
-        "Crítica: Los niveles de satisfacción son bajos. Es fundamental analizar los comentarios y tomar acciones correctivas inmediatas.",
-      );
+      partes.push("encuestasPage.tendencias.critica");
     }
 
-    // Evaluación de rango
     if (promedioRango >= 75) {
-      partes.push(
-        "La valoración general indica que los pacientes recomendarían los servicios.",
-      );
+      partes.push("encuestasPage.tendencias.rangoAlto");
     } else if (promedioRango >= 50) {
-      partes.push(
-        "La valoración general es neutral, sugiriendo que hay aspectos que requieren atención.",
-      );
+      partes.push("encuestasPage.tendencias.rangoMedio");
     } else {
-      partes.push(
-        "La valoración general es baja, indicando insatisfacción significativa que requiere intervención.",
-      );
+      partes.push("encuestasPage.tendencias.rangoBajo");
     }
 
-    partes.push(`Total de encuestas analizadas: ${total}.`);
-
-    return partes.join(" ");
+    return partes.join("|");
   }
 
   private calcularPuntuacionPorEspecialista(

@@ -4,12 +4,14 @@
     class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
   >
     <div class="mb-6 flex items-center justify-between">
-      <h1 class="text-4xl font-bold text-azul-oscuro">Mi Perfil</h1>
+      <h1 class="text-4xl font-bold text-azul-oscuro">
+        {{ 'perfilPaciente.titulo' | transloco }}
+      </h1>
       <button
         (click)="abrirModalDescarga()"
         class="hover:bg-azul rounded-lg bg-azul-oscuro px-6 py-3 font-semibold text-white shadow-lg transition-all hover:scale-105"
       >
-        📄 Descargar Historia Clínica
+        📄 {{ 'perfilPaciente.descargarHistoria' | transloco }}
       </button>
     </div>
     <div class="mb-6 flex items-center">
@@ -29,15 +31,30 @@
         class="grid grid-cols-2 gap-x-1 gap-y-1 text-xl font-normal text-gray-700"
         style="min-width: 300px"
       >
-        <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
-        <p><strong>Apellido:</strong> {{ usuario.apellido }}</p>
-        <p><strong>Edad:</strong> {{ usuario.edad }}</p>
-        <p><strong>DNI:</strong> {{ usuario.dni }}</p>
         <p>
-          <strong>Obra Social:</strong> {{ usuario.obraSocial || 'No registrada'
+          <strong>{{ 'perfilPaciente.nombre' | transloco }}</strong> {{
+          usuario.nombre }}
+        </p>
+        <p>
+          <strong>{{ 'perfilPaciente.apellido' | transloco }}</strong> {{
+          usuario.apellido }}
+        </p>
+        <p>
+          <strong>{{ 'perfilPaciente.edad' | transloco }}</strong> {{
+          usuario.edad }}
+        </p>
+        <p>
+          <strong>{{ 'perfilPaciente.dni' | transloco }}</strong> {{ usuario.dni
           }}
         </p>
-        <p><strong>Email:</strong> {{ usuario.email }}</p>
+        <p>
+          <strong>{{ 'perfilPaciente.obraSocial' | transloco }}</strong> {{
+          usuario.obraSocial || ('perfilPaciente.noRegistrada' | transloco) }}
+        </p>
+        <p>
+          <strong>{{ 'perfilPaciente.email' | transloco }}</strong> {{
+          usuario.email }}
+        </p>
       </div>
     </div>
   </div>
@@ -60,11 +77,11 @@
     (keydown)="$event.stopPropagation()"
   >
     <h2 class="mb-6 text-2xl font-bold text-azul-oscuro">
-      Descargar Historia Clínica
+      {{ 'perfilPaciente.modal.titulo' | transloco }}
     </h2>
 
     <p class="mb-4 text-gray-600">
-      Selecciona qué deseas incluir en tu historia clínica:
+      {{ 'perfilPaciente.modal.descripcion' | transloco }}
     </p>
 
     <!-- Opción: Todo el historial -->
@@ -86,9 +103,12 @@
           class="mr-3 h-5 w-5"
         />
         <div>
-          <p class="font-semibold text-azul-oscuro">Historia Completa</p>
+          <p class="font-semibold text-azul-oscuro">
+            {{ 'perfilPaciente.modal.historiaCompleta' | transloco }}
+          </p>
           <p class="text-sm text-gray-600">
-            Todas las especialidades ({{ citas.length }} consultas)
+            {{ 'perfilPaciente.modal.todasEspecialidades' | transloco: { count:
+            citas.length } }}
           </p>
         </div>
       </div>
@@ -97,7 +117,7 @@
     <!-- Opciones por especialidad -->
     @if (especialidades.length > 0) {
     <p class="mt-4 mb-2 text-sm font-semibold text-gray-700">
-      O filtrar por especialidad:
+      {{ 'perfilPaciente.modal.filtrarPorEspecialidad' | transloco }}
     </p>
     } @for (especialidad of especialidades; track especialidad) {
     <div
@@ -120,7 +140,8 @@
         <div>
           <p class="font-semibold text-azul-oscuro">{{ especialidad }}</p>
           <p class="text-sm text-gray-600">
-            {{ contarCitasPorEspecialidad(especialidad) }} consultas
+            {{ 'perfilPaciente.modal.consultasCount' | transloco: { count:
+            contarCitasPorEspecialidad(especialidad) } }}
           </p>
         </div>
       </div>
@@ -133,14 +154,14 @@
         (click)="cerrarModalDescarga()"
         class="flex-1 rounded-lg border-2 border-gray-300 bg-white px-4 py-3 font-semibold text-gray-700 transition-all hover:scale-105 hover:border-gray-400 hover:bg-gray-100 hover:shadow-md active:scale-95"
       >
-        Cancelar
+        {{ 'perfilPaciente.modal.cancelar' | transloco }}
       </button>
       <button
         (click)="descargarHistoriaClinica()"
         [disabled]="especialidadSeleccionada === undefined"
         class="hover:bg-azul flex-1 rounded-lg bg-azul-oscuro px-4 py-3 font-semibold text-white shadow-md transition-all hover:scale-105 hover:shadow-xl active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:scale-100"
       >
-        Descargar PDF
+        {{ 'perfilPaciente.modal.descargarPdf' | transloco }}
       </button>
     </div>
   </div>

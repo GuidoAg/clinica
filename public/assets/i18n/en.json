@@ -237,5 +237,40 @@
     "miPerfil": "My Profile",
     "usuarios": "Users",
     "encuestas": "Surveys"
+  },
+  "encuestasPage": {
+    "titulo": "Survey Analysis",
+    "subtitulo": "Summary and analysis of patient satisfaction",
+    "botonExportar": "Export PDF",
+    "metricas": {
+      "totalEncuestas": "Total Surveys",
+      "promedioEstrellas": "Average Stars",
+      "valoracionGeneral": "Overall Rating"
+    },
+    "apreciacionGeneral": "General Service Assessment",
+    "participacion": {
+      "titulo": "Survey Participation",
+      "encuestasRespondidas": "Surveys Answered",
+      "respuesta": "Response",
+      "respondidas": "Answered",
+      "pendientes": "Pending",
+      "excelente": "Excellent participation",
+      "excelenteDesc": "Most patients share their experience.",
+      "buena": "Good participation",
+      "buenaDesc": "More than half of the patients respond.",
+      "moderada": "Moderate participation",
+      "moderadaDesc": "Consider encouraging more responses.",
+      "baja": "Low participation",
+      "bajaDesc": "Implement strategies to increase responses."
+    },
+    "distribucionCalificaciones": "Rating Distribution",
+    "evaluacionAtencion": "Service Evaluation",
+    "aspectosDestacados": "Top Aspects Highlighted by Patients",
+    "comentariosPositivos": "Featured Positive Comments",
+    "comentariosCriticos": "Areas for Improvement - Critical Comments",
+    "noHayEncuestas": {
+      "titulo": "No surveys available",
+      "descripcion": "Patients will be able to complete surveys after their appointments."
+    }
   }
 }

@@ -6,10 +6,11 @@ import { Observable, firstValueFrom } from "rxjs";
 import { LoadingOverlayService } from "../../../../services/loading-overlay-service";
 import { TrackImage } from "../../../../directivas/track-image";
 import { LoadingWrapper } from "../../../loading-wrapper/loading-wrapper";
+import { TranslocoModule } from "@jsverse/transloco";
 
 @Component({
   selector: "app-perfil-admin",
-  imports: [CommonModule, TrackImage, LoadingWrapper],
+  imports: [CommonModule, TrackImage, LoadingWrapper, TranslocoModule],
   templateUrl: "./perfil-admin.html",
   styleUrl: "./perfil-admin.css",
 })

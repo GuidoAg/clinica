@@ -4,7 +4,9 @@
     <div
       class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
     >
-      <h1 class="mb-6 text-4xl font-bold text-azul-oscuro">Mi Perfil</h1>
+      <h1 class="mb-6 text-4xl font-bold text-azul-oscuro">
+        {{ 'perfilAdmin.titulo' | transloco }}
+      </h1>
       <div class="mb-6 flex items-center">
         <img
           [src]="'assets/imagenes/perfiles/bannerAdmin.webp'"
@@ -24,11 +26,26 @@
           class="grid grid-cols-2 gap-x-1 gap-y-1 text-xl font-normal text-gray-700"
           style="min-width: 300px"
         >
-          <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
-          <p><strong>Apellido:</strong> {{ usuario.apellido }}</p>
-          <p><strong>Edad:</strong> {{ usuario.edad }}</p>
-          <p><strong>DNI:</strong> {{ usuario.dni }}</p>
-          <p><strong>Email:</strong> {{ usuario.email }}</p>
+          <p>
+            <strong>{{ 'perfilAdmin.nombre' | transloco }}</strong> {{
+            usuario.nombre }}
+          </p>
+          <p>
+            <strong>{{ 'perfilAdmin.apellido' | transloco }}</strong> {{
+            usuario.apellido }}
+          </p>
+          <p>
+            <strong>{{ 'perfilAdmin.edad' | transloco }}</strong> {{
+            usuario.edad }}
+          </p>
+          <p>
+            <strong>{{ 'perfilAdmin.dni' | transloco }}</strong> {{ usuario.dni
+            }}
+          </p>
+          <p>
+            <strong>{{ 'perfilAdmin.email' | transloco }}</strong> {{
+            usuario.email }}
+          </p>
         </div>
       </div>
     </div>

@@ -219,6 +219,22 @@ export class AccionesEspecialista {
   datoNumero = { clave: "", valor: null };
   datoBoolean = { clave: "", valor: false };
 
+  private placeholdersClave = ["Diagnóstico", "Observaciones", "Tratamiento"];
+
+  private placeholdersValor = [
+    "Hipertensión arterial",
+    "Paciente en buen estado",
+    "Reposo por 3 días",
+  ];
+
+  obtenerPlaceholderClave(index: number): string {
+    return this.placeholdersClave[index] || `Campo ${index + 1}`;
+  }
+
+  obtenerPlaceholderValor(index: number): string {
+    return this.placeholdersValor[index] || "Ingrese valor";
+  }
+
   cancelarAccionCancelar() {
     this.mostrarFormularioCancelar = false;
     this.comentarioCancelar = "";

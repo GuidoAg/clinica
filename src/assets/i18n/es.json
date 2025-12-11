@@ -237,5 +237,237 @@
     "miPerfil": "Mi Perfil",
     "usuarios": "Usuarios",
     "encuestas": "Encuestas"
+  },
+  "homePage": {
+    "titulo": "Panel de Estadísticas",
+    "subtitulo": "Análisis y métricas del sistema en tiempo real",
+    "botonExportar": "Exportar PDF",
+    "filtros": {
+      "desde": "Desde:",
+      "hasta": "Hasta:",
+      "aplicar": "Aplicar Filtro"
+    },
+    "graficos": {
+      "turnosPorDia": {
+        "titulo": "Turnos por Día",
+        "descripcion": "Distribución diaria de turnos"
+      },
+      "turnosPorEspecialidad": {
+        "titulo": "Turnos por Especialidad",
+        "descripcion": "Distribución por área médica"
+      },
+      "turnosPorMedico": {
+        "titulo": "Turnos por Médico",
+        "descripcion": "Carga de trabajo por profesional"
+      },
+      "turnosFinalizados": {
+        "titulo": "Turnos Finalizados por Médico",
+        "descripcion": "Consultas completadas exitosamente"
+      },
+      "ingresosEspecialistas": {
+        "titulo": "Ingresos - Especialistas",
+        "descripcion": "Últimos 60 días (por día)"
+      },
+      "ingresosPacientes": {
+        "titulo": "Ingresos - Pacientes",
+        "descripcion": "Últimos 60 días (por día)"
+      },
+      "pacientesPorEspecialidad": {
+        "titulo": "Pacientes por Especialidad",
+        "descripcion": "Pacientes únicos con citas"
+      },
+      "medicosPorEspecialidad": {
+        "titulo": "Médicos por Especialidad",
+        "descripcion": "Distribución del personal médico"
+      },
+      "citasPorEstado": {
+        "titulo": "Citas por Estado",
+        "descripcion": "Distribución de citas según su estado actual"
+      }
+    }
+  },
+  "perfilAdmin": {
+    "titulo": "Mi Perfil",
+    "nombre": "Nombre:",
+    "apellido": "Apellido:",
+    "edad": "Edad:",
+    "dni": "DNI:",
+    "email": "Email:"
+  },
+  "encuestasPage": {
+    "titulo": "Análisis de Encuestas",
+    "subtitulo": "Resumen y análisis de satisfacción de pacientes",
+    "botonExportar": "Exportar PDF",
+    "metricas": {
+      "totalEncuestas": "Total Encuestas",
+      "promedioEstrellas": "Promedio Estrellas",
+      "valoracionGeneral": "Valoración General"
+    },
+    "apreciacionGeneral": "Apreciación General del Servicio",
+    "tendencias": {
+      "excelente": "Excelente: Los pacientes están altamente satisfechos con los servicios. La calificación promedio refleja una experiencia excepcional.",
+      "buena": "Buena: La mayoría de los pacientes reportan experiencias positivas. Existen oportunidades de mejora para alcanzar la excelencia.",
+      "regular": "Regular: Los resultados muestran una satisfacción moderada. Se recomienda revisar los comentarios negativos para identificar áreas de mejora urgentes.",
+      "critica": "Crítica: Los niveles de satisfacción son bajos. Es fundamental analizar los comentarios y tomar acciones correctivas inmediatas.",
+      "rangoAlto": "La valoración general indica que los pacientes recomendarían los servicios.",
+      "rangoMedio": "La valoración general es neutral, sugiriendo que hay aspectos que requieren atención.",
+      "rangoBajo": "La valoración general es baja, indicando insatisfacción significativa que requiere intervención."
+    },
+    "participacion": {
+      "titulo": "Participación en Encuestas",
+      "encuestasRespondidas": "Encuestas Respondidas",
+      "respuesta": "Respuesta",
+      "respondidas": "Respondidas",
+      "pendientes": "Pendientes",
+      "excelente": "Excelente participación",
+      "excelenteDesc": "La mayoría de los pacientes comparten su experiencia.",
+      "buena": "Buena participación",
+      "buenaDesc": "Más de la mitad de los pacientes responden.",
+      "moderada": "Participación moderada",
+      "moderadaDesc": "Considerar incentivar más respuestas.",
+      "baja": "Participación baja",
+      "bajaDesc": "Implementar estrategias para aumentar respuestas."
+    },
+    "distribucionCalificaciones": "Distribución de Calificaciones",
+    "evaluacionAtencion": "Evaluación de Atención",
+    "grafico": {
+      "titulo": "Puntuación Promedio por Especialista",
+      "promedioEstrellas": "Promedio de Estrellas",
+      "promedio": "Promedio",
+      "estrellas": "estrellas",
+      "valoracion": "Valoración",
+      "encuestas": "Encuestas",
+      "ejeEstrellas": "Estrellas"
+    },
+    "aspectosDestacados": "Aspectos Más Destacados por los Pacientes",
+    "comentariosPositivos": "Comentarios Positivos Destacados",
+    "comentariosCriticos": "Áreas de Mejora - Comentarios Críticos",
+    "noHayEncuestas": {
+      "titulo": "No hay encuestas disponibles",
+      "descripcion": "Los pacientes podrán completar encuestas después de sus consultas."
+    }
+  },
+  "entradaPage": {
+    "bienvenida": "¡Bienvenido/a, {{nombre}}!",
+    "cargando": "Cargando información...",
+    "proximosTurnos": "Próximos Turnos",
+    "noTurnosPaciente": "No tienes turnos programados",
+    "noTurnosEspecialista": "No tienes turnos pendientes",
+    "solicitarTurno": "Solicitar un turno",
+    "verDetalles": "Ver Detalles",
+    "accionesRapidas": "Acciones Rápidas",
+    "paciente": {
+      "solicitarTurno": "Solicitar Turno",
+      "solicitarTurnoDesc": "Agenda una nueva cita",
+      "misTurnos": "Mis Turnos",
+      "misTurnosDesc": "Ver historial completo",
+      "miPerfil": "Mi Perfil",
+      "miPerfilDesc": "Editar información",
+      "info1": "Recordá confirmar tus turnos con 24hs de anticipación",
+      "info2": "Podés cancelar turnos hasta 12hs antes",
+      "info3": "No olvides completar las encuestas de satisfacción"
+    },
+    "especialista": {
+      "misTurnos": "Mis Turnos",
+      "misTurnosDesc": "Ver agenda completa",
+      "misPacientes": "Mis Pacientes",
+      "misPacientesDesc": "Ver historial clínico",
+      "miPerfil": "Mi Perfil",
+      "miPerfilDesc": "Configurar horarios",
+      "info1": "Revisá tu agenda diariamente",
+      "info2": "Completá el registro médico de cada consulta",
+      "info3": "Mantené actualizada tu disponibilidad horaria"
+    },
+    "informacionImportante": "Información Importante",
+    "necesitasAyuda": "¿Necesitás Ayuda?",
+    "necesitasAyudaDesc": "Nuestro equipo está disponible para asistirte con cualquier consulta o inconveniente."
+  },
+  "perfilEspecialista": {
+    "titulo": "Mi Perfil",
+    "nombre": "Nombre:",
+    "apellido": "Apellido:",
+    "edad": "Edad:",
+    "dni": "DNI:",
+    "email": "Email:",
+    "activo": "Activo:",
+    "definirHorarios": "Definir horarios",
+    "agregarEspecialidad": "Agregar especialidad",
+    "especialidades": "Especialidades:",
+    "minutos": "min",
+    "guardar": "Guardar"
+  },
+  "perfilPaciente": {
+    "titulo": "Mi Perfil",
+    "descargarHistoria": "Descargar Historia Clínica",
+    "nombre": "Nombre:",
+    "apellido": "Apellido:",
+    "edad": "Edad:",
+    "dni": "DNI:",
+    "obraSocial": "Obra Social:",
+    "noRegistrada": "No registrada",
+    "email": "Email:",
+    "modal": {
+      "titulo": "Descargar Historia Clínica",
+      "descripcion": "Selecciona qué deseas incluir en tu historia clínica:",
+      "historiaCompleta": "Historia Completa",
+      "todasEspecialidades": "Todas las especialidades ({{count}} consultas)",
+      "filtrarPorEspecialidad": "O filtrar por especialidad:",
+      "consultasCount": "{{count}} consultas",
+      "cancelar": "Cancelar",
+      "descargarPdf": "Descargar PDF"
+    }
+  },
+  "registerPage": {
+    "titulo": "Registro",
+    "tipoUsuario": "¿Qué tipo de usuario sos?",
+    "paciente": "Paciente",
+    "especialista": "Especialista",
+    "campos": {
+      "nombre": "Nombre",
+      "apellido": "Apellido",
+      "edad": "Edad",
+      "dni": "DNI",
+      "obraSocial": "Obra Social",
+      "email": "Email",
+      "contrasena": "Contraseña",
+      "especialidades": "Especialidades (seleccioná al menos una)",
+      "fotoPerfil": "Foto Perfil",
+      "fotoFondo": "Foto Fondo"
+    },
+    "errores": {
+      "campoObligatorio": "Campo obligatorio",
+      "minimo2Caracteres": "Mínimo 2 caracteres",
+      "minimo4Caracteres": "Mínimo 4 caracteres",
+      "minimo7Caracteres": "Mínimo 7 caracteres",
+      "soloLetras": "Solo letras",
+      "soloLetrasEspacios": "Solo letras y espacios permitidos",
+      "minimo18": "Mínimo 18",
+      "maximo99": "Máximo 99",
+      "dni8Digitos": "Debe contener 8 dígitos",
+      "emailInvalido": "Email inválido",
+      "alMenosUnaEspecialidad": "Debés seleccionar al menos una especialidad o agregar una nueva",
+      "seleccionarImagenPerfil": "Debe seleccionar una imagen de perfil.",
+      "seleccionarImagenFondo": "Debe seleccionar una imagen de fondo.",
+      "soloJpgPng": "Solo se permiten archivos .jpg o .png",
+      "resolverCaptcha": "Debe resolver correctamente el CAPTCHA."
+    },
+    "agregarNuevaEspecialidad": "Agregar nueva especialidad",
+    "cancelar": "Cancelar",
+    "nombreEspecialidad": "Nombre de la especialidad",
+    "confirmarAgregar": "Confirmar y agregar",
+    "registrarse": "Registrarse",
+    "cambiarTipoUsuario": "Cambiar tipo de usuario"
+  },
+  "loginPage": {
+    "titulo": "Ingresar",
+    "email": "Email",
+    "contrasena": "Contraseña",
+    "login": "Ingresar",
+    "autoLog": "Ingreso Automático",
+    "errores": {
+      "campoObligatorio": "Campo obligatorio",
+      "emailInvalido": "Email inválido",
+      "minimo7Caracteres": "Mínimo 7 caracteres"
+    }
   }
 }

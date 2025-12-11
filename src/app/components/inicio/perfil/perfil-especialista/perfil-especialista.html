@@ -3,7 +3,9 @@
   <div
     class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
   >
-    <h1 class="mb-6 ml-3 text-4xl font-bold text-azul-oscuro">Mi Perfil</h1>
+    <h1 class="mb-6 ml-3 text-4xl font-bold text-azul-oscuro">
+      {{ 'perfilEspecialista.titulo' | transloco }}
+    </h1>
     <div class="mb-2 flex items-center">
       <img
         [src]="'assets/imagenes/perfiles/bannerEspecialista.webp'"
@@ -21,12 +23,30 @@
         class="grid grid-cols-2 gap-x-6 gap-y-1 text-xl font-normal text-gray-700"
         style="min-width: 300px"
       >
-        <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
-        <p><strong>Apellido:</strong> {{ usuario.apellido }}</p>
-        <p><strong>Edad:</strong> {{ usuario.edad }}</p>
-        <p><strong>DNI:</strong> {{ usuario.dni | formatoDni }}</p>
-        <p><strong>Email:</strong> {{ usuario.email }}</p>
-        <p><strong>Activo:</strong> {{ usuario.activo | formatoBoolSiNO }}</p>
+        <p>
+          <strong>{{ 'perfilEspecialista.nombre' | transloco }}</strong> {{
+          usuario.nombre }}
+        </p>
+        <p>
+          <strong>{{ 'perfilEspecialista.apellido' | transloco }}</strong> {{
+          usuario.apellido }}
+        </p>
+        <p>
+          <strong>{{ 'perfilEspecialista.edad' | transloco }}</strong> {{
+          usuario.edad }}
+        </p>
+        <p>
+          <strong>{{ 'perfilEspecialista.dni' | transloco }}</strong> {{
+          usuario.dni | formatoDni }}
+        </p>
+        <p>
+          <strong>{{ 'perfilEspecialista.email' | transloco }}</strong> {{
+          usuario.email }}
+        </p>
+        <p>
+          <strong>{{ 'perfilEspecialista.activo' | transloco }}</strong> {{
+          usuario.activo | formatoBoolSiNO }}
+        </p>
       </div>
     </div>
     <div class="pl-10">
@@ -35,13 +55,13 @@
           class="btn btn-primary h-12 rounded bg-verde-oscuro px-4 py-2 text-base text-white transition-all duration-50 hover:bg-verde-oscuro/90 hover:text-lg"
           (click)="abrirPopupHorarios()"
         >
-          Definir horarios
+          {{ 'perfilEspecialista.definirHorarios' | transloco }}
         </button>
         <button
           class="btn btn-primary h-12 rounded bg-verde-oscuro px-4 py-2 text-base text-white transition-all duration-50 hover:bg-verde-oscuro/90 hover:text-lg"
           (click)="abrirPopupAgregarEspecialidad()"
         >
-          Agregar especialidad
+          {{ 'perfilEspecialista.agregarEspecialidad' | transloco }}
         </button>
       </div>
       @if (mostrarPopupHorarios && usuarioActual) {
@@ -57,7 +77,9 @@
       ></app-agregar-especialidad>
       }
       <div class="col-span-2 pt-5">
-        <p class="mb-2 text-xl font-semibold text-gray-700">Especialidades:</p>
+        <p class="mb-2 text-xl font-semibold text-gray-700">
+          {{ 'perfilEspecialista.especialidades' | transloco }}
+        </p>
         <div
           class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
         >
@@ -83,14 +105,16 @@
                 [(ngModel)]="esp.duracion"
                 class="w-16 rounded border border-gray-300 px-2 py-1 text-center text-sm text-azul-oscuro"
               />
-              <span class="text-sm text-gray-600">min</span>
+              <span class="text-sm text-gray-600"
+                >{{ 'perfilEspecialista.minutos' | transloco }}</span
+              >
             </div>
             <button
               type="button"
               class="ml-2 rounded bg-azul-oscuro px-3 py-1 text-white hover:bg-azul-oscuro/90"
               (click)="guardarDuracion(esp)"
             >
-              Guardar
+              {{ 'perfilEspecialista.guardar' | transloco }}
             </button>
           </div>
           }

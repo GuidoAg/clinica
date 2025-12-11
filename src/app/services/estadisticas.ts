@@ -47,10 +47,6 @@ export class Estadisticas {
   private datosCacheTimestamp?: number;
   private readonly CACHE_DURATION_MS = 3 * 60 * 1000;
 
-  /**
-   * Precarga todos los datos necesarios para las estadísticas en una sola consulta por tabla.
-   * Esto optimiza el rendimiento al reducir múltiples llamadas a la base de datos.
-   */
   async precargarDatosEstadisticas(): Promise<void> {
     const ahora = Date.now();
 

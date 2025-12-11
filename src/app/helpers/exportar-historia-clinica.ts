@@ -7,13 +7,6 @@ export interface OpcionesHistoriaClinica {
   incluirDatosDinamicos?: boolean; // Incluir campos dinámicos
 }
 
-/**
- * Exporta la historia clínica de un paciente a PDF
- * @param paciente Datos del paciente
- * @param citas Array de citas completas del paciente
- * @param exportarPdf Servicio de exportación PDF
- * @param opciones Opciones de configuración
- */
 export async function exportarHistoriaClinicaPdf(
   paciente: Usuario,
   citas: CitaCompletaTurnos[],
@@ -160,11 +153,6 @@ export async function exportarHistoriaClinicaPdf(
   });
 }
 
-/**
- * Obtiene las especialidades únicas de las citas de un paciente
- * @param citas Array de citas del paciente
- * @returns Array de nombres de especialidades únicas
- */
 export function obtenerEspecialidadesUnicas(
   citas: CitaCompletaTurnos[],
 ): string[] {

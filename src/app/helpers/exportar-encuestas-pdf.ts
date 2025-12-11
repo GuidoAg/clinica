@@ -1,35 +1,11 @@
-/**
- * @fileoverview Helper para exportar estadísticas de encuestas de satisfacción a PDF
- *
- * Este módulo proporciona funcionalidades para generar informes PDF profesionales
- * con análisis de encuestas de pacientes y estadísticas de satisfacción.
- *
- * @example
- * // Uso básico (obtiene automáticamente los gráficos del DOM):
- * await exportarEncuestasPdf();
- *
- * @example
- * // Uso con configuración personalizada:
- * await exportarEncuestasPdf({
- *   nombreArchivo: 'encuestas_marzo',
- *   tituloDocumento: 'ANÁLISIS DE SATISFACCIÓN'
- * });
- */
-
 import jsPDF from "jspdf";
 import type { EstadisticasEncuestas } from "../models/Encuestas/modeloEncuestas";
 
-/**
- * Información descriptiva de un gráfico para el PDF
- */
 interface GraficoInfo {
   titulo: string;
   descripcion: string;
 }
 
-/**
- * Configuración para la exportación del PDF de encuestas
- */
 export interface ConfiguracionPdfEncuestas {
   nombreArchivo?: string;
   tituloDocumento?: string;
@@ -40,9 +16,6 @@ export interface ConfiguracionPdfEncuestas {
   notaFinal?: string;
 }
 
-/**
- * Información predefinida de las secciones de análisis de encuestas
- */
 const SECCIONES_ENCUESTAS: GraficoInfo[] = [
   {
     titulo: "Distribución de Calificaciones por Estrellas",
@@ -61,9 +34,6 @@ const SECCIONES_ENCUESTAS: GraficoInfo[] = [
   },
 ];
 
-/**
- * Clase para gestionar la creación del PDF de encuestas
- */
 class GeneradorPdfEncuestas {
   private pdf: jsPDF;
   private pageWidth: number;
@@ -99,9 +69,6 @@ class GeneradorPdfEncuestas {
     };
   }
 
-  /**
-   * Agrega el encabezado de la página
-   */
   private agregarEncabezado(): void {
     const [r, g, b] = this.config.colorPrimario;
 
@@ -149,9 +116,7 @@ class GeneradorPdfEncuestas {
     }
   }
 
-  /**
-   * Verifica si hay espacio suficiente en la página y crea una nueva si es necesario
-   */
+  // Verifica si hay espacio suficiente en la página y crea una nueva si es necesario
   private verificarEspacio(alturaRequerida: number): boolean {
     if (this.yPosition + alturaRequerida > this.pageHeight - 20) {
       this.pdf.addPage();
@@ -163,9 +128,6 @@ class GeneradorPdfEncuestas {
     return false;
   }
 
-  /**
-   * Agrega un resumen ejecutivo con las métricas principales
-   */
   private agregarResumenEjecutivo(estadisticas: EstadisticasEncuestas): void {
     const [r, g, b] = this.config.colorPrimario;
 
@@ -272,9 +234,6 @@ class GeneradorPdfEncuestas {
     this.yPosition += altoCaja + 8;
   }
 
-  /**
-   * Agrega distribuciones visuales (barras de progreso) al PDF
-   */
   private agregarDistribuciones(estadisticas: EstadisticasEncuestas): void {
     const [r, g, b] = this.config.colorPrimario;
 
@@ -388,9 +347,6 @@ class GeneradorPdfEncuestas {
     this.yPosition += 8;
   }
 
-  /**
-   * Agrega un gráfico al PDF con mejor calidad
-   */
   private agregarGrafico(canvas: HTMLCanvasElement, info: GraficoInfo): void {
     const [r, g, b] = this.config.colorPrimario;
 
@@ -464,9 +420,6 @@ class GeneradorPdfEncuestas {
     this.yPosition += altoMarco + 8;
   }
 
-  /**
-   * Agrega aspectos destacados al PDF
-   */
   private agregarAspectosDestacados(
     aspectos: { aspecto: string; cantidad: number }[],
   ): void {
@@ -544,9 +497,6 @@ class GeneradorPdfEncuestas {
       8;
   }
 
-  /**
-   * Agrega comentarios destacados al PDF
-   */
   private agregarComentarios(estadisticas: EstadisticasEncuestas): void {
     // Mejores comentarios
     if (estadisticas.mejoresComentarios.length > 0) {
@@ -673,9 +623,6 @@ class GeneradorPdfEncuestas {
     }
   }
 
-  /**
-   * Agrega la nota final al documento
-   */
   private agregarNotaFinal(): void {
     const [r, g, b] = this.config.colorPrimario;
 
@@ -708,9 +655,7 @@ class GeneradorPdfEncuestas {
     });
   }
 
-  /**
-   * Genera el PDF completo con estadísticas y gráficos
-   */
+  // Genera el PDF completo con estadísticas y gráficos
   public generar(
     estadisticas: EstadisticasEncuestas,
     canvases: HTMLCanvasElement[],
@@ -743,9 +688,6 @@ class GeneradorPdfEncuestas {
     this.agregarNotaFinal();
   }
 
-  /**
-   * Descarga el PDF generado
-   */
   public descargar(): void {
     const fechaArchivo = new Date().toISOString().split("T")[0];
     const nombreCompleto = `${this.config.nombreArchivo}_${fechaArchivo}.pdf`;
@@ -753,11 +695,6 @@ class GeneradorPdfEncuestas {
   }
 }
 
-/**
- * Exporta las encuestas a PDF obteniendo los gráficos del DOM
- * @param estadisticas Estadísticas de las encuestas
- * @param config Configuración personalizada para el PDF
- */
 export async function exportarEncuestasPdf(
   estadisticas: EstadisticasEncuestas,
   config: ConfiguracionPdfEncuestas = {},
@@ -778,10 +715,6 @@ export async function exportarEncuestasPdf(
   generador.descargar();
 }
 
-/**
- * Obtiene la información predefinida de las secciones
- * Útil para personalización o consulta
- */
 export function obtenerInfoSecciones(): GraficoInfo[] {
   return [...SECCIONES_ENCUESTAS];
 }

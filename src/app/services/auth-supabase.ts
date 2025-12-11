@@ -292,7 +292,6 @@ export class AuthSupabase {
     const auth_id = data.user.id;
     const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, "");
 
-    // Paso 2: Subir imagen de perfil
     const imagenPerfilRes = await subirImagenDesdeBase64(
       dataRegistro.imagenPerfil,
       "fotoPerfilEspecialista",
@@ -412,7 +411,6 @@ export class AuthSupabase {
     const auth_id = data.user.id;
     const nombreSanitizado = dataRegistro.nombre.replace(/\s+/g, "");
 
-    // Paso 2: Subir imagen de perfil
     const imagenPerfilRes = await subirImagenDesdeBase64(
       dataRegistro.imagenPerfil,
       "fotoPerfilAdmin",

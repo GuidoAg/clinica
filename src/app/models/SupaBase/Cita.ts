@@ -5,6 +5,6 @@ export interface Cita {
   especialidadId: number;
   fechaHora: string;
   duracionMin: number;
-  estado: 'solicitado' | 'confirmado' | 'cancelado' | 'completado'; // adaptá el enum según tu tipo_estado_cita
+  estado: "solicitado" | "confirmado" | "cancelado" | "completado";
   creadoEn: string;
 }

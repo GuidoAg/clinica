@@ -8,5 +8,5 @@ export interface Perfil {
   urlImagenPerfil?: string;
   emailVerificado: boolean;
   creadoEn: string;
-  rol: 'admin' | 'paciente' | 'especialista'; // adaptá según tu enum de roles
+  rol: "admin" | "paciente" | "especialista";
 }

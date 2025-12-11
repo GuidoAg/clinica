@@ -5,7 +5,7 @@
   >
     <div class="mb-6">
       <h1 class="mb-2 text-3xl font-bold text-azul-oscuro">
-        ¡Bienvenido/a, {{ usuario.nombre }}!
+        {{ 'entradaPage.bienvenida' | transloco: { nombre: usuario.nombre } }}
       </h1>
       <p class="text-gray-600">{{ getFechaActual() }}</p>
     </div>
@@ -16,7 +16,7 @@
         <div
           class="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-azul-oscuro border-t-transparent"
         ></div>
-        <p class="text-gray-600">Cargando información...</p>
+        <p class="text-gray-600">{{ 'entradaPage.cargando' | transloco }}</p>
       </div>
     </div>
     } @else {
@@ -26,7 +26,7 @@
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-2xl font-semibold text-azul-oscuro">
             <mat-icon class="mr-2 align-middle">event_note</mat-icon>
-            Próximos Turnos
+            {{ 'entradaPage.proximosTurnos' | transloco }}
           </h2>
         </div>
 
@@ -34,15 +34,15 @@
         <div class="py-8 text-center text-gray-500">
           <mat-icon class="mb-2 text-5xl text-gray-300">event_busy</mat-icon>
           <p class="text-lg">
-            {{ usuario.rol === 'paciente' ? 'No tienes turnos programados' : 'No
-            tienes turnos pendientes' }}
+            {{ usuario.rol === 'paciente' ? ('entradaPage.noTurnosPaciente' |
+            transloco) : ('entradaPage.noTurnosEspecialista' | transloco) }}
           </p>
           @if (usuario.rol === 'paciente') {
           <button
             (click)="navegarA('solicitar-turnos')"
             class="mt-4 rounded-lg bg-azul-oscuro px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700"
           >
-            Solicitar un turno
+            {{ 'entradaPage.solicitarTurno' | transloco }}
           </button>
           }
         </div>
@@ -89,7 +89,7 @@
                 (click)="navegarA(usuario.rol === 'paciente' ? 'mis-turnos-paciente' : 'mis-turnos-especialista')"
                 class="rounded-lg bg-azul-oscuro px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
               >
-                Ver Detalles
+                {{ 'entradaPage.verDetalles' | transloco }}
               </button>
             </div>
           </div>
@@ -101,7 +101,7 @@
       <div class="rounded-lg bg-white p-6 shadow-md">
         <h2 class="mb-4 text-2xl font-semibold text-azul-oscuro">
           <mat-icon class="mr-2 align-middle">flash_on</mat-icon>
-          Acciones Rápidas
+          {{ 'entradaPage.accionesRapidas' | transloco }}
         </h2>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           @if (usuario.rol === 'paciente') {
@@ -111,8 +111,12 @@
           >
             <mat-icon class="text-3xl">add_circle</mat-icon>
             <div class="text-left">
-              <p class="font-semibold">Solicitar Turno</p>
-              <p class="text-sm opacity-75">Agenda una nueva cita</p>
+              <p class="font-semibold">
+                {{ 'entradaPage.paciente.solicitarTurno' | transloco }}
+              </p>
+              <p class="text-sm opacity-75">
+                {{ 'entradaPage.paciente.solicitarTurnoDesc' | transloco }}
+              </p>
             </div>
           </button>
 
@@ -122,8 +126,12 @@
           >
             <mat-icon class="text-3xl">list_alt</mat-icon>
             <div class="text-left">
-              <p class="font-semibold">Mis Turnos</p>
-              <p class="text-sm opacity-75">Ver historial completo</p>
+              <p class="font-semibold">
+                {{ 'entradaPage.paciente.misTurnos' | transloco }}
+              </p>
+              <p class="text-sm opacity-75">
+                {{ 'entradaPage.paciente.misTurnosDesc' | transloco }}
+              </p>
             </div>
           </button>
 
@@ -133,8 +141,12 @@
           >
             <mat-icon class="text-3xl">account_circle</mat-icon>
             <div class="text-left">
-              <p class="font-semibold">Mi Perfil</p>
-              <p class="text-sm opacity-75">Editar información</p>
+              <p class="font-semibold">
+                {{ 'entradaPage.paciente.miPerfil' | transloco }}
+              </p>
+              <p class="text-sm opacity-75">
+                {{ 'entradaPage.paciente.miPerfilDesc' | transloco }}
+              </p>
             </div>
           </button>
           } @else if (usuario.rol === 'especialista') {
@@ -144,8 +156,12 @@
           >
             <mat-icon class="text-3xl">event_note</mat-icon>
             <div class="text-left">
-              <p class="font-semibold">Mis Turnos</p>
-              <p class="text-sm opacity-75">Ver agenda completa</p>
+              <p class="font-semibold">
+                {{ 'entradaPage.especialista.misTurnos' | transloco }}
+              </p>
+              <p class="text-sm opacity-75">
+                {{ 'entradaPage.especialista.misTurnosDesc' | transloco }}
+              </p>
             </div>
           </button>
 
@@ -155,8 +171,12 @@
           >
             <mat-icon class="text-3xl">people</mat-icon>
             <div class="text-left">
-              <p class="font-semibold">Mis Pacientes</p>
-              <p class="text-sm opacity-75">Ver historial clínico</p>
+              <p class="font-semibold">
+                {{ 'entradaPage.especialista.misPacientes' | transloco }}
+              </p>
+              <p class="text-sm opacity-75">
+                {{ 'entradaPage.especialista.misPacientesDesc' | transloco }}
+              </p>
             </div>
           </button>
 
@@ -166,8 +186,12 @@
           >
             <mat-icon class="text-3xl">account_circle</mat-icon>
             <div class="text-left">
-              <p class="font-semibold">Mi Perfil</p>
-              <p class="text-sm opacity-75">Configurar horarios</p>
+              <p class="font-semibold">
+                {{ 'entradaPage.especialista.miPerfil' | transloco }}
+              </p>
+              <p class="text-sm opacity-75">
+                {{ 'entradaPage.especialista.miPerfilDesc' | transloco }}
+              </p>
             </div>
           </button>
           }
@@ -179,35 +203,35 @@
           <div class="mb-3 flex items-center gap-2">
             <mat-icon class="text-2xl text-blue-600">info</mat-icon>
             <h3 class="text-lg font-semibold text-azul-oscuro">
-              Información Importante
+              {{ 'entradaPage.informacionImportante' | transloco }}
             </h3>
           </div>
           <ul class="space-y-2 text-sm text-gray-700">
             @if (usuario.rol === 'paciente') {
             <li class="flex items-start gap-2">
               <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
-              <span>Recordá confirmar tus turnos con 24hs de anticipación</span>
+              <span>{{ 'entradaPage.paciente.info1' | transloco }}</span>
             </li>
             <li class="flex items-start gap-2">
               <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
-              <span>Podés cancelar turnos hasta 12hs antes</span>
+              <span>{{ 'entradaPage.paciente.info2' | transloco }}</span>
             </li>
             <li class="flex items-start gap-2">
               <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
-              <span>No olvides completar las encuestas de satisfacción</span>
+              <span>{{ 'entradaPage.paciente.info3' | transloco }}</span>
             </li>
             } @else {
             <li class="flex items-start gap-2">
               <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
-              <span>Revisá tu agenda diariamente</span>
+              <span>{{ 'entradaPage.especialista.info1' | transloco }}</span>
             </li>
             <li class="flex items-start gap-2">
               <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
-              <span>Completá el registro médico de cada consulta</span>
+              <span>{{ 'entradaPage.especialista.info2' | transloco }}</span>
             </li>
             <li class="flex items-start gap-2">
               <mat-icon class="text-sm text-blue-600">check_circle</mat-icon>
-              <span>Mantené actualizada tu disponibilidad horaria</span>
+              <span>{{ 'entradaPage.especialista.info3' | transloco }}</span>
             </li>
             }
           </ul>
@@ -217,12 +241,11 @@
           <div class="mb-3 flex items-center gap-2">
             <mat-icon class="text-2xl text-green-600">contact_support</mat-icon>
             <h3 class="text-lg font-semibold text-azul-oscuro">
-              ¿Necesitás Ayuda?
+              {{ 'entradaPage.necesitasAyuda' | transloco }}
             </h3>
           </div>
           <p class="mb-3 text-sm text-gray-700">
-            Nuestro equipo está disponible para asistirte con cualquier consulta
-            o inconveniente.
+            {{ 'entradaPage.necesitasAyudaDesc' | transloco }}
           </p>
           <div class="space-y-2 text-sm text-gray-700">
             <div class="flex items-center gap-2">
