@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { AuthSupabase } from "../../../../services/auth-supabase";
 import { Usuario } from "../../../../models/Auth/Usuario";
@@ -12,14 +12,16 @@ import {
   obtenerEspecialidadesUnicas,
 } from "../../../../helpers/exportar-historia-clinica";
 import { TranslocoModule } from "@jsverse/transloco";
+import { TrackImage } from "../../../../directivas/track-image";
+import { LoadingWrapper } from "../../../loading-wrapper/loading-wrapper";
 
 @Component({
   selector: "app-perfil-paciente",
-  imports: [CommonModule, TranslocoModule],
+  imports: [CommonModule, TranslocoModule, TrackImage, LoadingWrapper],
   templateUrl: "./perfil-paciente.html",
   styleUrl: "./perfil-paciente.css",
 })
-export class PerfilPaciente implements OnInit, AfterViewInit {
+export class PerfilPaciente implements OnInit {
   usuario$: Observable<Usuario | null>;
   citas: CitaCompletaTurnos[] = [];
   especialidades: string[] = [];
@@ -28,7 +30,7 @@ export class PerfilPaciente implements OnInit, AfterViewInit {
 
   constructor(
     private authSupabase: AuthSupabase,
-    private loading: LoadingOverlayService,
+    private loadingOverlay: LoadingOverlayService,
     private turnosService: Turnos,
     private exportarPdf: ExportarPdf,
   ) {
@@ -36,6 +38,7 @@ export class PerfilPaciente implements OnInit, AfterViewInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.loadingOverlay.hide();
     const usuario = await firstValueFrom(this.usuario$);
 
     if (usuario) {
@@ -44,13 +47,8 @@ export class PerfilPaciente implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(): void {
-    this.loading.hide();
-  }
-
   async cargarHistorialClinico(usuarioId: number): Promise<void> {
     try {
-      this.loading.show();
       this.citas = await this.turnosService.obtenerCitasPaciente(usuarioId);
 
       this.citas = this.citas.filter((cita) => cita.estado === "completado");
@@ -60,8 +58,6 @@ export class PerfilPaciente implements OnInit, AfterViewInit {
       console.log(`Historia clínica cargada: ${this.citas.length} citas`);
     } catch (error) {
       console.error("Error al cargar historia clínica:", error);
-    } finally {
-      this.loading.hide();
     }
   }
 
@@ -91,8 +87,6 @@ export class PerfilPaciente implements OnInit, AfterViewInit {
     }
 
     try {
-      this.loading.show();
-
       await exportarHistoriaClinicaPdf(usuario, this.citas, this.exportarPdf, {
         especialidadFiltro: this.especialidadSeleccionada || undefined,
         incluirDatosDinamicos: true,
@@ -104,8 +98,6 @@ export class PerfilPaciente implements OnInit, AfterViewInit {
       alert(
         "Error al generar la historia clínica. Por favor, intenta nuevamente.",
       );
-    } finally {
-      this.loading.hide();
     }
   }
 

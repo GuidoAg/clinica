@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 
 import { AuthSupabase } from "../../../../services/auth-supabase";
 import { Usuario } from "../../../../models/Auth/Usuario";
@@ -13,6 +13,8 @@ import { EspecialistaEspecialidad } from "../../../../services/especialista-espe
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { AgregarEspecialidad } from "../../agregar-especialidad/agregar-especialidad";
 import { TranslocoModule } from "@jsverse/transloco";
+import { TrackImage } from "../../../../directivas/track-image";
+import { LoadingWrapper } from "../../../loading-wrapper/loading-wrapper";
 
 @Component({
   selector: "app-perfil-especialista",
@@ -24,11 +26,13 @@ import { TranslocoModule } from "@jsverse/transloco";
     FormsModule,
     AgregarEspecialidad,
     TranslocoModule,
+    TrackImage,
+    LoadingWrapper,
   ],
   templateUrl: "./perfil-especialista.html",
   styleUrl: "./perfil-especialista.css",
 })
-export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
+export class PerfilEspecialista implements OnInit, OnDestroy {
   usuario$: Observable<Usuario | null>;
   usuarioActual: Usuario | null = null;
   mostrarPopupHorarios = false;
@@ -38,7 +42,7 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private authSupabase: AuthSupabase,
-    private loading: LoadingOverlayService,
+    private loadingOverlay: LoadingOverlayService,
     private especialistaEspecialidad: EspecialistaEspecialidad,
     private snackBar: MatSnackBar,
   ) {
@@ -46,6 +50,7 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.loadingOverlay.hide();
     this.usuario$.pipe(takeUntil(this.destroy$)).subscribe((usuario) => {
       if (!usuario) {
         this.usuarioActual = null;
@@ -56,10 +61,6 @@ export class PerfilEspecialista implements OnInit, AfterViewInit, OnDestroy {
 
       this.usuarioActual = usuario;
     });
-  }
-
-  ngAfterViewInit(): void {
-    this.loading.hide();
   }
 
   ngOnDestroy() {

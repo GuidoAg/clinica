@@ -69,9 +69,11 @@
         </tr>
       </thead>
 
-      <tbody>
-        @if (!cargando()) { @for (cita of citasFiltradas; track cita) {
+      @if (!cargando() && mostrarFilas()) {
+      <tbody @listStagger>
+        @for (cita of citasFiltradas; track cita) {
         <tr
+          @fadeInRow
           class="cursor-pointer border border-gray-300 transition-colors duration-150 hover:bg-[color:var(--color-verde-claro)]"
           (click)="toggleFilaExpandida(cita.citaId)"
           [style.background-color]="
@@ -130,7 +132,7 @@
           </td>
         </tr>
         @if (filaExpandida() === cita.citaId) {
-        <tr>
+        <tr @expandCollapse>
           <td
             colspan="11"
             class="border border-gray-300 bg-[color:var(--color-crema)] px-3 py-2 text-[color:var(--color-azul-oscuro)]"
@@ -142,7 +144,10 @@
             </div>
           </td>
         </tr>
-        } } } @else {
+        } }
+      </tbody>
+      } @else {
+      <tbody>
         <tr>
           <td
             colspan="11"
@@ -151,8 +156,8 @@
             Cargando datos...
           </td>
         </tr>
-        }
       </tbody>
+      }
     </table>
   </div>
 </div>

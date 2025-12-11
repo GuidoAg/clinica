@@ -8,10 +8,15 @@
       <p class="text-center text-gray-500">Cargando pacientes...</p>
     </div>
     } @if (!cargando() && pacientesConCitas.length > 0) {
-    <div class="flex flex-wrap justify-start gap-6">
+    <div
+      class="grid gap-6 transition-all duration-700 ease-in-out"
+      style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))"
+    >
       @for (item of pacientesConCitas; track item) {
       <div
-        class="h-auto w-[300px] cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm transition hover:shadow-md"
+        @scaleIn
+        class="h-auto cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm transition-all duration-700 ease-in-out hover:shadow-md"
+        [class.pointer-events-none]="panelAnimando()"
         (click)="seleccionarPaciente(item)"
         (keyup.enter)="seleccionarPaciente(item)"
         tabindex="0"
@@ -59,11 +64,15 @@
     }
   </div>
 
-  @if (pacienteSeleccionado()) {
+  <!-- Panel lateral siempre presente pero oculto cuando no hay paciente seleccionado -->
   <div
-    class="flex h-full w-full flex-col overflow-hidden rounded-2xl bg-white p-6 transition-all duration-700 ease-in-out md:w-[35%]"
-    [@slideInRight]
+    class="flex h-full flex-col overflow-hidden rounded-2xl bg-white p-6 transition-all duration-700 ease-in-out"
+    [style.width]="pacienteSeleccionado() ? '35%' : '0'"
+    [style.opacity]="pacienteSeleccionado() ? '1' : '0'"
+    [style.padding]="pacienteSeleccionado() ? '1.5rem' : '0'"
+    [class.pointer-events-none]="!pacienteSeleccionado()"
   >
+    @if (pacienteSeleccionado()) {
     <button
       class="mb-4 self-start rounded border border-gray-400 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-100"
       (click)="cerrarHistoriaClinica()"
@@ -100,6 +109,6 @@
       </div>
       }
     </div>
+    }
   </div>
-  }
 </div>

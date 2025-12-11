@@ -24,19 +24,10 @@ interface PacienteConCitas {
   templateUrl: "./pacientes.html",
   styleUrl: "./pacientes.css",
   animations: [
-    trigger("slideInRight", [
+    trigger("scaleIn", [
       transition(":enter", [
-        style({ transform: "translateX(100%)", opacity: 0 }),
-        animate(
-          "600ms ease-in-out",
-          style({ transform: "translateX(0)", opacity: 1 }),
-        ),
-      ]),
-      transition(":leave", [
-        animate(
-          "400ms ease-in",
-          style({ transform: "translateX(100%)", opacity: 0 }),
-        ),
+        style({ transform: "scale(0.3)", opacity: 0 }),
+        animate("600ms ease-out", style({ transform: "scale(1)", opacity: 1 })),
       ]),
     ]),
   ],
@@ -52,6 +43,7 @@ export class Pacientes implements OnInit, OnDestroy {
   pacientesConCitas: PacienteConCitas[] = [];
 
   pacienteSeleccionado = signal<PacienteConCitas | null>(null);
+  panelAnimando = signal(false);
 
   constructor(
     private turnosService: Turnos,
@@ -136,10 +128,31 @@ export class Pacientes implements OnInit, OnDestroy {
   }
 
   seleccionarPaciente(paciente: PacienteConCitas) {
+    const panelYaAbierto = this.pacienteSeleccionado() !== null;
+
+    if (panelYaAbierto) {
+      // Si el panel ya está abierto, solo actualizar contenido sin animación
+      this.pacienteSeleccionado.set(paciente);
+      return;
+    }
+
+    // Panel cerrado: bloquear clicks durante la animación
+    this.panelAnimando.set(true);
     this.pacienteSeleccionado.set(paciente);
+
+    // Desbloquear después que termine la transición
+    setTimeout(() => {
+      this.panelAnimando.set(false);
+    }, 700);
   }
 
   cerrarHistoriaClinica() {
+    this.panelAnimando.set(true);
     this.pacienteSeleccionado.set(null);
+
+    // Desbloquear después que termine la transición
+    setTimeout(() => {
+      this.panelAnimando.set(false);
+    }, 700);
   }
 }

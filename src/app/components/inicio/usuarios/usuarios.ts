@@ -12,6 +12,7 @@ import { formatearUsuariosParaExcel } from "../../../helpers/exportar-usuarios";
 import { formatearTurnosPacienteParaExcel } from "../../../helpers/exportar-turnos-paciente";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Turnos } from "../../../services/turnos";
+import { trigger, transition, style, animate } from "@angular/animations";
 
 @Component({
   selector: "app-usuarios",
@@ -19,6 +20,14 @@ import { Turnos } from "../../../services/turnos";
   imports: [CommonModule, AltasAdmin, TrackImage, LoadingWrapper],
   templateUrl: "./usuarios.html",
   styleUrls: ["./usuarios.css"],
+  animations: [
+    trigger("scaleIn", [
+      transition(":enter", [
+        style({ transform: "scale(0.3)", opacity: 0 }),
+        animate("600ms ease-out", style({ transform: "scale(1)", opacity: 1 })),
+      ]),
+    ]),
+  ],
 })
 export class Usuarios implements OnInit, OnDestroy {
   solapaActiva: "pacientes" | "especialistas" | "administradores" = "pacientes";

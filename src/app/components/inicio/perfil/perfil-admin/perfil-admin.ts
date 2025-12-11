@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { AuthSupabase } from "../../../../services/auth-supabase";
 import { Usuario } from "../../../../models/Auth/Usuario";
@@ -14,25 +14,22 @@ import { TranslocoModule } from "@jsverse/transloco";
   templateUrl: "./perfil-admin.html",
   styleUrl: "./perfil-admin.css",
 })
-export class PerfilAdmin implements OnInit, AfterViewInit {
+export class PerfilAdmin implements OnInit {
   usuario$: Observable<Usuario | null>;
 
   constructor(
     private authSupabase: AuthSupabase,
-    private loading: LoadingOverlayService,
+    private loadingOverlay: LoadingOverlayService,
   ) {
     this.usuario$ = this.authSupabase.user$;
   }
 
   async ngOnInit(): Promise<void> {
+    this.loadingOverlay.hide();
     const usuario = await firstValueFrom(this.usuario$);
 
     if (usuario) {
       console.log("Usuario cargado en ngOnInit:", usuario.urlImagenFondo);
     }
-  }
-
-  ngAfterViewInit(): void {
-    this.loading.hide();
   }
 }

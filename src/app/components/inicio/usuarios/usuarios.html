@@ -66,6 +66,7 @@
       >
         @for (usuario of pacientes; track usuario) {
         <div
+          @scaleIn
           class="relative w-full rounded-lg border border-gray-300 bg-white p-4 shadow-sm"
         >
           <button
@@ -110,6 +111,7 @@
       >
         @for (usuario of especialistas; track usuario) {
         <div
+          @scaleIn
           class="w-full rounded-lg border border-gray-300 bg-white p-4 shadow-sm"
         >
           @if (usuario.urlImagenPerfil) {
@@ -160,6 +162,7 @@
       >
         @for (usuario of administradores; track usuario) {
         <div
+          @scaleIn
           class="w-full rounded-lg border border-gray-300 bg-white p-4 shadow-sm"
         >
           @if (usuario.urlImagenPerfil) {

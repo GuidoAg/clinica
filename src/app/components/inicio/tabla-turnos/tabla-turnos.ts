@@ -12,6 +12,14 @@ import { ColorEstado } from "../../../directivas/color-estado";
 import { filtrarCitas } from "../../../helpers/filtrar-citas";
 import { UnidadMedidaPipe } from "../../../pipes/unidad-medida-pipe";
 import { LoadingOverlayService } from "../../../services/loading-overlay-service";
+import {
+  trigger,
+  transition,
+  style,
+  animate,
+  query,
+  stagger,
+} from "@angular/animations";
 
 @Component({
   selector: "app-tabla-turnos",
@@ -25,6 +33,44 @@ import { LoadingOverlayService } from "../../../services/loading-overlay-service
   ],
   templateUrl: "./tabla-turnos.html",
   styleUrl: "./tabla-turnos.css",
+  animations: [
+    trigger("fadeInRow", [
+      transition(":enter", [
+        style({ opacity: 0, transform: "translateY(-10px)" }),
+        animate(
+          "300ms ease-out",
+          style({ opacity: 1, transform: "translateY(0)" }),
+        ),
+      ]),
+    ]),
+    trigger("listStagger", [
+      transition(":enter", [
+        query(
+          ":enter",
+          [
+            style({ opacity: 0, transform: "translate(-20px, -10px)" }),
+            stagger(50, [
+              animate(
+                "300ms ease-out",
+                style({ opacity: 1, transform: "translate(0, 0)" }),
+              ),
+            ]),
+          ],
+          { optional: true },
+        ),
+      ]),
+    ]),
+    trigger("expandCollapse", [
+      transition(":enter", [
+        style({ height: "0", opacity: 0, overflow: "hidden" }),
+        animate("350ms ease-out", style({ height: "*", opacity: 1 })),
+      ]),
+      transition(":leave", [
+        style({ height: "*", opacity: 1 }),
+        animate("250ms ease-in", style({ height: "0", opacity: 0 })),
+      ]),
+    ]),
+  ],
 })
 export class TablaTurnos implements OnInit, OnDestroy {
   usuario$: Observable<Usuario | null>;
@@ -36,6 +82,7 @@ export class TablaTurnos implements OnInit, OnDestroy {
   cargando = signal(true);
   citaSeleccionada = signal<CitaCompletaTurnos | null>(null);
   ordenamiento = signal<"fecha" | "estado" | null>("fecha");
+  mostrarFilas = signal(false);
 
   mostrarPopupAcciones = false;
 
@@ -66,12 +113,17 @@ export class TablaTurnos implements OnInit, OnDestroy {
   }
 
   private _filtroValor = signal("");
+  private _filtroTimeout: ReturnType<typeof setTimeout> | null = null;
 
   get filtroValorModel(): string {
     return this._filtroValor();
   }
   set filtroValorModel(value: string) {
     this._filtroValor.set(value);
+
+    if (this._filtroTimeout) {
+      clearTimeout(this._filtroTimeout);
+    }
   }
 
   async ngOnInit() {
@@ -95,6 +147,7 @@ export class TablaTurnos implements OnInit, OnDestroy {
 
   async cargarCitas() {
     this.cargando.set(true);
+    this.mostrarFilas.set(false);
 
     try {
       if (this.usuarioActual?.id != null) {
@@ -105,6 +158,9 @@ export class TablaTurnos implements OnInit, OnDestroy {
       console.error("Error al obtener citas", e);
     } finally {
       this.cargando.set(false);
+      setTimeout(() => {
+        this.mostrarFilas.set(true);
+      }, 10);
       this.loading.hide();
     }
   }
@@ -133,6 +189,10 @@ export class TablaTurnos implements OnInit, OnDestroy {
 
   limpiarFiltro() {
     this._filtroValor.set("");
+    this.mostrarFilas.set(false);
+    setTimeout(() => {
+      this.mostrarFilas.set(true);
+    }, 10);
   }
 
   abrirPopupAcciones(cita: CitaCompletaTurnos) {
@@ -152,9 +212,17 @@ export class TablaTurnos implements OnInit, OnDestroy {
 
   ordenarPorFecha() {
     this.ordenamiento.set("fecha");
+    this.mostrarFilas.set(false);
+    setTimeout(() => {
+      this.mostrarFilas.set(true);
+    }, 10);
   }
 
   ordenarPorEstado() {
     this.ordenamiento.set("estado");
+    this.mostrarFilas.set(false);
+    setTimeout(() => {
+      this.mostrarFilas.set(true);
+    }, 10);
   }
 }
