@@ -15,7 +15,13 @@ import {
 import { TranslocoModule } from "@jsverse/transloco";
 import { TrackImage } from "../../../../directivas/track-image";
 import { LoadingWrapper } from "../../../loading-wrapper/loading-wrapper";
-import { trigger, style, transition, animate } from "@angular/animations";
+import {
+  trigger,
+  style,
+  transition,
+  animate,
+  keyframes,
+} from "@angular/animations";
 
 @Component({
   selector: "app-perfil-paciente",
@@ -25,16 +31,30 @@ import { trigger, style, transition, animate } from "@angular/animations";
   animations: [
     trigger("slideInFromRight", [
       transition(":enter", [
-        style({
-          transform: "translateX(150%)",
-          opacity: 0,
-        }),
         animate(
-          "600ms cubic-bezier(0.35, 0, 0.25, 1)",
-          style({
-            transform: "translateX(0)",
-            opacity: 1,
-          }),
+          "1000ms ease-out",
+          keyframes([
+            style({
+              transform: "rotate(-360deg) scale(0.3)",
+              opacity: 0,
+              offset: 0,
+            }),
+            style({
+              transform: "rotate(-180deg) scale(0.7)",
+              opacity: 0.5,
+              offset: 0.5,
+            }),
+            style({
+              transform: "rotate(-30deg) scale(1.05)",
+              opacity: 1,
+              offset: 0.8,
+            }),
+            style({
+              transform: "rotate(0deg) scale(1)",
+              opacity: 1,
+              offset: 1,
+            }),
+          ]),
         ),
       ]),
     ]),

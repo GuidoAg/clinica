@@ -7,7 +7,13 @@ import { LoadingOverlayService } from "../../../../services/loading-overlay-serv
 import { TrackImage } from "../../../../directivas/track-image";
 import { LoadingWrapper } from "../../../loading-wrapper/loading-wrapper";
 import { TranslocoModule } from "@jsverse/transloco";
-import { trigger, style, transition, animate } from "@angular/animations";
+import {
+  trigger,
+  style,
+  transition,
+  animate,
+  keyframes,
+} from "@angular/animations";
 
 @Component({
   selector: "app-perfil-admin",
@@ -17,16 +23,60 @@ import { trigger, style, transition, animate } from "@angular/animations";
   animations: [
     trigger("slideInFromLeft", [
       transition(":enter", [
-        style({
-          transform: "translateX(150%)",
-          opacity: 0,
-        }),
         animate(
-          "600ms cubic-bezier(0.35, 0, 0.25, 1)",
-          style({
-            transform: "translateX(0)",
-            opacity: 1,
-          }),
+          "1400ms ease-in-out",
+          keyframes([
+            style({
+              transform: "translateX(-200%) translateY(0)",
+              opacity: 0,
+              offset: 0,
+            }),
+            style({
+              transform: "translateX(-150%) translateY(-40px)",
+              opacity: 1,
+              offset: 0.15,
+            }),
+            style({
+              transform: "translateX(-120%) translateY(0)",
+              opacity: 1,
+              offset: 0.25,
+            }),
+            style({
+              transform: "translateX(-90%) translateY(-30px)",
+              opacity: 1,
+              offset: 0.4,
+            }),
+            style({
+              transform: "translateX(-60%) translateY(0)",
+              opacity: 1,
+              offset: 0.5,
+            }),
+            style({
+              transform: "translateX(-40%) translateY(-20px)",
+              opacity: 1,
+              offset: 0.62,
+            }),
+            style({
+              transform: "translateX(-20%) translateY(0)",
+              opacity: 1,
+              offset: 0.72,
+            }),
+            style({
+              transform: "translateX(-10%) translateY(-10px)",
+              opacity: 1,
+              offset: 0.85,
+            }),
+            style({
+              transform: "translateX(-3%) translateY(0)",
+              opacity: 1,
+              offset: 0.93,
+            }),
+            style({
+              transform: "translateX(0) translateY(0)",
+              opacity: 1,
+              offset: 1,
+            }),
+          ]),
         ),
       ]),
     ]),
