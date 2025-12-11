@@ -202,9 +202,9 @@ export class AccionesEspecialista {
   }
 
   registro: RegistroMedicoTurnos = {
-    alturaCm: 0,
-    pesoKg: 0,
-    temperaturaC: 0,
+    alturaCm: null,
+    pesoKg: null,
+    temperaturaC: null,
     presionArterial: "",
     citaId: 0,
   };

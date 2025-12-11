@@ -215,7 +215,8 @@
           [min]="RANGOS_MEDICOS.altura.min"
           [max]="RANGOS_MEDICOS.altura.max"
           step="0.1"
-          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+          placeholder="160"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring focus:ring-indigo-300"
           [ngClass]="{ 'border-red-500 ring-red-300': errorAltura }"
         />
         @if (errorAltura) {
@@ -239,7 +240,8 @@
           [min]="RANGOS_MEDICOS.peso.min"
           [max]="RANGOS_MEDICOS.peso.max"
           step="0.1"
-          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+          placeholder="65"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring focus:ring-indigo-300"
           [ngClass]="{ 'border-red-500 ring-red-300': errorPeso }"
         />
         @if (errorPeso) {
@@ -266,7 +268,8 @@
           [min]="RANGOS_MEDICOS.temperatura.min"
           [max]="RANGOS_MEDICOS.temperatura.max"
           step="0.1"
-          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+          placeholder="38"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring focus:ring-indigo-300"
           [ngClass]="{ 'border-red-500 ring-red-300': errorTemperatura }"
         />
         @if (errorTemperatura) {
@@ -288,7 +291,7 @@
           required
           type="text"
           placeholder="120/80"
-          class="w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring focus:ring-indigo-300"
           [ngClass]="{ 'border-red-500 ring-red-300': errorPresion }"
         />
         @if (errorPresion) {

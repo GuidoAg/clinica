@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { AuthSupabase } from "../../../../services/auth-supabase";
 import { Usuario } from "../../../../models/Auth/Usuario";
 import { Observable, firstValueFrom } from "rxjs";
@@ -52,6 +53,7 @@ export class PerfilPaciente implements OnInit {
     private loadingOverlay: LoadingOverlayService,
     private turnosService: Turnos,
     private exportarPdf: ExportarPdf,
+    private snackBar: MatSnackBar,
   ) {
     this.usuario$ = this.authSupabase.user$;
   }
@@ -87,7 +89,11 @@ export class PerfilPaciente implements OnInit {
 
   abrirModalDescarga(): void {
     if (this.citas.length === 0) {
-      alert("No tienes citas completadas para generar la historia clínica.");
+      this.snackBar.open(
+        "No tienes citas completadas para generar la historia clínica.",
+        "Cerrar",
+        { duration: 4000 },
+      );
       return;
     }
     this.mostrarModalDescarga = true;
@@ -106,7 +112,11 @@ export class PerfilPaciente implements OnInit {
     const usuario = await firstValueFrom(this.usuario$);
 
     if (!usuario) {
-      alert("No se pudo obtener la información del usuario.");
+      this.snackBar.open(
+        "No se pudo obtener la información del usuario.",
+        "Cerrar",
+        { duration: 4000 },
+      );
       return;
     }
 
@@ -119,8 +129,10 @@ export class PerfilPaciente implements OnInit {
       this.cerrarModalDescarga();
     } catch (error) {
       console.error("Error al generar PDF:", error);
-      alert(
+      this.snackBar.open(
         "Error al generar la historia clínica. Por favor, intenta nuevamente.",
+        "Cerrar",
+        { duration: 5000 },
       );
     }
   }
