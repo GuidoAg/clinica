@@ -1,4 +1,4 @@
-![logo](https://github.com/user-attachments/assets/d2f68ec5-575b-488a-986b-7cfe8c9ef02b)# 🏥 Centro Medico Insua - Sistema de Gestión Médica
+# 🏥 Centro Medico Insua - Sistema de Gestión Médica
 
 <div align="center">
 
@@ -9,7 +9,7 @@
 </div>
 
 <div align="center">
-<img width="400" height="400" alt="logo_png" src="https://github.com/user-attachments/assets/5cdae4ee-50be-4a2b-b3f1-733b5a8ea3f7" />
+  ![logo](https://github.com/user-attachments/assets/d2f68ec5-575b-488a-986b-7cfe8c9ef02b)
 </div>
 
 
