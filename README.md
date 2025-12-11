@@ -8,10 +8,6 @@
 
 </div>
 
-<div align="center">
-  ![logo](https://github.com/user-attachments/assets/d2f68ec5-575b-488a-986b-7cfe8c9ef02b)
-</div>
-
 
 ## 📋 Descripción
 
