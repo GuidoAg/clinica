@@ -31,11 +31,48 @@ import {
   templateUrl: "./solicitar-turno.html",
   styleUrl: "./solicitar-turno.css",
   animations: [
+    trigger("slideInFromRight", [
+      transition("true => false", []),
+      transition("* => true", [
+        style({
+          transform: "translateX(150%)",
+          opacity: 0,
+        }),
+        animate(
+          "600ms cubic-bezier(0.35, 0, 0.25, 1)",
+          style({
+            transform: "translateX(0)",
+            opacity: 1,
+          }),
+        ),
+      ]),
+    ]),
+
+    // Animación para botones individuales con bounce
+    trigger("botonBounce", [
+      transition(":enter", [
+        style({ opacity: 0, transform: "scale(0.3) translateY(-20px)" }),
+        animate(
+          "800ms cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+          style({ opacity: 1, transform: "scale(1) translateY(0)" }),
+        ),
+      ]),
+    ]),
+
+    // Animación para contenedores de listas
+    trigger("listaStagger", [
+      transition(":enter", [
+        query("@botonBounce", stagger(80, animateChild()), {
+          optional: true,
+        }),
+      ]),
+    ]),
+
     trigger("especialidadAnimacion", [
       transition(":enter", [
         style({ opacity: 0, transform: "scale(0.5)" }),
         animate(
-          "400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+          "500ms cubic-bezier(0.34, 1.56, 0.64, 1)",
           style({ opacity: 1, transform: "scale(1)" }),
         ),
       ]),
@@ -73,6 +110,9 @@ export class SolicitarTurno implements OnInit, OnDestroy {
   especialistasBuscados = signal(false);
 
   cargando = signal(false);
+
+  mostrarContenido = false;
+  primeraVezAnimando = true;
 
   constructor(
     private turnosService: Turnos,
@@ -131,10 +171,18 @@ export class SolicitarTurno implements OnInit, OnDestroy {
       (e) => e.validadoAdmin === true && e.activo === true,
     );
 
-    this.especialistas.set(especialistasValidados);
-    this.especialistasBuscados.set(true);
-
     this.loadin.hide();
+
+    // Activar la animación después de un pequeño delay
+    setTimeout(() => {
+      this.mostrarContenido = true;
+
+      // Mostrar especialistas con un delay adicional para que se vea la animación
+      setTimeout(() => {
+        this.especialistas.set(especialistasValidados);
+        this.especialistasBuscados.set(true);
+      }, 200);
+    }, 100);
   }
 
   ngOnDestroy() {
@@ -143,6 +191,7 @@ export class SolicitarTurno implements OnInit, OnDestroy {
   }
 
   async seleccionarEspecialista(e: EspecialistaTurnos) {
+    this.primeraVezAnimando = false;
     this.especialistaSeleccionado.set(e);
     this.especialidadSeleccionada.set(null);
     this.fechaSeleccionada.set(null);

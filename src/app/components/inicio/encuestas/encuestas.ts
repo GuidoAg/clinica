@@ -6,6 +6,7 @@ import { LoadingOverlayService } from "../../../services/loading-overlay-service
 import { PuntuacionEspecialistaChartComponent } from "../../charts/puntuacion-especialista-chart/puntuacion-especialista-chart";
 import { exportarEncuestasPdf } from "../../../helpers/exportar-encuestas-pdf";
 import { TranslocoModule } from "@jsverse/transloco";
+import { trigger, style, transition, animate } from "@angular/animations";
 
 // Constantes para mapeo de etiquetas
 const ETIQUETAS_RADIO: Record<string, string> = {
@@ -44,15 +45,38 @@ const ICONOS_TENDENCIA: Record<string, string> = {
   ],
   templateUrl: "./encuestas.html",
   styleUrl: "./encuestas.css",
+  animations: [
+    trigger("slideInFromRight", [
+      transition(":enter", [
+        style({
+          transform: "translateX(150%)",
+          opacity: 0,
+        }),
+        animate(
+          "600ms cubic-bezier(0.35, 0, 0.25, 1)",
+          style({
+            transform: "translateX(0)",
+            opacity: 1,
+          }),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class Encuestas implements OnInit {
   private readonly encuestasService = inject(EncuestasService);
   private readonly loading = inject(LoadingOverlayService);
 
   readonly estadisticas = signal<EstadisticasEncuestas | null>(null);
+  mostrarContenido = false;
 
   async ngOnInit() {
     await this.cargarEstadisticas();
+
+    // Activar la animación después de un pequeño delay
+    setTimeout(() => {
+      this.mostrarContenido = true;
+    }, 100);
   }
 
   async cargarEstadisticas() {

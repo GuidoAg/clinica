@@ -14,12 +14,30 @@ import {
 import { TranslocoModule } from "@jsverse/transloco";
 import { TrackImage } from "../../../../directivas/track-image";
 import { LoadingWrapper } from "../../../loading-wrapper/loading-wrapper";
+import { trigger, style, transition, animate } from "@angular/animations";
 
 @Component({
   selector: "app-perfil-paciente",
   imports: [CommonModule, TranslocoModule, TrackImage, LoadingWrapper],
   templateUrl: "./perfil-paciente.html",
   styleUrl: "./perfil-paciente.css",
+  animations: [
+    trigger("slideInFromRight", [
+      transition(":enter", [
+        style({
+          transform: "translateX(150%)",
+          opacity: 0,
+        }),
+        animate(
+          "600ms cubic-bezier(0.35, 0, 0.25, 1)",
+          style({
+            transform: "translateX(0)",
+            opacity: 1,
+          }),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class PerfilPaciente implements OnInit {
   usuario$: Observable<Usuario | null>;
@@ -27,6 +45,7 @@ export class PerfilPaciente implements OnInit {
   especialidades: string[] = [];
   mostrarModalDescarga = false;
   especialidadSeleccionada: string | null = null;
+  mostrarContenido = false;
 
   constructor(
     private authSupabase: AuthSupabase,
@@ -45,6 +64,11 @@ export class PerfilPaciente implements OnInit {
       console.log("Usuario cargado en ngOnInit:", usuario.urlImagenFondo);
       await this.cargarHistorialClinico(usuario.id);
     }
+
+    // Activar la animación después de un pequeño delay
+    setTimeout(() => {
+      this.mostrarContenido = true;
+    }, 100);
   }
 
   async cargarHistorialClinico(usuarioId: number): Promise<void> {

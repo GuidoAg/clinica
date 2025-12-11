@@ -43,4 +43,5 @@ export interface EstadisticasEncuestas {
   citasCompletadas: number;
   encuestasRespondidas: number;
   puntuacionPorEspecialista: PuntuacionEspecialista[];
+  visitasTotales: number;
 }

@@ -31,13 +31,18 @@ export class EncuestasService {
   }
 
   async obtenerEstadisticas(): Promise<EstadisticasEncuestas> {
-    const [encuestas, citasResult] = await Promise.all([
+    const [encuestas, citasResult, visitasResult] = await Promise.all([
       this.obtenerTodasEncuestas(),
       Supabase.from(TABLA.CITAS).select("id").eq("estado", "completado"),
+      Supabase.from(TABLA.REGISTRO_INGRESOS).select("id", {
+        count: "exact",
+        head: true,
+      }),
     ]);
 
     const totalCitasCompletadas = citasResult.data?.length || 0;
     const totalEncuestas = encuestas.length;
+    const visitasTotales = visitasResult.count || 0;
     const tasaRespuesta =
       totalCitasCompletadas > 0
         ? (totalEncuestas / totalCitasCompletadas) * 100
@@ -47,6 +52,7 @@ export class EncuestasService {
       return this.obtenerEstadisticasVacias(
         totalCitasCompletadas,
         tasaRespuesta,
+        visitasTotales,
       );
     }
 
@@ -92,12 +98,14 @@ export class EncuestasService {
       citasCompletadas: totalCitasCompletadas,
       encuestasRespondidas: totalEncuestas,
       puntuacionPorEspecialista,
+      visitasTotales,
     };
   }
 
   private obtenerEstadisticasVacias(
     citasCompletadas: number,
     tasaRespuesta: number,
+    visitasTotales: number,
   ): EstadisticasEncuestas {
     return {
       total: 0,
@@ -113,6 +121,7 @@ export class EncuestasService {
       citasCompletadas,
       encuestasRespondidas: 0,
       puntuacionPorEspecialista: [],
+      visitasTotales,
     };
   }
 

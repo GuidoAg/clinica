@@ -25,22 +25,14 @@ export class Horarios implements OnInit {
 
   @Output() cerrar = new EventEmitter<void>();
 
-  dias = [
-    "Lunes",
-    "Martes",
-    "Miércoles",
-    "Jueves",
-    "Viernes",
-    "Sábado",
-    "Domingo",
-  ];
+  dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
   disponibilidades: WritableSignal<DisponibilidadVisual[]> = signal(
-    Array.from({ length: 7 }, (_, i) => ({
+    Array.from({ length: 6 }, (_, i) => ({
       dia: i + 1,
       habilitado: false,
-      horaDesde: "09:00",
-      horaHasta: "17:00",
+      horaDesde: i < 5 ? "08:00" : "08:00", // L-V: 8:00, Sábado: 8:00
+      horaHasta: i < 5 ? "19:00" : "14:00", // L-V: 19:00, Sábado: 14:00
     })),
   );
 
@@ -57,7 +49,11 @@ export class Horarios implements OnInit {
     const cargas = await this.disponibilidad.obtenerDisponibilidades(
       this.perfilId,
     );
-    this.disponibilidades.set(cargas);
+    // Filtrar solo los días de lunes a sábado (día 1 a 6)
+    const disponibilidadesFiltradas = cargas.filter(
+      (d) => d.dia >= 1 && d.dia <= 6,
+    );
+    this.disponibilidades.set(disponibilidadesFiltradas);
   }
 
   cerrarPopup() {
@@ -70,8 +66,10 @@ export class Horarios implements OnInit {
     );
 
     for (const disp of disponibilidadesHabilitadas) {
+      const nombreDia = this.dias[disp.dia - 1];
+
+      // Validar que hora inicio sea menor que hora fin
       if (disp.horaDesde >= disp.horaHasta) {
-        const nombreDia = this.dias[disp.dia - 1];
         this.snackBar.open(
           `Error en ${nombreDia}: la hora de inicio debe ser menor que la hora de fin.`,
           "Cerrar",
@@ -81,6 +79,48 @@ export class Horarios implements OnInit {
           },
         );
         return false;
+      }
+
+      // Validar rangos horarios según el día
+      const horaDesdeNum = parseInt(disp.horaDesde.split(":")[0]);
+      const horaHastaNum = parseInt(disp.horaHasta.split(":")[0]);
+      const minutoHasta = parseInt(disp.horaHasta.split(":")[1]);
+
+      // Lunes a Viernes: 8:00 a 19:00
+      if (disp.dia >= 1 && disp.dia <= 5) {
+        if (
+          horaDesdeNum < 8 ||
+          horaHastaNum > 19 ||
+          (horaHastaNum === 19 && minutoHasta > 0)
+        ) {
+          this.snackBar.open(
+            `Error en ${nombreDia}: el horario debe estar entre 08:00 y 19:00.`,
+            "Cerrar",
+            {
+              duration: 4000,
+              panelClass: ["bg-red-600", "text-white"],
+            },
+          );
+          return false;
+        }
+      }
+      // Sábado: 8:00 a 14:00
+      else if (disp.dia === 6) {
+        if (
+          horaDesdeNum < 8 ||
+          horaHastaNum > 14 ||
+          (horaHastaNum === 14 && minutoHasta > 0)
+        ) {
+          this.snackBar.open(
+            `Error en ${nombreDia}: el horario debe estar entre 08:00 y 14:00.`,
+            "Cerrar",
+            {
+              duration: 4000,
+              panelClass: ["bg-red-600", "text-white"],
+            },
+          );
+          return false;
+        }
       }
     }
     return true;

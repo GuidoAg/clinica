@@ -1,5 +1,5 @@
-@if (usuario$ | async; as usuario) {
-<div class="h-full w-full p-1">
+@if (usuario$ | async; as usuario) { @if (mostrarContenido) {
+<div class="h-full w-full overflow-hidden p-1" [@slideInFromRight]>
   <div
     class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
   >
@@ -263,4 +263,4 @@
     }
   </div>
 </div>
-}
+} }

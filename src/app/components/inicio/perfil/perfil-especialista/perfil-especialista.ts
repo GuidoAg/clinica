@@ -15,6 +15,7 @@ import { AgregarEspecialidad } from "../../agregar-especialidad/agregar-especial
 import { TranslocoModule } from "@jsverse/transloco";
 import { TrackImage } from "../../../../directivas/track-image";
 import { LoadingWrapper } from "../../../loading-wrapper/loading-wrapper";
+import { trigger, style, transition, animate } from "@angular/animations";
 
 @Component({
   selector: "app-perfil-especialista",
@@ -31,12 +32,30 @@ import { LoadingWrapper } from "../../../loading-wrapper/loading-wrapper";
   ],
   templateUrl: "./perfil-especialista.html",
   styleUrl: "./perfil-especialista.css",
+  animations: [
+    trigger("slideInFromRight", [
+      transition(":enter", [
+        style({
+          transform: "translateX(150%)",
+          opacity: 0,
+        }),
+        animate(
+          "600ms cubic-bezier(0.35, 0, 0.25, 1)",
+          style({
+            transform: "translateX(0)",
+            opacity: 1,
+          }),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class PerfilEspecialista implements OnInit, OnDestroy {
   usuario$: Observable<Usuario | null>;
   usuarioActual: Usuario | null = null;
   mostrarPopupHorarios = false;
   mostrarPopupAgregarEspecialidad = false;
+  mostrarContenido = false;
 
   private destroy$ = new Subject<void>();
 
@@ -61,6 +80,11 @@ export class PerfilEspecialista implements OnInit, OnDestroy {
 
       this.usuarioActual = usuario;
     });
+
+    // Activar la animación después de un pequeño delay
+    setTimeout(() => {
+      this.mostrarContenido = true;
+    }, 100);
   }
 
   ngOnDestroy() {

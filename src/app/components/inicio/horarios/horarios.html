@@ -27,6 +27,8 @@
             type="time"
             [(ngModel)]="disp.horaDesde"
             name="desde{{ i }}"
+            min="08:00"
+            [max]="i < 5 ? '19:00' : '14:00'"
             class="w-28 rounded-md border px-2 py-1 text-sm"
             [disabled]="!disp.habilitado"
             [ngClass]="{
@@ -40,6 +42,8 @@
             type="time"
             [(ngModel)]="disp.horaHasta"
             name="hasta{{ i }}"
+            min="08:00"
+            [max]="i < 5 ? '19:00' : '14:00'"
             class="w-28 rounded-md border px-2 py-1 text-sm"
             [disabled]="!disp.habilitado"
             [ngClass]="{

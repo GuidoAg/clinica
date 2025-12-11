@@ -1,6 +1,6 @@
 <app-loading-wrapper>
-  @if (usuarioActual; as usuario) {
-  <div class="h-full w-full p-1">
+  @if (usuarioActual; as usuario) { @if (mostrarContenido) {
+  <div class="h-full w-full overflow-hidden p-1" [@slideInFromRight]>
     <div
       class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
     >
@@ -126,5 +126,5 @@
       </div>
     </div>
   </div>
-  }
+  } }
 </app-loading-wrapper>

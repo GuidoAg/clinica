@@ -13,6 +13,7 @@ import { Supabase } from "../../../supabase";
 import { TABLA } from "../../../constantes";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { TranslocoModule } from "@jsverse/transloco";
+import { trigger, style, transition, animate } from "@angular/animations";
 
 @Component({
   selector: "app-entrada",
@@ -20,6 +21,23 @@ import { TranslocoModule } from "@jsverse/transloco";
   imports: [CommonModule, MatIconModule, TranslocoModule],
   templateUrl: "./entrada.html",
   styleUrl: "./entrada.css",
+  animations: [
+    trigger("slideInFromRight", [
+      transition(":enter", [
+        style({
+          transform: "translateX(150%)",
+          opacity: 0,
+        }),
+        animate(
+          "600ms cubic-bezier(0.35, 0, 0.25, 1)",
+          style({
+            transform: "translateX(0)",
+            opacity: 1,
+          }),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class Entrada implements OnInit, OnDestroy {
   usuario$: Observable<Usuario | null>;
@@ -28,6 +46,7 @@ export class Entrada implements OnInit, OnDestroy {
 
   proximosTurnos = signal<CitaCompletaTurnos[]>([]);
   cargando = signal(true);
+  mostrarContenido = false;
 
   constructor(
     private authSupabase: AuthSupabase,
@@ -45,6 +64,11 @@ export class Entrada implements OnInit, OnDestroy {
       await this.cargarDatos();
 
       this.suscribirseACambiosCitas();
+
+      // Activar la animación después de un pequeño delay
+      setTimeout(() => {
+        this.mostrarContenido = true;
+      }, 100);
     }
   }
 

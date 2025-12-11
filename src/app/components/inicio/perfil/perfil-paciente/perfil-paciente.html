@@ -1,6 +1,6 @@
 <app-loading-wrapper>
-  @if (usuario$ | async; as usuario) {
-  <div class="h-full w-full p-1">
+  @if (usuario$ | async; as usuario) { @if (mostrarContenido) {
+  <div class="h-full w-full overflow-hidden p-1" [@slideInFromRight]>
     <div
       class="h-full w-full overflow-auto rounded-2xl border border-white bg-crema p-6 shadow-inner"
     >
@@ -123,32 +123,35 @@
       <p class="mt-4 mb-2 text-sm font-semibold text-gray-700">
         {{ 'perfilPaciente.modal.filtrarPorEspecialidad' | transloco }}
       </p>
-      } @for (especialidad of especialidades; track especialidad) {
-      <div
-        role="button"
-        tabindex="0"
-        (click)="seleccionarEspecialidad(especialidad)"
-        (keydown.enter)="seleccionarEspecialidad(especialidad)"
-        (keydown.space)="seleccionarEspecialidad(especialidad); $event.preventDefault()"
-        [class.border-azul]="especialidadSeleccionada === especialidad"
-        [class.bg-azul-claro]="especialidadSeleccionada === especialidad"
-        class="hover:border-azul mb-3 cursor-pointer rounded-lg border-2 border-gray-300 p-4 transition-all hover:bg-azul-claro"
-      >
-        <div class="flex items-center">
-          <input
-            type="radio"
-            name="especialidad"
-            [checked]="especialidadSeleccionada === especialidad"
-            class="mr-3 h-5 w-5"
-          />
-          <div>
-            <p class="font-semibold text-azul-oscuro">{{ especialidad }}</p>
-            <p class="text-sm text-gray-600">
-              {{ 'perfilPaciente.modal.consultasCount' | transloco: { count:
-              contarCitasPorEspecialidad(especialidad) } }}
-            </p>
+      <div class="max-h-80 overflow-y-auto pr-2" style="scrollbar-width: thin">
+        @for (especialidad of especialidades; track especialidad) {
+        <div
+          role="button"
+          tabindex="0"
+          (click)="seleccionarEspecialidad(especialidad)"
+          (keydown.enter)="seleccionarEspecialidad(especialidad)"
+          (keydown.space)="seleccionarEspecialidad(especialidad); $event.preventDefault()"
+          [class.border-azul]="especialidadSeleccionada === especialidad"
+          [class.bg-azul-claro]="especialidadSeleccionada === especialidad"
+          class="hover:border-azul mb-3 ml-4 cursor-pointer rounded-lg border-2 border-gray-300 p-4 transition-all hover:bg-azul-claro"
+        >
+          <div class="flex items-center">
+            <input
+              type="radio"
+              name="especialidad"
+              [checked]="especialidadSeleccionada === especialidad"
+              class="mr-3 h-5 w-5"
+            />
+            <div>
+              <p class="font-semibold text-azul-oscuro">{{ especialidad }}</p>
+              <p class="text-sm text-gray-600">
+                {{ 'perfilPaciente.modal.consultasCount' | transloco: { count:
+                contarCitasPorEspecialidad(especialidad) } }}
+              </p>
+            </div>
           </div>
         </div>
+        }
       </div>
       }
 
@@ -170,5 +173,5 @@
       </div>
     </div>
   </div>
-  }
+  } }
 </app-loading-wrapper>
