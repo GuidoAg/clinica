@@ -62,7 +62,7 @@ Vista principal donde el paciente puede ver un resumen de su actividad y acceder
 ---
 
 #### 📅 Mis Turnos
-Listado completo de turnos programados, pasados y futuros, con opciones para cancelar o reprogramar.
+Listado completo de turnos programados, pasados y futuros, con opciones para cancelar y completar encuesta.
 
 <img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/7a71c9d2-29d5-44ca-83f6-a64bd247802e" />
 
@@ -131,7 +131,7 @@ Panel de control con estadísticas generales, métricas de uso y accesos rápido
 
 <img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/b230cfdc-7645-4260-939c-04e30a99468d" />
 
-<img width="992" height="908" alt="image" src="https://github.com/user-attachments/assets/199930be-18aa-4b40-8581-1711f3d73b40" />
+<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/959c5361-9498-496e-bcb7-d03f42e7eedc" />
 
 ---
 
@@ -163,7 +163,7 @@ Administración completa de usuarios: altas, bajas, modificaciones y habilitaci�
 
 <img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/23d9aab6-8f27-4b57-b6aa-32de347c5d53" />
 
-<img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/bff480a1-d185-42cd-b48e-b5e0d9f0ac97" />
+<img width="1527" height="531" alt="image" src="https://github.com/user-attachments/assets/28eb0138-4582-433e-8efb-27e6039399fb" />
 
 ---
 
