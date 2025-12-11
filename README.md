@@ -33,7 +33,7 @@ Página de bienvenida que presenta el sistema y permite a los usuarios navegar h
 ---
 
 ### 🔐 Login
-Sistema de autenticación seguro donde los usuarios ingresan con sus credenciales según su rol (Paciente, Especialista o Administrador).
+Sistema de autenticación seguro donde los usuarios ingresan con sus credenciales.
 
 <img width="1869" height="947" alt="image" src="https://github.com/user-attachments/assets/51135c9d-dc7c-415d-9e13-4b6932f3966f" />
 
